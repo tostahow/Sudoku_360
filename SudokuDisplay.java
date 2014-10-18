@@ -1,4 +1,4 @@
-public class Sudoku_Display
+public class SudokuDisplay
 {
 
 }

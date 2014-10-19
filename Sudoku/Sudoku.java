@@ -39,7 +39,7 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 	private LogIn log_in;				// LogIn object to aid with log in
 	private Register register;			// register object for registering new users
 	private User current_user;			// Player currently signed in
-	private GameBoard board;            // GameBoard object for displaying the game.
+	private SudokuDisplay board;        // Display object for displaying the game.
 	
 	private JButton log_in_button;		// Button used for logging in
 	private JButton register_button;	// Button used for registering
@@ -96,6 +96,7 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 		---------------------------------------------------------------*/
 		log_in = new LogIn( this );
 		register = new Register( this );
+		
 		/*---------------------------------------
 		 Read in registered users
 		---------------------------------------*/
@@ -261,7 +262,7 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
         /*---------------------------------------------------------------
         Initializing Variables
         ---------------------------------------------------------------*/
-        board = new GameBoard(this, current_user);
+        board = new SudokuDisplay();
         b_layout = new BorderLayout();
         button_panel = new JPanel();
         play_game_button = new JButton( "Play Game" );
@@ -365,9 +366,9 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 		 LogIn service completed. Set current
 		 user into logged in user.
 		---------------------------------------*/
-		if( object_changed instanceof User && subject instanceof LogIn)
+		if( object_changed instanceof User && ( subject instanceof LogIn || subject instanceof Register ) )
 			{
-			System.out.println("User Loaded");
+			System.out.println( "User Loaded" );
 			current_user = (User)object_changed;
 			
 			/*---------------------------------------
@@ -383,8 +384,8 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 			---------------------------------------*/
 			getContentPane().removeAll();
 			menu_panel();
-			setVisible(true);
-			System.out.println("User: " + current_user.get_name() );
+			setVisible( true );
+			System.out.println( "User: " + current_user.get_name() );
 			repaint();
 			
 			}
@@ -396,15 +397,15 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 		if ( ( object_changed instanceof Boolean ) 
 		&& ( subject instanceof LogIn || subject instanceof Register ) )
 			{
-			System.out.println("Going Back to menu!");
+			System.out.println( "Going Back to menu!" );
 			
 			getContentPane().removeAll();
-			add(entry_panel);
+			add( entry_panel );
 			repaint();
-			setVisible(true);
+			setVisible( true );
 			}
 		
-		if( object_changed instanceof Boolean && subject instanceof GameBoard )
+		if( object_changed instanceof Boolean && subject instanceof SudokuDisplay )
 		{
 			System.out.println("Going Back to menu!");
 			
@@ -413,29 +414,6 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 			repaint();
 			setVisible(true);
 		}
-	
-		/*---------------------------------------
-		 New user was registered.
-		---------------------------------------*/
-		if( object_changed instanceof User && subject instanceof Register )
-			{
-			System.out.println("For debug purposes");
-			System.out.println("User registered");
-			
-			current_user = (User)object_changed;
-			
-			log_in.deleteObservers();
-			log_in = null;
-			register.deleteObservers();
-			register = null;
-			
-			getContentPane().removeAll();
-			menu_panel();
-			setVisible(true);
-			
-			System.out.println("User: " + current_user.get_name() );
-			repaint();
-			}
 		
 	}
 	/*----------------------------------------------------------------------------------------
@@ -450,33 +428,37 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 	---------------------------------------*/
 	public void actionPerformed( ActionEvent e )
 	{
+		JPanel new_panel;
+		
 		if( e.getSource() == log_in_button )
 		{
 			getContentPane().remove( entry_panel );
-			JPanel log_panel =log_in.create_panel();
-			add(log_panel);
-			setVisible(true);
+			new_panel = log_in.get_panel();
+			add( new_panel );
+			repaint();
+			setVisible( true );
 		}
 		
 		if( e.getSource() == register_button )
 		{
 			getContentPane().remove( entry_panel );
-			JPanel reg_panel = register.create_panel();
-			add(reg_panel);
-			setVisible(true);
+			new_panel = register.get_panel();
+			add( new_panel );
+			repaint();
+			setVisible( true );
 		}
 		
 		if( e.getSource() == play_game_button )
 		{
             getContentPane().remove( menu_panel );
-            JPanel board_panel = board.create_panel();
-            add(board_panel);
-            setVisible(true);
+            new_panel = null;
+            add( new_panel );
+            setVisible( true );
 		}
 		
 		if( e.getSource() == exit_button )
 		{   
-			dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+			dispatchEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
 		}
 	}
 	

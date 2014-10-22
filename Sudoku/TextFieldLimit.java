@@ -32,6 +32,9 @@ public class TextFieldLimit extends PlainDocument
 			
 		};
 	
+	private String valid_cell9_characters = "123456789";
+	private String valid_cell16_characters = "123456789abcdefgABCDEFG";
+	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		TextFieldLimit( int )

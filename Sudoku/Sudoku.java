@@ -12,21 +12,16 @@
  										Imports
 -------------------------------------------------------------------------------------------------*/
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.*;
-import java.awt.Font;
 import java.awt.GridLayout;
-import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-
 
 
 public class Sudoku extends JFrame implements Observer, WindowListener, ActionListener
@@ -36,8 +31,8 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 	/*-----------------------------------------------------------------------------------
 								Private Class Members
 	-----------------------------------------------------------------------------------*/
-	private LogIn log_in;				// LogIn object to aid with log in
-	private Register register;			// register object for registering new users
+	private UserService log_in;			// LogIn object to aid with log in
+    private UserService register;		// register object for registering new users
 	private User current_user;			// Player currently signed in
 	private SudokuDisplay board;        // Display object for displaying the game.
 	
@@ -56,15 +51,6 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 	-----------------------------------------------------------------------------------*/
 	private final int display_height = 750; 			// height of frame
 	private final int display_width = 1000; 			// width of frame
-	private final Color panel_color = Color.ORANGE;		// color of the panels on frame
-	private final File data_file = 
-	new File("users.data"); 							// file containing user object
-	
-	private final Font title_font = 
-	new Font("TimesNewRomans", Font.ITALIC, 85);		// Font for Title
-	
-	private final Font text_font = 
-	new Font( "SansSerif", Font.ROMAN_BASELINE, 50 );	// Font for Text
 	
 	/*--------------------------------------------------------------------
 	 *  main()
@@ -101,7 +87,7 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 		 Read in registered users
 		---------------------------------------*/
 		this.addWindowListener(this);
-		Database.read_database( data_file );
+		Database.read_database();
 		
 		/*---------------------------------------
 		 * Generates the initial ui for users
@@ -126,7 +112,7 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 		setLocation( 500, 280 );
 		setResizable( false );
 		setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		setFont( text_font );
+		setFont( SudokuCommon.TEXT_FONT );
 					
 		/*---------------------------------
 		 * Call entry_panel for users.
@@ -186,15 +172,15 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 		/*---------------------------------------
 		 Set background for components
 		---------------------------------------*/
-		title.setBackground( panel_color );
-		entry_panel.setBackground( panel_color );
+		title.setBackground( SudokuCommon.BACKGROUND_COLOR );
+		entry_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		
 		/*---------------------------------------
 		 Set fonts for components
 		---------------------------------------*/
-		title.setFont( title_font );
-		log_in_button.setFont( text_font );
-		register_button.setFont( text_font );
+		title.setFont( SudokuCommon.TITLE_FONT );
+		log_in_button.setFont( SudokuCommon.TEXT_FONT );
+		register_button.setFont( SudokuCommon.TEXT_FONT );
 		
 		/*---------------------------------------
 		 Set both buttons to be without borders
@@ -207,7 +193,7 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 		 in a grid layout with 1 row
 		---------------------------------------*/
 		button_panel.setLayout( g_layout );
-		button_panel.setBackground( panel_color );
+		button_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		button_panel.add( register_button );
 		button_panel.add( log_in_button );
 		
@@ -291,16 +277,16 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
         /*---------------------------------------
         Set background for components
         ---------------------------------------*/
-        title.setBackground( panel_color );
-        menu_panel.setBackground( panel_color );
+        title.setBackground( SudokuCommon.BACKGROUND_COLOR );
+        menu_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
         
         /*---------------------------------------
         Set fonts for components
         ---------------------------------------*/
-        title.setFont( title_font );
-        play_game_button.setFont( text_font );
-        see_stats_button.setFont( text_font );
-        exit_button.setFont( text_font );
+        title.setFont( SudokuCommon.TITLE_FONT );
+        play_game_button.setFont( SudokuCommon.TEXT_FONT );
+        see_stats_button.setFont( SudokuCommon.TEXT_FONT );
+        exit_button.setFont( SudokuCommon.TEXT_FONT );
         
         /*---------------------------------------
         Set both buttons to be without borders
@@ -314,7 +300,7 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
         in a grid layout with 1 row
         ---------------------------------------*/
         button_panel.setLayout( g_layout );
-        button_panel.setBackground( panel_color );
+        button_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
         button_panel.add( play_game_button );
         button_panel.add( see_stats_button );
         button_panel.add( exit_button );
@@ -389,13 +375,11 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 			repaint();
 			
 			}
-		
 		/*---------------------------------------
 		 Back button was pressed. Remove_panels
 		 and reload entry panel.
 		---------------------------------------*/
-		if ( ( object_changed instanceof Boolean ) 
-		&& ( subject instanceof LogIn || subject instanceof Register ) )
+		if ( object_changed instanceof String   )
 			{
 			System.out.println( "Going Back to menu!" );
 			
@@ -403,12 +387,12 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 			add( entry_panel );
 			repaint();
 			setVisible( true );
+			
 			}
 		
-		if( object_changed instanceof Boolean && subject instanceof SudokuDisplay )
+		if( object_changed instanceof String && subject instanceof SudokuDisplay )
 		{
 			System.out.println("Going Back to menu!");
-			
 			getContentPane().removeAll();
 			add( menu_panel );
 			repaint();
@@ -420,12 +404,13 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 	 									All Listeners
 	 ----------------------------------------------------------------------------------------*
 	
-	/*---------------------------------------
-	 Method: actionPerformed
-	 
-	 Description:
-	 	Handles different buttons pressed.
-	---------------------------------------*/
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		actionPerformed
+	 * 
+	 * Description:
+	 * 		wait for actions to occur, and respond when they do.
+	 --------------------------------------------------------------------------------------*/
 	public void actionPerformed( ActionEvent e )
 	{
 		JPanel new_panel;
@@ -433,7 +418,7 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 		if( e.getSource() == log_in_button )
 		{
 			getContentPane().remove( entry_panel );
-			new_panel = log_in.get_panel();
+			new_panel = log_in.getPanel();
 			add( new_panel );
 			repaint();
 			setVisible( true );
@@ -442,7 +427,7 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 		if( e.getSource() == register_button )
 		{
 			getContentPane().remove( entry_panel );
-			new_panel = register.get_panel();
+			new_panel = register.getPanel();
 			add( new_panel );
 			repaint();
 			setVisible( true );
@@ -463,18 +448,19 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 	}
 	
 	
-	/*---------------------------------------
-	 Method: WindowClosing
-	 
-	 Description: 
-	 Write any new information to database
-	---------------------------------------*/
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		windowClosing
+	 * 
+	 * Description:
+	 * 		Window is closing, write new info to database.
+	 --------------------------------------------------------------------------------------*/
 	@Override
 	public void windowClosing(WindowEvent arg0) 
 	{
 		// TODO Auto-generated method stub
 		JOptionPane.showMessageDialog(null, "Updating Database");
-		Database.write_database( data_file );
+		Database.write_database();
 	}
 	
 	@Override

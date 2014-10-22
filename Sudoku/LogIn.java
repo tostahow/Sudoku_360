@@ -14,39 +14,24 @@
 -------------------------------------------------------------------------------------------------*/
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Observable;
 import java.util.Observer;
 
 
-public class LogIn extends Observable implements ActionListener
+public class LogIn extends UserService implements ActionListener
 {	
 	/*-----------------------------------------------------------------------------------
 									Private Class Members
 	-----------------------------------------------------------------------------------*/
-	private User log_user;								// User that logged in
-	private Boolean go_back;							// back button was pressed
-	private JPanel log_panel;							// panel for log in
-	
 	private JButton log_in_button;						// button to log in with
 	private JButton back_button;						// back button
-	
 	private JPasswordField pw_field;    				// password field
 	private JTextField username_field;					// field for User name
-	
-	private final Font text_font = 
-	new Font( "SansSerif", Font.ROMAN_BASELINE, 50 );	// font for text
-	private final Color panel_color = Color.ORANGE;		// color of the panels on frame
-	
 	private boolean success;							// flag set if log in credentials are valid
 	
 	/*---------------------------------------------------------------------------------------
@@ -58,55 +43,42 @@ public class LogIn extends Observable implements ActionListener
 	 --------------------------------------------------------------------------------------*/
 	public LogIn(Observer listener)
 	{
-		addObserver(listener);
-		create_panel();
+		super( listener );
+		this.setPanel( generatePanel() );
 	}
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
-	 * 		update_user()
+	 * 		updateUser()
 	 * 
 	 * Description:
 	 * 		When a user is found to match the password settings. Make sure to set the local
 	 * 		version of user to the logged in user and notify the listeners that a new user
 	 * 		has access to the system.
 	 --------------------------------------------------------------------------------------*/
-	private void update_user( User logged_in_user )
+	public void updateUser( User logged_in_user )
 	{
-		this.log_user = logged_in_user;
+		this.setUser( logged_in_user );
 		setChanged();
-		notifyObservers( this.log_user );
+		notifyObservers( this.getUser() );
 	}
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
-	 * 		back_to_caller()
-	 * 
-	 * Description:
-	 * 		return to calling class
-	 --------------------------------------------------------------------------------------*/
-	private void back_to_caller( Boolean flag )
-	{
-		this.go_back = flag;
-		setChanged();
-		notifyObservers(this.go_back);
-	}
-	
-	/*---------------------------------------------------------------------------------------
-	 * Method:
-	 * 		create_panel()
+	 * 		generatePanel()
 	 * 
 	 * Description:
 	 * 		The panel users will use when attempting to log in. This panel consists of a
 	 * 		fields for the user name and password along with a JButton that will attempt
 	 * 		to find the user within the database so that they can play.
 	 --------------------------------------------------------------------------------------*/
-	private void create_panel()
+	private JPanel generatePanel()
 	{
 
 		/*---------------------------------------------------------------
 		 						Instance Variables
 		---------------------------------------------------------------*/
+		JPanel log_panel;			// panel to be created
 		JPanel button_panel;		// panel which holds back/log button
 		GridLayout g_layout;		// layout of panel that holds buttons
 		JLabel pw_label;			// label for password field
@@ -128,12 +100,12 @@ public class LogIn extends Observable implements ActionListener
 		/*---------------------------------------
 		 Set Fonts for each component
 		---------------------------------------*/
-		back_button.setFont( text_font );
-		username_field.setFont( text_font );
-		username_label.setFont( text_font );
-		pw_label.setFont( text_font );
-		pw_field.setFont( text_font );		
-		log_in_button.setFont( text_font );
+		back_button.setFont( SudokuCommon.TEXT_FONT );
+		username_field.setFont( SudokuCommon.TEXT_FONT );
+		username_label.setFont( SudokuCommon.TEXT_FONT );
+		pw_label.setFont( SudokuCommon.TEXT_FONT );
+		pw_field.setFont( SudokuCommon.TEXT_FONT );		
+		log_in_button.setFont( SudokuCommon.TEXT_FONT );
 		
 		/*---------------------------------------
 		 Set field limits for text fields
@@ -145,13 +117,13 @@ public class LogIn extends Observable implements ActionListener
 		 Set background color for panel and 
 		 button.
 		---------------------------------------*/		
-		log_panel.setBackground( panel_color );
+		log_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		
 		/*---------------------------------------------------------------
 							  Set up Log in Panel
 		---------------------------------------------------------------*/
 		g_layout.setHgap( 200 );
-		button_panel.setBackground( panel_color );
+		button_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		button_panel.setLayout( g_layout );
 		button_panel.add( log_in_button );
 		button_panel.add( back_button );
@@ -171,19 +143,20 @@ public class LogIn extends Observable implements ActionListener
 		 the log in service.
 		---------------------------------------*/
 		log_in_button.addActionListener(this);
-		
 		back_button.addActionListener(this);
 		
+		return log_panel;
 	}
 	
-	// Return the log in panel
-	public JPanel get_panel()
-	{
-		return this.log_panel;
-	}
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		clearFields()
+	 * 
+	 * Description:
+	 * 		Clears all applicable fields. Must be implemented.
+	 --------------------------------------------------------------------------------------*/
 	
-	// clears all fields
-	public void clear_fields()
+	public void clearFields()
 	{
 		username_field.setText("");
 		pw_field.setText("");
@@ -212,7 +185,7 @@ public class LogIn extends Observable implements ActionListener
 			
 			if( valid == true )
 			{
-				update_user( potential_user );
+				updateUser( potential_user );
 			}
 		}
 		return valid;
@@ -231,9 +204,8 @@ public class LogIn extends Observable implements ActionListener
 		 ------------------------------------------*/
 		if( e.getSource() == back_button )
 		{
-			Boolean flag = new Boolean( false );
-			clear_fields();
-			back_to_caller( flag );
+			clearFields();
+			goBack();
 		}
 		
 		if( e.getSource() == log_in_button )
@@ -246,16 +218,7 @@ public class LogIn extends Observable implements ActionListener
 			if( ( username_field.getText().length() < 6) 
 			||  ( pw_field.getPassword().length < 6 ) )
 				{
-				
-				JOptionPane.showMessageDialog
-				( 		
-	        		null, 
-	        		"User Name or Password did not meet minimum length of 6"
-	        		+ " of accepted characters.", 
-	        		"Log In Fail", 
-	        		JOptionPane.ERROR_MESSAGE 
-				);
-				
+				errorMessage( "user name or password does not meet 6 character limit");
 				return;
 				}
 			
@@ -277,16 +240,8 @@ public class LogIn extends Observable implements ActionListener
 				 Use option pane to alert user of failed
 				 attempt.
 				---------------------------------------*/
-				JOptionPane.showMessageDialog
-					( 		
-		        		null, 
-		        		"That user name and password combo did not match any"
-		        		+ " users in the database.", 
-		        		"Log In Fail", 
-		        		JOptionPane.ERROR_MESSAGE 
-					);
-				
-				clear_fields();
+				errorMessage("user name and password combo does not match stored records");
+				clearFields();
 				
 				}
 			/*---------------------------------------
@@ -294,16 +249,8 @@ public class LogIn extends Observable implements ActionListener
 			---------------------------------------*/
 			else
 				{
-				
-				JOptionPane.showMessageDialog
-					(
-					null,
-					"Success",
-					"Success",
-					JOptionPane.OK_OPTION
-					);
-				
-				clear_fields();
+				successMessage("Log In Successful");
+				clearFields();
 				}
 		}
 	}

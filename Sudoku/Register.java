@@ -13,40 +13,27 @@
 -------------------------------------------------------------------------------------------------*/
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.Arrays;
-import java.util.Observable;
 import java.util.Observer;
 
-public class Register extends Observable implements ActionListener
+public class Register extends UserService implements ActionListener
 {
 	/*-----------------------------------------------------------------------------------
 									Private Class Members
-	-----------------------------------------------------------------------------------*/
-	private User new_user;									// registered user
-	private Boolean go_back;								// go back to calling function
-	
-	private JPanel reg_panel;								// reg panel		
+	-----------------------------------------------------------------------------------*/			
 	private JButton	back_button;							// back button
 	private JButton reg_button;								// register button
 	private JTextField username_field;						// username_field
 	private JPasswordField pw_field;						// field for password
 	private JPasswordField v_pw_field;						// verification field
-	
-	private final Font text_font = 
-	new Font( "SansSerif", Font.ROMAN_BASELINE, 50 );		// Text font
-	private final Color panel_color = Color.ORANGE;			// color of the panels on frame
 	
 	private boolean success;								// Flag for successful register
 	
@@ -59,23 +46,9 @@ public class Register extends Observable implements ActionListener
 	 --------------------------------------------------------------------------------------*/
 	public Register( Observer listener )
 	{
-		addObserver( listener );
-		create_panel();
+		super( listener );
+		this.setPanel( generatePanel() );
 	}	
-	
-	/*---------------------------------------------------------------------------------------
-	 * Method:
-	 * 		back_to_caller()
-	 * 
-	 * Description:
-	 * 		Let listeners know that the back button was pressed
-	 --------------------------------------------------------------------------------------*/
-	private void back_to_caller( Boolean flag )
-	{
-		this.go_back = flag;
-		setChanged();
-		notifyObservers( this.go_back );
-	}
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -84,29 +57,30 @@ public class Register extends Observable implements ActionListener
 	 * Description:
 	 * 		Let listeners know that there is a successful user registration.
 	 --------------------------------------------------------------------------------------*/
-	private void register_user( User user_to_register )
+	public void updateUser( User user_to_register )
 	{
-		this.new_user = user_to_register;
-		Database.add( this.new_user );
+		this.setUser( user_to_register );
+		Database.add( this.getUser() );
 		setChanged();
-		notifyObservers( this.new_user );
+		notifyObservers( this.getUser() );
 	}
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
-	 * 		create_panel()
+	 * 		generatePanel()
 	 * 
 	 * Description:
 	 * 		The panel users will use when attempting to register. This panel consists of a
 	 * 		fields for the user name and password along with a JButton that will attempt
 	 * 		to create the user within the database so that they can play.
 	 --------------------------------------------------------------------------------------*/
-	private void create_panel()
+	private JPanel generatePanel()
 	{
 		/*---------------------------------------------------------------
 		 						Instance Variables
 		---------------------------------------------------------------*/
 		JPanel button_panel;     	// panel to hold reg/back buttons
+		JPanel reg_panel;			// registration panel
 		GridLayout g_layout;		// layout for buttons
 		JLabel pw_label;			// label for password field
 		JLabel username_label;		// name label
@@ -130,14 +104,14 @@ public class Register extends Observable implements ActionListener
 		/*---------------------------------------
 		 Set Fonts for each component
 		---------------------------------------*/		
-		back_button.setFont( text_font );
-		username_field.setFont( text_font );
-		username_label.setFont( text_font );
-		pw_label.setFont( text_font );
-		pw_field.setFont( text_font );
-		reg_button.setFont( text_font );
-		v_pw_label.setFont( text_font );
-		v_pw_field.setFont( text_font );
+		back_button.setFont( SudokuCommon.TEXT_FONT );
+		username_field.setFont( SudokuCommon.TEXT_FONT );
+		username_label.setFont( SudokuCommon.TEXT_FONT );
+		pw_label.setFont( SudokuCommon.TEXT_FONT );
+		pw_field.setFont( SudokuCommon.TEXT_FONT );
+		reg_button.setFont( SudokuCommon.TEXT_FONT );
+		v_pw_label.setFont( SudokuCommon.TEXT_FONT );
+		v_pw_field.setFont( SudokuCommon.TEXT_FONT );
 		
 		/*---------------------------------------
 		 Set field limits for text fields
@@ -150,14 +124,14 @@ public class Register extends Observable implements ActionListener
 		 Set background color for panel and 
 		 button.
 		---------------------------------------*/		
-		button_panel.setBackground( panel_color );
-		reg_panel.setBackground( panel_color );
+		button_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
+		reg_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		
 		/*---------------------------------------------------------------
 							  Set up Log in Panel
 		---------------------------------------------------------------*/
-		g_layout.setHgap(200);
-		button_panel.setBackground( panel_color );
+		g_layout.setHgap( 200 );
+		button_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		button_panel.setLayout( g_layout );
 		button_panel.add( reg_button );
 		button_panel.add( back_button );
@@ -175,16 +149,12 @@ public class Register extends Observable implements ActionListener
 		reg_button.addActionListener(this);
 		back_button.addActionListener(this);
 		
-	}
-	
-	// Return the log in panel
-	public JPanel get_panel()
-	{
-		return this.reg_panel;
+		return reg_panel;
+		
 	}
 	
 	// clears all fields
-	public void clear_fields()
+	public void clearFields()
 	{
 		username_field.setText("");
 		pw_field.setText("");
@@ -233,7 +203,7 @@ public class Register extends Observable implements ActionListener
 				 notify listeners that update has 
 				 occurred.
 				---------------------------------------*/
-				register_user( reg_user );
+				updateUser( reg_user );
 				
 				}
 			/*---------------------------------------
@@ -261,9 +231,8 @@ public class Register extends Observable implements ActionListener
 		---------------------------------------*/
 		if( e.getSource() == back_button )
 		{
-			Boolean flag = new Boolean( false );
-			clear_fields();
-			back_to_caller( flag );
+			clearFields();
+			goBack();
 		}
 		
 		/*---------------------------------------
@@ -283,14 +252,7 @@ public class Register extends Observable implements ActionListener
 			||  ( pw_field.getPassword().length < 6) )
 				{
 				
-				JOptionPane.showMessageDialog
-				( 		
-       		null, 
-       		"Entere User Name or Password must exceed 6 characters", 
-       		"Register Fail", 
-       		JOptionPane.ERROR_MESSAGE 
-				);
-				
+				errorMessage("Entered user name or password must exceed 6 characters.");
 				v_pw_field.setText("");
 				pw_field.setText("");
 				
@@ -299,15 +261,9 @@ public class Register extends Observable implements ActionListener
 			
 			if( ( !Arrays.equals( pw_field.getPassword(), v_pw_field.getPassword() ) ) )
 				{
-				JOptionPane.showMessageDialog
-					( 		
-	       		null, 
-	       		"That entered passwords do not match!", 
-	       		"Password Fail", 
-	       		JOptionPane.ERROR_MESSAGE 
-					);
-	
-				clear_fields();
+				
+				errorMessage("Passwords do not match!");
+				clearFields();
 				
 				return;
 				}
@@ -329,30 +285,17 @@ public class Register extends Observable implements ActionListener
 				 Use option pane to alert user of failed
 				 attempt.
 				---------------------------------------*/
-				JOptionPane.showMessageDialog
-					( 		
-		        		null, 
-		        		"That user name already exist", 
-		        		"Register Fail", 
-		        		JOptionPane.ERROR_MESSAGE 
-					);
+				errorMessage("User Name Exists.");
+				clearFields();
 				
-				clear_fields();
 				}
 			/*---------------------------------------
 			 if the register_request succeeds.
 			---------------------------------------*/
 			else
 				{
-				JOptionPane.showMessageDialog
-					(
-					null,
-					"Success",
-					"Success",
-					JOptionPane.OK_OPTION
-					);
-				
-				clear_fields();
+				successMessage("Registration Successful!");
+				clearFields();
 				}
 		}
 	}

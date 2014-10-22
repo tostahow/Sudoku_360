@@ -16,6 +16,9 @@ import java.io.*;
 public class Database
 {
 	private static ArrayList< User > database = new ArrayList< User >();
+	private static final File file = 
+	new File("users.data"); 							// file containing user object
+	
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -92,7 +95,7 @@ public class Database
 	 * 		are stored locally.
 	 --------------------------------------------------------------------------------------*/
 	@SuppressWarnings("unchecked")
-	public static void read_database( File file )
+	public static void read_database()
 	{
 		try
 			{
@@ -126,7 +129,7 @@ public class Database
 	 * 		user objects out to a file so that the list of users that are registered are
 	 * 		stored locally.
 	 --------------------------------------------------------------------------------------*/
-	public static void write_database( File file )
+	public static void write_database()
 	{
 		try
 		{

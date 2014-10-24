@@ -21,6 +21,9 @@ public class SudokuCommon
 	public static final Font TEXT_FONT = 						//Font for Texts
 			new Font( "SansSerif", Font.ROMAN_BASELINE, 50 );
 	
-	public static final Color BACKGROUND_COLOR = Color.ORANGE;	//Background color of game.
+	public static final Color BACKGROUND_COLOR = Color.ORANGE;	//Background color of game.	
+	public static final Color PENCIL_COLOR = Color.white;		//Pencil field color
+	public static final Color PEN_COLOR = Color.BLACK;			//Pen color
+	
 	
 }

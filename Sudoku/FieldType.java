@@ -11,5 +11,5 @@ public enum FieldType
 	USERNAME,
 	PASSWORD,
 	CELL9,
-	CELL16
+	CELL16,
 }

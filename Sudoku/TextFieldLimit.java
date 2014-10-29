@@ -74,6 +74,12 @@ public class TextFieldLimit extends PlainDocument
 				super.insertString(offset, str, attr);
 		}
 		
+		if( field_type == FieldType.CELL9 || field_type == FieldType.CELL16 )
+		{
+			if( (getLength() + str.length() ) <= max_length && isValidEntry( str ) )
+				super.insertString(offset, str, attr);
+		}
+		
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -91,6 +97,30 @@ public class TextFieldLimit extends PlainDocument
 			if( str.contains(invalid_username_characters[i]) )
 				return false;
 		}
+		
+		return true;
+	}
+	
+	
+	private boolean isValidEntry( String str )
+	{
+		if( this.field_type == FieldType.CELL9 )
+		{
+			for(int i = 0; i < str.length(); i ++ )
+			{
+				if( !this.valid_cell9_characters.contains( "" + str.charAt(i) ) )
+					return false;
+			}
+		}
+		else
+		{
+			for(int i = 0; i < str.length(); i ++ )
+			{
+				if( !this.valid_cell16_characters.contains( "" + str.charAt(i) ) )
+					return false;
+			}
+		}
+			
 		
 		return true;
 	}

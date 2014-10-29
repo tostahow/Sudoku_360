@@ -12,15 +12,21 @@
  										Imports
 -------------------------------------------------------------------------------------------------*/
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.event.*;
 import java.awt.GridLayout;
 import java.util.Observable;
 import java.util.Observer;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
 
 
@@ -34,7 +40,7 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 	private UserService log_in;			// LogIn object to aid with log in
     private UserService register;		// register object for registering new users
 	private User current_user;			// Player currently signed in
-	private SudokuDisplay board;        // Display object for displaying the game.
+	private Board board;        		// Display object for displaying the game.
 	
 	private JButton log_in_button;		// Button used for logging in
 	private JButton register_button;	// Button used for registering
@@ -49,7 +55,7 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 	/*-----------------------------------------------------------------------------------
 							Private Constant Class Members
 	-----------------------------------------------------------------------------------*/
-	private final int display_height = 750; 			// height of frame
+	private final int display_height = 1000; 			// height of frame
 	private final int display_width = 1000; 			// width of frame
 	
 	/*--------------------------------------------------------------------
@@ -108,7 +114,7 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 		/*---------------------------------------------------------------
 		 					Set Frame Attributes
 		---------------------------------------------------------------*/
-		setSize( display_width, display_height );
+		setSize(display_width + 250, 750 );
 		setLocation( 500, 280 );
 		setResizable( false );
 		setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
@@ -174,6 +180,8 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 		---------------------------------------*/
 		title.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		entry_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
+		log_in_button.setBackground(SudokuCommon.BACKGROUND_COLOR );
+		register_button.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		
 		/*---------------------------------------
 		 Set fonts for components
@@ -185,8 +193,8 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 		/*---------------------------------------
 		 Set both buttons to be without borders
 		---------------------------------------*/
-		register_button.setBorder( null );
-		log_in_button.setBorder( null );
+		register_button.setBorder( BorderFactory.createLineBorder( Color.black, 8) );
+		log_in_button.setBorder( BorderFactory.createLineBorder( Color.black, 8 ) );
 		
 		/*---------------------------------------
 		 Button panel will consist of two buttons
@@ -241,23 +249,75 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
         Instance Variables
         ---------------------------------------------------------------*/
         JPanel button_panel;        // panel that holds buttons
+        JPanel size_panel;			// panel for size options
+        JPanel diff_panel;			// panel for difficulties
+        JPanel option_panel;
+        ButtonGroup size_group;		// Size 9x9 or 16x16
+        ButtonGroup diff_group;		// Easy, Medium, Hard, Evil
         JLabel title;               // Title
         BorderLayout b_layout;      // layout of panel
-        GridLayout g_layout;        // orientation of buttons
+        GridLayout button_layout;   // orientation of buttons
+        GridLayout option_layout;	// list of all options
         
         /*---------------------------------------------------------------
         Initializing Variables
         ---------------------------------------------------------------*/
-        board = new SudokuDisplay();
+        board = new Board(BoardSize.SIXTEEN, Difficulty.EASY);
         b_layout = new BorderLayout();
         button_panel = new JPanel();
-        play_game_button = new JButton( "Play Game" );
+        size_panel = new JPanel();
+        diff_panel = new JPanel();
+        play_game_button = new JButton( "Play!" );
         see_stats_button = new JButton( "See Stats" );
-        exit_button = new JButton( "Exit Game" );
+        exit_button = new JButton( "Exit!" );
         menu_panel = new JPanel();
+        size_group = new ButtonGroup();
+        diff_group = new ButtonGroup();
         
         title = new JLabel( "Sudoku" );
         title.setHorizontalAlignment( SwingConstants.CENTER );
+        
+        JRadioButton size_nine = new JRadioButton("9x9");
+        JRadioButton size_sixteen = new JRadioButton("16x16");
+        
+        size_nine.setBackground(SudokuCommon.BACKGROUND_COLOR);
+        size_nine.setFont( SudokuCommon.TEXT_FONT );
+        size_sixteen.setBackground(SudokuCommon.BACKGROUND_COLOR);
+        size_sixteen.setFont( SudokuCommon.TEXT_FONT );
+        
+        size_group.add(size_nine);
+        size_group.add(size_sixteen);
+        
+        size_panel.setLayout(new FlowLayout() );
+        size_panel.setBackground(SudokuCommon.BACKGROUND_COLOR);
+        size_panel.add(size_nine);
+        size_panel.add(size_sixteen);
+        
+        JRadioButton easy = new JRadioButton("Easy");
+        JRadioButton medium = new JRadioButton("Medium");
+        JRadioButton hard = new JRadioButton("Hard");
+        JRadioButton evil = new JRadioButton("Evil");
+        
+        easy.setFont(SudokuCommon.TEXT_FONT);
+        easy.setBackground(SudokuCommon.BACKGROUND_COLOR);
+        medium.setFont(SudokuCommon.TEXT_FONT);
+        medium.setBackground(SudokuCommon.BACKGROUND_COLOR);
+        hard.setFont(SudokuCommon.TEXT_FONT);
+        hard.setBackground(SudokuCommon.BACKGROUND_COLOR);
+        evil.setFont(SudokuCommon.TEXT_FONT);
+        evil.setBackground(SudokuCommon.BACKGROUND_COLOR);
+        
+        diff_group.add(easy);
+        diff_group.add(medium);
+        diff_group.add(hard);
+        diff_group.add(evil);
+        
+        diff_panel.setLayout( new FlowLayout() );
+        diff_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
+        diff_panel.add(easy);
+        diff_panel.add(medium);
+        diff_panel.add(hard);
+        diff_panel.add(evil);
         
         /*---------------------------------------
         Set vertical and horizontal spacing
@@ -270,10 +330,13 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
         adjust grid of three rows, with a gap that
         will separate buttons
         ---------------------------------------*/
-        g_layout = new GridLayout( 3, 1 );
-        g_layout.setHgap( 500 );
-        g_layout.setVgap( 50 );
-                
+        button_layout = new GridLayout( 1, 3 );
+        button_layout.setHgap( 5 );
+        button_layout.setVgap( 5 );
+        
+        option_layout = new GridLayout( 3, 1);
+        option_panel = new JPanel( option_layout );
+        option_panel.setBackground(SudokuCommon.BACKGROUND_COLOR);
         /*---------------------------------------
         Set background for components
         ---------------------------------------*/
@@ -299,19 +362,22 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
         Button panel will consist of two buttons
         in a grid layout with 1 row
         ---------------------------------------*/
-        button_panel.setLayout( g_layout );
+        button_panel.setLayout( button_layout );
         button_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
         button_panel.add( play_game_button );
         button_panel.add( see_stats_button );
         button_panel.add( exit_button );
         
+        option_panel.add( size_panel );
+        option_panel.add( diff_panel );
+        option_panel.add( button_panel );
         /*---------------------------------------
         Add title to the entry panel north, and
         place buttons into the center
         ---------------------------------------*/
         menu_panel.setLayout( b_layout );
         menu_panel.add( title, BorderLayout.NORTH );
-        menu_panel.add( button_panel, BorderLayout.CENTER );
+        menu_panel.add( option_panel, BorderLayout.CENTER );
         
         /*---------------------------------------
         Add empty labels to pad the empty sides
@@ -319,8 +385,9 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
         symmetry
        ---------------------------------------*/
         menu_panel.add( new JLabel( "" ), BorderLayout.SOUTH );
-        menu_panel.add( new JLabel( "" ), BorderLayout.EAST );
-        menu_panel.add( new JLabel( "" ), BorderLayout.WEST );
+        menu_panel.add( new JLabel(""), BorderLayout.EAST );
+        menu_panel.add( new JLabel(""), BorderLayout.EAST);
+        menu_panel.add( new JLabel(""), BorderLayout.WEST );
         
         /*---------------------------------------
         Set action listeners for buttons
@@ -436,7 +503,7 @@ public class Sudoku extends JFrame implements Observer, WindowListener, ActionLi
 		if( e.getSource() == play_game_button )
 		{
             getContentPane().remove( menu_panel );
-            new_panel = null;
+            new_panel = board;
             add( new_panel );
             setVisible( true );
 		}

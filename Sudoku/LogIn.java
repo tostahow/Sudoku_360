@@ -212,7 +212,7 @@ public class LogIn extends UserService implements ActionListener
 		{
 			/*---------------------------------------
 			 If password or username field are empty
-			 inform user, and do not proces request
+			 inform user, and do not process request
 			 to log in.
 			---------------------------------------*/
 			if( ( username_field.getText().length() < 6) 

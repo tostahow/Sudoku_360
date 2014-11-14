@@ -5,6 +5,9 @@
  * Description:
  * 		Password is used to ensure that users' password are stored securely stored within the
  * 		Sudoku software.
+ *
+ * Author:
+ * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
 
 /*-------------------------------------------------------------------------------------------------

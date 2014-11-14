@@ -4,6 +4,9 @@
  * 
  * Description:
  * 		Arranges cells in manner such that they can be used in a puzzle
+ * 
+ * Author:
+ * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -14,6 +17,8 @@ import javax.swing.JPanel;
 
 public class Board extends JPanel
 {
+	private static final long serialVersionUID = 1L;
+	
 	private Difficulty diff;
 	private BoardSize board_size;
 	private Cell[][] cells;
@@ -52,15 +57,9 @@ public class Board extends JPanel
 		{
 			for( int j = 0; j < cells_dim; j++)
 			{
-				if( this.board_size == BoardSize.NINE )
-				{
-					cells[i][j] = new Cell( FieldType.CELL9, count++ );
-				}
-				else
-				{
-					cells[i][j] = new Cell( FieldType.CELL16, count++ );
-				}
+				cells[i][j] = new Cell( board_size , count );
 			}
+			
 		}
 		
 		//set Cell_Square attributes
@@ -112,4 +111,5 @@ public class Board extends JPanel
 		}
 
 	}
+	
 }

@@ -5,6 +5,9 @@
  * Description:
  * 		Base class of Register and Log In and comes packed with different functions
  * 		that are typical to User Services.
+ * 
+ * Author:
+ * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
 
 import java.util.Observer;

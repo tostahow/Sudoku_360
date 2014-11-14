@@ -5,6 +5,9 @@
  * Description:
  * 		Database handles the loading, accessing, and writing of user information within the
  * 		software.
+ * 
+ * Author:
+ * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
 
 /*-------------------------------------------------------------------------------------------------

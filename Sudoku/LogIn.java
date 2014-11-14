@@ -8,6 +8,8 @@
  *      a notification will be sent to any listening objects in order to delete the LogIn
  *      object.
  * 
+ * Author:
+ * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------------------------
 										    Imports

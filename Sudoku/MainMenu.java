@@ -1,10 +1,13 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -13,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 
 
 
@@ -72,7 +76,6 @@ public class MainMenu implements ActionListener, WindowListener
         /*---------------------------------------------------------------
         Initializing Variables
         ---------------------------------------------------------------*/
-        board = new Board(BoardSize.SIXTEEN, Difficulty.EASY);
         b_layout = new BorderLayout();
         button_panel = new JPanel();
         size_panel = new JPanel();
@@ -98,6 +101,8 @@ public class MainMenu implements ActionListener, WindowListener
         size_group.add(size_nine);
         size_group.add(size_sixteen);
         
+        Border size_border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Size Options" );
+        size_panel.setBorder( size_border );
         size_panel.setLayout(new FlowLayout() );
         size_panel.setBackground(SudokuCommon.BACKGROUND_COLOR);
         size_panel.add(size_nine);
@@ -122,6 +127,8 @@ public class MainMenu implements ActionListener, WindowListener
         diff_group.add(hard);
         diff_group.add(evil);
         
+        Border diff_border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Difficulty Options" );
+        diff_panel.setBorder( diff_border );
         diff_panel.setLayout( new FlowLayout() );
         diff_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
         diff_panel.add(easy);
@@ -217,6 +224,26 @@ public class MainMenu implements ActionListener, WindowListener
 	{
 		main_frame.setVisible(true);
 	}
+	
+	public Difficulty getDesiredDifficulty()
+	{
+		if( easy.isSelected() )
+			return Difficulty.EASY;
+		else if( medium.isSelected() )
+			return Difficulty.MEDIUM;
+		else if( hard.isSelected() )
+			return Difficulty.HARD;
+		else
+			return Difficulty.EVIL;
+	}
+	
+	public BoardSize getDesiredBoardSize()
+	{
+		if( size_nine.isSelected() )
+			return BoardSize.NINE;
+		else
+			return BoardSize.SIXTEEN;
+	}
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		showStats()
@@ -273,8 +300,9 @@ public class MainMenu implements ActionListener, WindowListener
 		-------------------------------------------*/
 		if( e.getSource() == play_game_button )
 		{
-            main_frame.getContentPane().remove( menu_panel );
+			board = new Board( getDesiredBoardSize(), getDesiredDifficulty() );
             new_panel = board;
+            main_frame.getContentPane().remove( menu_panel );
             main_frame.add( new_panel );
             main_frame.setVisible( true );
 		}

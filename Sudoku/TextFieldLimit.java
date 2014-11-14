@@ -5,6 +5,10 @@
  * Description:
  * 		TextFieldLimit is used to ensure that Users do not enter string literals that do not
  * 		correspond to specified limits.
+ * 
+ * 
+ * Author:
+ * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
 
 /*-------------------------------------------------------------------------------------------------
@@ -28,7 +32,7 @@ public class TextFieldLimit extends PlainDocument
 			">", "<", ";", ":", "=",
 			"+", "-", "_", ")", "(",
 			"*", "&", "^", "%", "$",
-			"#", "@", "!", "~", "`"
+			"#", "@", "!", "~", "`", "{","["
 			
 		};
 	
@@ -76,7 +80,7 @@ public class TextFieldLimit extends PlainDocument
 		
 		if( field_type == FieldType.CELL9 || field_type == FieldType.CELL16 )
 		{
-			if( (getLength() + str.length() ) <= max_length && isValidEntry( str ) )
+			if( (getLength() + str.length() ) <= max_length && isValidCellEntry( str ) )
 				super.insertString(offset, str, attr);
 		}
 		
@@ -102,7 +106,7 @@ public class TextFieldLimit extends PlainDocument
 	}
 	
 	
-	private boolean isValidEntry( String str )
+	private boolean isValidCellEntry( String str )
 	{
 		if( this.field_type == FieldType.CELL9 )
 		{

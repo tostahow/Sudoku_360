@@ -6,6 +6,9 @@
  * 		Controls all of the components of the main display for the Sudoku Gui application.
  * 		Sudoku subscribes to LogIn and Registration services and generates the main frame that
  * 		the board and actions will be hosted on.
+ * 
+ * Author:
+ * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
 
 /*-------------------------------------------------------------------------------------------------

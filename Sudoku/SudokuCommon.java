@@ -5,6 +5,9 @@
  * Description:
  * 		Contains commonly used variables and functions throughout the Sudoku software
  * 		run time.
+ * 
+ * Author:
+ * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
 import java.awt.Color;
 import java.awt.Font;
@@ -21,9 +24,9 @@ public class SudokuCommon
 	public static final Font TEXT_FONT = 						//Font for Texts
 			new Font( "SansSerif", Font.ROMAN_BASELINE, 50 );
 	public static final Font PEN_FONT =
-			new Font( "TimesNewRomans", Font.ITALIC, 32 );
+			new Font( "TimesNewRomans", Font.ITALIC, 24 );
 	public static final Font PENCIL_FONT =
-			new Font( "SanSerif", Font.ITALIC, 18 );
+			new Font( "SanSerif", Font.ITALIC, 14 );
 	
 	public static final Color BACKGROUND_COLOR = Color.ORANGE;	//Background color of game.
 	public static final Color GUESS_FIELD_COLOR = Color.red;	// Guess field color

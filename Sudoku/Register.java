@@ -7,6 +7,8 @@
  * 		can be stored and used within the Sudoku system. When a user is registered, a notification
  * 		will be sent to any listening objects in order to delete the register object.
  * 
+ * Author:
+ * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------------------------
  									 	 Imports
@@ -245,7 +247,7 @@ public class Register extends UserService implements ActionListener
 		{
 			/*---------------------------------------
 			 If password or username field are empty
-			 inform user, and do not proces request
+			 inform user, and do not process request
 			 to log in.
 			---------------------------------------*/
 			if( ( username_field.getText().length() < 6 ) 

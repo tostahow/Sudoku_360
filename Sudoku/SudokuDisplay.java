@@ -10,20 +10,16 @@
  * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.TimerTask;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import java.util.Timer;
 
 public class SudokuDisplay extends Observable implements ActionListener
 {	
@@ -32,10 +28,14 @@ public class SudokuDisplay extends Observable implements ActionListener
 	private SudokuBackEnd back_end;
 	private Board board;
 	
+	private Thread timer_thread;
 	
-	private JButton pencil_button;
-	private JButton eraser_button;
-	private JButton pen_button;
+	private long start_time;
+	private long elapsed_time;
+	
+	private ModeButton pencil_button;
+	private ModeButton eraser_button;
+	private ModeButton pen_button;
 	private JButton quit_button;
 	private JButton score_button;
 	private JButton solve_button;
@@ -51,12 +51,36 @@ public class SudokuDisplay extends Observable implements ActionListener
 	private JPanel info_panel;
 	private JPanel button_panel;
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		SudokuDisplay() - Constructor
+	 * 
+	 * Description:
+	 * 		Set Up all Components to generate board
+	 --------------------------------------------------------------------------------------*/
 	public SudokuDisplay( Observer listener, BoardSize size, Difficulty difficulty )
 	{
 		addObserver( listener );
 		board_size = size;
 		this.difficulty = difficulty;
-		
+		/*timer_thread = new Thread()
+		{
+			public void run()
+			{
+				while(true)
+				{
+					elapsed_time = (System.currentTimeMillis() - start_time)/1000;
+					time.setText("" + elapsed_time );
+					
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		};*/
 		display_panel = new JPanel();
 		display_panel.setLayout( new BorderLayout() );
 		
@@ -65,6 +89,14 @@ public class SudokuDisplay extends Observable implements ActionListener
 		loadBoardPanel();
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		loadStatPanel()
+	 * 
+	 * Description:
+	 * 		loads the basic statistic panel with score of game, elapsed time of game, and
+	 * 		a button to update score.
+	 --------------------------------------------------------------------------------------*/
 	public void loadStatPanel()
 	{
 		GridLayout info_grid = new GridLayout(1,5);
@@ -77,12 +109,12 @@ public class SudokuDisplay extends Observable implements ActionListener
 		score_button = new JButton("Update Score!");
 		
 		score_label.setFont( SudokuCommon.PEN_FONT );
-		score.setFont(SudokuCommon.PEN_FONT);
+		score.setFont( SudokuCommon.PEN_FONT );
 		time_label.setFont( SudokuCommon.PEN_FONT );
-		time.setFont(SudokuCommon.PEN_FONT);
+		time.setFont( SudokuCommon.PEN_FONT );
 		score_button.setFont( SudokuCommon.PEN_FONT );
 		
-		score_button.addActionListener(this);
+		score_button.addActionListener( this );
 		info_panel.add( score_label );
 		info_panel.add( score );
 		info_panel.add( time_label );
@@ -92,17 +124,24 @@ public class SudokuDisplay extends Observable implements ActionListener
 		display_panel.add(info_panel, BorderLayout.NORTH );
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		loadButtonPanels()
+	 * 
+	 * Description:
+	 * 		load all of the buttons to be used during game play.
+	 --------------------------------------------------------------------------------------*/
 	public void loadButtonPanels()
 	{
 		GridLayout button_grid = new GridLayout(1,6);
 		button_panel = new JPanel( button_grid );
 		
-		pencil_button = new JButton("Pencil Mode");
-		pen_button = new JButton("Pen Mode");
+		pencil_button = new ModeButton("Pencil Mode");
+		pen_button = new ModeButton("Pen Mode");
 		quit_button = new JButton("Quit");
 		score_button = new JButton("Solve Now");
 		back_button = new JButton("Main Menu");
-		eraser_button = new JButton("Eraser Mode");
+		eraser_button = new ModeButton("Eraser Mode");
 		
 		pencil_button.setFont( SudokuCommon.PEN_FONT );
 		quit_button.setFont( SudokuCommon.PEN_FONT );
@@ -122,7 +161,6 @@ public class SudokuDisplay extends Observable implements ActionListener
 		button_panel.add( pen_button );
 		button_panel.add( pencil_button );
 		button_panel.add( eraser_button );
-		
 		button_panel.add( score_button );
 		button_panel.add( back_button );
 		button_panel.add( quit_button );
@@ -130,68 +168,128 @@ public class SudokuDisplay extends Observable implements ActionListener
 		display_panel.add( button_panel, BorderLayout.SOUTH );
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		loadBoardPanel()
+	 * 
+	 * Description:
+	 * 		create new Sudoku board and activate pen_mode
+	 --------------------------------------------------------------------------------------*/
 	public void loadBoardPanel()
 	{
 		board = new Board( this.board_size, this.difficulty );
 		board.enablePenMode();
-		activate(pen_button);
+		pen_button.activateButton();
 		display_panel.add( board, BorderLayout.CENTER );
 	}
 	
-	// restart timer
-	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		getGamePanel()
+	 * 
+	 * Description:
+	 * 		return panel of game
+	 --------------------------------------------------------------------------------------*/
 	public JPanel getGamePanel()
 	{
+		//start_time = System.currentTimeMillis();
+		//timer_thread.start();
 		return display_panel;
 	}
 	
-	public void activate( JButton mode_button )
-	{
-		mode_button.setBackground( SudokuCommon.BUTTON_ACTIVATED_COLOR );
-		mode_button.setForeground( SudokuCommon.BUTTON_ACTIVATED_TEXT );
-	}
-	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		deactivateModes()
+	 * 
+	 * Description:
+	 * 		deactivate the different mode buttons
+	 --------------------------------------------------------------------------------------*/
 	public void deactivateModes()
 	{
-		pen_button.setBackground( null );
-		pen_button.setForeground( null );
-		pencil_button.setBackground( null );
-		pencil_button.setForeground( null );
-		eraser_button.setBackground( null );
-		eraser_button.setForeground( null );
+		pen_button.deactivateButton();
+		pencil_button.deactivateButton();
+		eraser_button.deactivateButton();
+		
 	}
-
+	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		quitGame()
+	 * 
+	 * Description:
+	 * 		quit the game
+	 --------------------------------------------------------------------------------------*/
+	public void quitGame()
+	{
+		timer_thread = null;
+		setChanged();
+		notifyObservers( "Quit" );
+	}
+	/*---------------------------------------------------------------------------------------
+	 *  						 All Listener Functions
+	 --------------------------------------------------------------------------------------*/
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		actionPerformed()
+	 * 
+	 * Description:
+	 * 		depending on button pressed, a different behavior should be activated
+	 --------------------------------------------------------------------------------------*/
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e) 
+	{	
+	    /*---------------------------------------------------------------
+        If pen_button is pressed, activate the button and enable
+        pen mode for board
+        ---------------------------------------------------------------*/
 		if( e.getSource() == pen_button )
 		{
 			deactivateModes();
-			activate(pen_button);
+			pen_button.activateButton();
 			board.enablePenMode();
 			display_panel.repaint();
 			display_panel.setVisible(true);
 		}
+		
+	    /*---------------------------------------------------------------
+        If pencil_button is pressed, activate the button and enable
+        pencil mode for board
+        ---------------------------------------------------------------*/
 		if( e.getSource() == pencil_button )
 		{
 			deactivateModes();
-			activate( pencil_button );
+			pencil_button.activateButton();
 			board.enablePencilMode();
 			
 			display_panel.repaint();
 			display_panel.setVisible(true);
 		}
+		
+	    /*---------------------------------------------------------------
+        if eraser_button is pressed, activate the button and enable
+        eraser mode for board
+        ---------------------------------------------------------------*/
 		if( e.getSource() == eraser_button )
 		{
 			deactivateModes();
-			activate(eraser_button);
+			eraser_button.activateButton();
 			board.enableEraserMode();
 			display_panel.repaint();
 			display_panel.setVisible(true);
 		}
+		
+	    /*---------------------------------------------------------------
+        Quit the game
+        ---------------------------------------------------------------*/
 		if( e.getSource() == quit_button )
 		{
-			
+			System.out.println("Calling Quit from Menu Frame!");
+			quitGame();
 		}
+		
+	    /*---------------------------------------------------------------
+        back to main menu
+        ---------------------------------------------------------------*/
 		if( e.getSource() == back_button )
 		{
 			

@@ -1,3 +1,18 @@
+/*-------------------------------------------------------------------------------------------------
+ * Document:
+ * 		MainMenu.java
+ * 
+ * Description:
+ * 		MainMenu includes the functionality for the Main Menu.
+ * 		The Main Menu includes options such as difficulty options, board size options.\
+ * 		The Main Menu includes buttons for playing the game, seeing user stats, and quiting game.
+ * 
+ * Author:
+ * 		Travis Ostahowski
+-------------------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------------------
+										    Imports
+-------------------------------------------------------------------------------------------------*/
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -8,7 +23,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.Observable;
 import java.util.Observer;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -24,25 +38,37 @@ import javax.swing.border.Border;
 
 public class MainMenu implements Observer, ActionListener, WindowListener 
 {
-	private User user;
-	private boolean stats_open;
-	private SudokuDisplay game;
-	private JButton play_game_button, exit_button, see_stats_button;
-	private JPanel menu_panel;
-	private JRadioButton size_nine;
-	private JRadioButton size_sixteen;
-	private JRadioButton easy, medium, hard, evil;
-	private ButtonGroup diff_group, size_group;
+	/*-----------------------------------------------------------------------------------
+								Private Class Members
+	-----------------------------------------------------------------------------------*/
+	private User user;					// User that has logged in.	
+	private boolean stats_open; 		// Set when stat panel is open
+	private SudokuDisplay game;			// Game object
+	private JButton play_game_button; 	// Plays the SudokuDisplay Game
+	private JButton exit_button; 		// Exits Software
+	private JButton see_stats_button;	// opens Stats frame
+	private JPanel menu_panel;			// Panel which holds Menu components
+	private JRadioButton size_nine;		// Radio Button for 9x9 Map
+	private JRadioButton size_sixteen;	// Radio Button for 16x16 Map
+	private JRadioButton easy, medium; 	// Radio Buttons for Easy/Medium
+	private JRadioButton hard, evil;	// Radio Buttons for Hard/Evil
+	private ButtonGroup diff_group;		// Groups the Difficulty Buttons
+	private ButtonGroup size_group;		// Groups the Size Buttons
 	
-	private JFrame main_frame;
-	private JFrame stats_frame;
+	private JFrame main_frame;			// Frame generated to hold Main menu
+	private JFrame stats_frame;			// Frame for User Stats
 	
-	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		MainMenu - Constructor
+	 * 
+	 * Description:
+	 * 		Initialize all Menu Components
+	 --------------------------------------------------------------------------------------*/
 	public MainMenu( User new_user )
 	{
 		this.user = new_user;
 		main_frame = new JFrame();
-		System.out.print("User:" + user.get_name() + " logged in");
 		initMenu();
 	}
 	
@@ -53,7 +79,6 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	 * Description:
 	 * 		initialize all main menu gui settings
 	 --------------------------------------------------------------------------------------*/
-	
 	private void initMenu()
 	{
 	    /*---------------------------------------------------------------
@@ -68,6 +93,9 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         GridLayout button_layout;   // orientation of buttons
         GridLayout option_layout;	// list of all options
         
+	    /*---------------------------------------------------------------
+        Setting up main_frame attributes
+        ---------------------------------------------------------------*/
         main_frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         main_frame.setTitle("Sudoku Main Menu");
         main_frame.setSize( 1500, 900 );
@@ -83,8 +111,11 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         size_panel = new JPanel();
         diff_panel = new JPanel();
         play_game_button = new JButton( "Play!" );
+        play_game_button.setFocusable(false);
         see_stats_button = new JButton( "See Stats" );
+        see_stats_button.setFocusable(false);
         exit_button = new JButton( "Exit!" );
+        exit_button.setFocusable(false);
         menu_panel = new JPanel();
         size_group = new ButtonGroup();
         diff_group = new ButtonGroup();
@@ -92,57 +123,57 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         title = new JLabel( "Sudoku" );
         title.setHorizontalAlignment( SwingConstants.CENTER );
         
-        size_nine = new JRadioButton("9x9");
-        size_sixteen = new JRadioButton("16x16");
+        size_nine = new JRadioButton( "9x9" );
+        size_sixteen = new JRadioButton( "16x16" );
         
-        size_nine.setBackground(SudokuCommon.BACKGROUND_COLOR);
+        size_nine.setBackground( SudokuCommon.BACKGROUND_COLOR );
         size_nine.setFont( SudokuCommon.TEXT_FONT );
-        size_nine.setFocusable(false);
-        size_sixteen.setBackground(SudokuCommon.BACKGROUND_COLOR);
+        size_nine.setFocusable( false );
+        size_sixteen.setBackground( SudokuCommon.BACKGROUND_COLOR );
         size_sixteen.setFont( SudokuCommon.TEXT_FONT );
-        size_sixteen.setFocusable(false);
+        size_sixteen.setFocusable( false );
         
-        size_group.add(size_nine);
-        size_group.add(size_sixteen);
+        size_group.add( size_nine );
+        size_group.add( size_sixteen );
         
-        Border size_border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Size Options" );
+        Border size_border = BorderFactory.createTitledBorder( BorderFactory.createLineBorder(Color.black), "Size Options" );
         size_panel.setBorder( size_border );
-        size_panel.setLayout(new FlowLayout() );
-        size_panel.setBackground(SudokuCommon.BACKGROUND_COLOR);
-        size_panel.add(size_nine);
-        size_panel.add(size_sixteen);
+        size_panel.setLayout( new FlowLayout() );
+        size_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
+        size_panel.add( size_nine );
+        size_panel.add( size_sixteen );
         
-        easy = new JRadioButton("Easy");
-        medium = new JRadioButton("Medium");
-        hard = new JRadioButton("Hard");
-        evil = new JRadioButton("Evil");
+        easy = new JRadioButton( "Easy" );
+        medium = new JRadioButton( "Medium" );
+        hard = new JRadioButton( "Hard" );
+        evil = new JRadioButton( "Evil" );
         
-        easy.setFont(SudokuCommon.TEXT_FONT);
-        easy.setBackground(SudokuCommon.BACKGROUND_COLOR);
-        easy.setFocusable(false);
-        medium.setFont(SudokuCommon.TEXT_FONT);
-        medium.setBackground(SudokuCommon.BACKGROUND_COLOR);
-        medium.setFocusable(false);
-        hard.setFont(SudokuCommon.TEXT_FONT);
-        hard.setBackground(SudokuCommon.BACKGROUND_COLOR);
-        hard.setFocusable(false);
-        evil.setFont(SudokuCommon.TEXT_FONT);
-        evil.setBackground(SudokuCommon.BACKGROUND_COLOR);
-        evil.setFocusable(false);
+        easy.setFont( SudokuCommon.TEXT_FONT );
+        easy.setBackground( SudokuCommon.BACKGROUND_COLOR );
+        easy.setFocusable( false );
+        medium.setFont( SudokuCommon.TEXT_FONT );
+        medium.setBackground( SudokuCommon.BACKGROUND_COLOR );
+        medium.setFocusable( false );
+        hard.setFont( SudokuCommon.TEXT_FONT );
+        hard.setBackground( SudokuCommon.BACKGROUND_COLOR );
+        hard.setFocusable( false );
+        evil.setFont( SudokuCommon.TEXT_FONT );
+        evil.setBackground( SudokuCommon.BACKGROUND_COLOR );
+        evil.setFocusable( false );
         
-        diff_group.add(easy);
-        diff_group.add(medium);
-        diff_group.add(hard);
-        diff_group.add(evil);
+        diff_group.add( easy );
+        diff_group.add( medium );
+        diff_group.add( hard );
+        diff_group.add( evil );
         
-        Border diff_border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Difficulty Options" );
+        Border diff_border = BorderFactory.createTitledBorder( BorderFactory.createLineBorder(Color.black), "Difficulty Options" );
         diff_panel.setBorder( diff_border );
         diff_panel.setLayout( new FlowLayout() );
         diff_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
-        diff_panel.add(easy);
-        diff_panel.add(medium);
-        diff_panel.add(hard);
-        diff_panel.add(evil);
+        diff_panel.add( easy );
+        diff_panel.add( medium );
+        diff_panel.add( hard );
+        diff_panel.add( evil );
         
         /*---------------------------------------
         Set vertical and horizontal spacing
@@ -161,7 +192,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         
         option_layout = new GridLayout( 3, 1);
         option_panel = new JPanel( option_layout );
-        option_panel.setBackground(SudokuCommon.BACKGROUND_COLOR);
+        option_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
         /*---------------------------------------
         Set background for components
         ---------------------------------------*/
@@ -228,11 +259,25 @@ public class MainMenu implements Observer, ActionListener, WindowListener
        main_frame.add( menu_panel );
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		show()
+	 * 
+	 * Description:
+	 * 		show the frame for the MainMenu
+	 --------------------------------------------------------------------------------------*/
 	public void show()
 	{
 		main_frame.setVisible(true);
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		getDesiredDifficulty()
+	 * 
+	 * Description:
+	 * 		Gather the Difficulty from the radio buttons
+	 --------------------------------------------------------------------------------------*/
 	public Difficulty getDesiredDifficulty()
 	{
 		if( medium.isSelected() )
@@ -245,6 +290,13 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 			return Difficulty.EASY;
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		getDesiredBoardSize()
+	 * 
+	 * Description:
+	 * 		Gather the BoardSize options from the radio buttons
+	 --------------------------------------------------------------------------------------*/
 	public BoardSize getDesiredBoardSize()
 	{
 		if( size_sixteen.isSelected() )
@@ -263,44 +315,67 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	{
 		stats_open = true;	// ensures that user cant make multiple frames.
 		
-		//Set up all frame settings
-		stats_frame = new JFrame( user.get_name() + " Stats" );
-		JPanel stats_panel = new JPanel();
-		GridLayout stats_grid = new GridLayout(3,2);
-		JLabel score_label = new JLabel( "Score: " );
-		JLabel score = new JLabel( "" + user.get_score() );
-		JLabel maps_comp_label = new JLabel( "Maps Completed: " );
-		JLabel maps = new JLabel( "" + user.get_maps_completed() );
-		JLabel name_label = new JLabel( "Name: " );
-		JLabel name = new JLabel( "" + user.get_name() );
-		
-		//add labels 
-		stats_panel.setLayout( stats_grid );
-		stats_panel.add( name_label );
-		stats_panel.add( name );
-		stats_panel.add( score_label );
-		stats_panel.add( score );
-		stats_panel.add( maps_comp_label );
-		stats_panel.add( maps );
-		
-		//set frame specifications
-		stats_frame.add(stats_panel);
-		stats_frame.setSize( 300 , 300 );
-		stats_frame.setLocation(300, 150);
-		stats_frame.setResizable(false);
-		stats_frame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
-		
-		//add window listeners
-		stats_frame.addWindowListener(this);
-		stats_frame.setVisible(true);
+	    /*---------------------------------------------------------------
+        Stats Frame has already been created.
+        ---------------------------------------------------------------*/
+		if( stats_frame != null )
+		{
+			System.out.println("Setting Stats Frame Visible!");
+			stats_frame.setVisible(true);
+		}
+	    /*---------------------------------------------------------------
+        Stats Frame has yet to be created. Create the frame.
+        ---------------------------------------------------------------*/
+		else
+		{
+		    /*---------------------------------------------------------------
+	        Local Variables
+	        ---------------------------------------------------------------*/
+			stats_frame = new JFrame( user.getName() + " Stats" );
+			JPanel stats_panel = new JPanel();
+			GridLayout stats_grid = new GridLayout(3,2);
+			JLabel score_label = new JLabel( "Score: " );
+			JLabel score = new JLabel( "" + user.getScore() );
+			JLabel maps_comp_label = new JLabel( "Maps Completed: " );
+			JLabel maps = new JLabel( "" + user.getMapsCompleted() );
+			JLabel name_label = new JLabel( "Name: " );
+			JLabel name = new JLabel( "" + user.getName() );
+			
+		    /*---------------------------------------------------------------
+	        Set up panel for stats frame
+	        ---------------------------------------------------------------*/
+			stats_panel.setLayout( stats_grid );
+			stats_panel.add( name_label );
+			stats_panel.add( name );
+			stats_panel.add( score_label );
+			stats_panel.add( score );
+			stats_panel.add( maps_comp_label );
+			stats_panel.add( maps );
+			
+		    /*---------------------------------------------------------------
+	        Setting up stats_frame attributes
+	        ---------------------------------------------------------------*/
+			stats_frame.add(stats_panel);
+			stats_frame.setSize( 300 , 300 );
+			stats_frame.setLocation(300, 150);
+			stats_frame.setResizable(false);
+			stats_frame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
+			
+		    /*---------------------------------------------------------------
+	        show the stat_frame
+	        ---------------------------------------------------------------*/
+			stats_frame.addWindowListener(this);
+			stats_frame.setVisible(true);
+		}
 	}
+	
 	/*---------------------------------------------------------------------------------------
-	 *  									All Listener Functions
+	 *  						 All Listener Functions
 	 --------------------------------------------------------------------------------------*/
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		JPanel new_panel;
+		JPanel new_panel;	//panel to be added to frame
 		
 		/*-------------------------------------------
 		 *  Play button was pressed. Create board,
@@ -394,8 +469,13 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 
 	@Override
 	public void update(Observable subject, Object object_changed) {
-		// TODO Auto-generated method stub
-		
+		if( ( subject instanceof SudokuDisplay ) && ( object_changed instanceof String ) )
+		{
+			if( ((String)object_changed).equals("Quit") )
+			{
+				main_frame.dispatchEvent( new WindowEvent( main_frame, WindowEvent.WINDOW_CLOSING ) );
+			}
+		}
 	}
 
 }

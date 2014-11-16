@@ -34,23 +34,23 @@ public class User implements Serializable {
 		total_score = 0;
 	}
 	
-	public String get_name()
+	public String getName()
 	{
 		return name;
 	}
-	public long get_score()
+	public long getScore()
 	{
 		return total_score;
 	}
-	public int get_maps_completed()
+	public int getMapsCompleted()
 	{
 		return maps_completed;
 	}
-	public String get_salt()
+	public String getSalt()
 	{
 		return password_salt;
 	}
-	public String get_pw_hash()
+	public String getPasswordHash()
 	{
 		return password_hash;
 	}

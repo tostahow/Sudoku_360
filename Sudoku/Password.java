@@ -34,7 +34,6 @@ public class Password {
 	 * 		generates a random salt for each person which is used to create very secure
 	 * 		pw hash.
 	 --------------------------------------------------------------------------------------*/
-	
 	public static String generate_Salt() throws NoSuchAlgorithmException, NoSuchProviderException
 	{
 		Random randomizer = SecureRandom.getInstance( "SHA1PRNG", "SUN" );	
@@ -98,12 +97,11 @@ public class Password {
 	 * 		Verifies if the user entered password, and random salt match the hashed password
 	 * 		stored for the player object. 
 	 --------------------------------------------------------------------------------------*/
-	
 	public static boolean verify_password(final User player, final char[] password )
 	{
 		boolean result = false;
-		String storedPwHash = player.get_pw_hash();
-		String salt = player.get_salt();
+		String storedPwHash = player.getPasswordHash();
+		String salt = player.getSalt();
 		
 		String generated_hash = get_SHA_256_secure_password( password, salt );
 		

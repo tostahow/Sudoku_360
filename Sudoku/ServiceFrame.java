@@ -150,7 +150,7 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 		
 		/*---------------------------------------
 		 adjust grid of one row, with a gap that
-		 will seperate buttons
+		 will separate buttons
 		---------------------------------------*/
 		g_layout = new GridLayout( 1, 0 );
 		g_layout.setHgap( 300 );
@@ -250,6 +250,7 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 			
 			updateUser();			
 			}
+		
 		/*---------------------------------------
 		 Back button was pressed. Remove_panels
 		 and reload entry panel.
@@ -266,6 +267,13 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 			}
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		updateUser()
+	 * 
+	 * Description:
+	 * 		send user object back to Sudoku
+	--------------------------------------------------------------------------------------*/
 	public void updateUser()
 	{
 		setChanged();

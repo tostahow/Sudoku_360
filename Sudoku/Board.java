@@ -9,6 +9,7 @@
  * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
@@ -34,9 +35,10 @@ public class Board extends JPanel
 		setDimensions();
 		generateBoard();
 	}
-	public void setCellValue( int x, int y, String value )
+	
+	public Cell[][] getCells()
 	{
-		cells[x][y].setPenField( value );
+		return cells;
 	}
 	public Difficulty getDifficulty()
 	{
@@ -48,7 +50,7 @@ public class Board extends JPanel
 		return board_size;
 	}
 	
-	private void generateBoard()
+	public void generateBoard()
 	{
 		this.cells = new Cell[ this.cells_dim ][ this.cells_dim ];
 		this.cell_square = new JPanel[ this.cell_square_dim ][ this.cell_square_dim ];
@@ -92,7 +94,7 @@ public class Board extends JPanel
 		
 	}
 	
-	private void setDimensions()
+	public void setDimensions()
 	{
 		if( this.board_size == BoardSize.NINE )
 		{
@@ -110,6 +112,45 @@ public class Board extends JPanel
 			System.exit(1);
 		}
 
+	}
+	
+	public void enablePenMode()
+	{
+		for( int i = 0; i < cells_dim; i++)
+			for( int j = 0; j < cells_dim; j++)
+			{
+				cells[i][j].setPencilMode(false);
+				cells[i][j].setPenMode(true);
+				cells[i][j].setEraserMode(false);
+			}
+		this.repaint();
+		this.setVisible(true);
+	}
+	
+	public void enablePencilMode()
+	{
+		for( int i = 0; i < cells_dim; i++)
+			for( int j = 0; j < cells_dim; j++)
+			{
+				cells[i][j].setPencilMode(true);
+				cells[i][j].setPenMode(false);
+				cells[i][j].setEraserMode(false);
+			}
+		this.repaint();
+		this.setVisible(true);
+	}
+	
+	public void enableEraserMode()
+	{
+		for( int i = 0; i < cells_dim; i++)
+			for( int j = 0; j < cells_dim; j++)
+			{
+				cells[i][j].setPencilMode(false);
+				cells[i][j].setPenMode(false);
+				cells[i][j].setEraserMode(true);
+			}
+		this.repaint();
+		this.setVisible(true);
 	}
 	
 }

@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -20,11 +22,11 @@ import javax.swing.border.Border;
 
 
 
-public class MainMenu implements ActionListener, WindowListener 
+public class MainMenu implements Observer, ActionListener, WindowListener 
 {
 	private User user;
 	private boolean stats_open;
-	private Board board;
+	private SudokuDisplay game;
 	private JButton play_game_button, exit_button, see_stats_button;
 	private JPanel menu_panel;
 	private JRadioButton size_nine;
@@ -95,8 +97,10 @@ public class MainMenu implements ActionListener, WindowListener
         
         size_nine.setBackground(SudokuCommon.BACKGROUND_COLOR);
         size_nine.setFont( SudokuCommon.TEXT_FONT );
+        size_nine.setFocusable(false);
         size_sixteen.setBackground(SudokuCommon.BACKGROUND_COLOR);
         size_sixteen.setFont( SudokuCommon.TEXT_FONT );
+        size_sixteen.setFocusable(false);
         
         size_group.add(size_nine);
         size_group.add(size_sixteen);
@@ -115,12 +119,16 @@ public class MainMenu implements ActionListener, WindowListener
         
         easy.setFont(SudokuCommon.TEXT_FONT);
         easy.setBackground(SudokuCommon.BACKGROUND_COLOR);
+        easy.setFocusable(false);
         medium.setFont(SudokuCommon.TEXT_FONT);
         medium.setBackground(SudokuCommon.BACKGROUND_COLOR);
+        medium.setFocusable(false);
         hard.setFont(SudokuCommon.TEXT_FONT);
         hard.setBackground(SudokuCommon.BACKGROUND_COLOR);
+        hard.setFocusable(false);
         evil.setFont(SudokuCommon.TEXT_FONT);
         evil.setBackground(SudokuCommon.BACKGROUND_COLOR);
+        evil.setFocusable(false);
         
         diff_group.add(easy);
         diff_group.add(medium);
@@ -227,22 +235,22 @@ public class MainMenu implements ActionListener, WindowListener
 	
 	public Difficulty getDesiredDifficulty()
 	{
-		if( easy.isSelected() )
-			return Difficulty.EASY;
-		else if( medium.isSelected() )
+		if( medium.isSelected() )
 			return Difficulty.MEDIUM;
 		else if( hard.isSelected() )
 			return Difficulty.HARD;
-		else
+		else if( evil.isSelected() )
 			return Difficulty.EVIL;
+		else
+			return Difficulty.EASY;
 	}
 	
 	public BoardSize getDesiredBoardSize()
 	{
-		if( size_nine.isSelected() )
-			return BoardSize.NINE;
-		else
+		if( size_sixteen.isSelected() )
 			return BoardSize.SIXTEEN;
+		else
+			return BoardSize.NINE;
 	}
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -300,8 +308,8 @@ public class MainMenu implements ActionListener, WindowListener
 		-------------------------------------------*/
 		if( e.getSource() == play_game_button )
 		{
-			board = new Board( getDesiredBoardSize(), getDesiredDifficulty() );
-            new_panel = board;
+			game = new SudokuDisplay(this, getDesiredBoardSize(), getDesiredDifficulty() );
+            new_panel = game.getGamePanel();
             main_frame.getContentPane().remove( menu_panel );
             main_frame.add( new_panel );
             main_frame.setVisible( true );
@@ -382,6 +390,12 @@ public class MainMenu implements ActionListener, WindowListener
 	@Override
 	public void windowOpened(WindowEvent arg0) {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void update(Observable subject, Object object_changed) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

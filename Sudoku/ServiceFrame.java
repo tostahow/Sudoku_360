@@ -164,6 +164,9 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 		log_in_button.setBackground(SudokuCommon.BACKGROUND_COLOR );
 		register_button.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		
+		log_in_button.setFocusable(false);
+		register_button.setFocusable(false);
+		
 		/*---------------------------------------
 		 Set fonts for components
 		---------------------------------------*/

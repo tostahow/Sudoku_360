@@ -22,11 +22,15 @@ import javax.swing.text.PlainDocument;
 
 public class TextFieldLimit extends PlainDocument 
 {
-	private static final long serialVersionUID = 1L;
-	private int max_length;		// max limit of field
-	private FieldType field_type; // Enum for username, password, cell9, cell16
+	/*-----------------------------------------------------------------------------------
+								Private Class Members
+	-----------------------------------------------------------------------------------*/
+	private static final long 
+	serialVersionUID = 1L;				// id
+	private int max_length;				// max limit of field
+	private FieldType field_type; 		// Enum for username, password, cell9, cell16
 	private String[] invalid_username_characters = 
-		{ // List of Invalid Username Character
+		{ 								// List of Invalid Username Character
 			" ", "*", "/", "}", "]",
 		   "\\", "|", ",", "?",".",
 			">", "<", ";", ":", "=",
@@ -36,8 +40,10 @@ public class TextFieldLimit extends PlainDocument
 			
 		};
 	
-	private String valid_cell9_characters = "123456789";
-	private String valid_cell16_characters = "123456789abcdefgABCDEFG";
+	private String valid_cell9_characters = 
+			"123456789";				// list of valid 9x9 characters
+	private String valid_cell16_characters = 
+			"123456789abcdefg";			// list of valid 16x16 characters
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -46,7 +52,7 @@ public class TextFieldLimit extends PlainDocument
 	 * Description:
 	 * 		Constructor that sets max length to the passed in limit.
 	 --------------------------------------------------------------------------------------*/
-	TextFieldLimit( int limit, FieldType type )
+	public TextFieldLimit( int limit, FieldType type )
 	{
 		super();
 		this.max_length = limit;
@@ -93,7 +99,6 @@ public class TextFieldLimit extends PlainDocument
 	 * Description:
 	 * 		ensures that entered user names do not contain any undesired characters.
 	 --------------------------------------------------------------------------------------*/
-	
 	private boolean userNameValid( String str )
 	{
 		for( int i= 0; i < invalid_username_characters.length; i++ )
@@ -105,7 +110,13 @@ public class TextFieldLimit extends PlainDocument
 		return true;
 	}
 	
-	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		isValidCellEntry()
+	 * 
+	 * Description:
+	 * 		ensures that entered each cell type does not contain any undesired characters.
+	 --------------------------------------------------------------------------------------*/
 	private boolean isValidCellEntry( String str )
 	{
 		if( this.field_type == FieldType.CELL9 )
@@ -125,9 +136,7 @@ public class TextFieldLimit extends PlainDocument
 			}
 		}
 			
-		
 		return true;
 	}
-	
 	
 }

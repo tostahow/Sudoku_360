@@ -18,14 +18,16 @@ import java.io.*;
 
 public class Database
 {
-	private static ArrayList< User > database = new ArrayList< User >();
-	private static final File file = 
-	new File("users.data"); 							// file containing user object
+	/*-----------------------------------------------------------------------------------
+								Private Class Members
+	-----------------------------------------------------------------------------------*/
+	private static ArrayList< User > database = new ArrayList< User >();// List for holding all Users
+	private static final File file = new File("users.data"); 			// file containing user object
 	
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
-	 * 		Database() - contstructor
+	 * 		Database() - constructor
 	 * 
 	 * Description:
 	 * 		Yet to have definition - may not need it.
@@ -59,7 +61,7 @@ public class Database
 		
 		for(int i = 0; i < database.size(); i++)
 			{
-			System.out.print( database.get( i ).get_name() );
+			System.out.print( database.get( i ).getName() );
 			}
 	}
 	
@@ -79,7 +81,7 @@ public class Database
 		
 		for(int i = 0; i < database.size(); i++)
 		{
-			if( user_name.equals( database.get(i).get_name() ) )
+			if( user_name.equals( database.get(i).getName() ) )
 			{
 				return database.get(i);
 			}

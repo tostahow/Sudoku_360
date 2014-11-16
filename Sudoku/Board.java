@@ -3,68 +3,122 @@
  * 		Board.java
  * 
  * Description:
- * 		Arranges cells in manner such that they can be used in a puzzle
+ * 		Arranges cells in manner such that they can be used in a Sudoku Puzzle
+ * 		Assists with establishing functionality of Sudoku Cells
  * 
  * Author:
  * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridLayout;
-
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 
 public class Board extends JPanel
 {
-	private static final long serialVersionUID = 1L;
+	/*-----------------------------------------------------------------------------------
+								Private Class Members
+	-----------------------------------------------------------------------------------*/
+	private static final long 
+	serialVersionUID = 1L;			//Serialized Value
 	
-	private Difficulty diff;
-	private BoardSize board_size;
-	private Cell[][] cells;
-	private JPanel[][] cell_square;
-	private int cells_dim;
-	private int cell_square_dim;
+	private Difficulty diff;		//Difficulty Values
+	private BoardSize board_size;	//BoardSize Values
+	private Cell[][] cells;			//Cells which will be used for game
+	private JPanel[][] cell_square; //Panels to hold the cells in a Sudoku format
+	private int cells_dim;			//3 or 4 depending on 9x9 or 16x16
+	private int cell_square_dim;	// dimensions for panels
+	private boolean pen_mode;		// flag for pen mode
+	private boolean pencil_mode;	// flag for pencil mode
+	private boolean eraser_mode;	// flag for eraser mode
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		Board - Constructor
+	 * 
+	 * Description:
+	 * 		Set Dimension of Board and Generate all of the cells into a panel
+	 --------------------------------------------------------------------------------------*/
 	public Board( BoardSize b_size, Difficulty difficulty )
 	{
 		this.setBackground( Color.BLACK );
 		this.board_size = b_size;
 		this.diff = difficulty;
+		
+		pen_mode = false;
+		pencil_mode = false;
+		eraser_mode = false;
+		
 		setDimensions();
 		generateBoard();
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		getCells()
+	 * 
+	 * Description:
+	 * 		return 2d array of Cells
+	 --------------------------------------------------------------------------------------*/
 	public Cell[][] getCells()
 	{
 		return cells;
 	}
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		getDifficulty
+	 * 
+	 * Description:
+	 * 		return Difficulty Setting
+	 --------------------------------------------------------------------------------------*/
 	public Difficulty getDifficulty()
 	{
 		return diff;
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		getBoardSize
+	 * 
+	 * Description:
+	 * 		return BoardSize
+	 --------------------------------------------------------------------------------------*/
 	public BoardSize getBoardSize()
 	{
 		return board_size;
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		generateBoard
+	 * 
+	 * Description:
+	 * 		arrange the cells depending on the requested dimensions
+	 --------------------------------------------------------------------------------------*/
 	public void generateBoard()
 	{
+	    /*---------------------------------------------------------------
+        Generate 2d Arrays for Cells and Panels for Holding Cells
+        ---------------------------------------------------------------*/
 		this.cells = new Cell[ this.cells_dim ][ this.cells_dim ];
 		this.cell_square = new JPanel[ this.cell_square_dim ][ this.cell_square_dim ];
-		int count = 1;
+		
+	    /*---------------------------------------------------------------
+        Generate All Cells
+        ---------------------------------------------------------------*/
 		for( int i = 0; i < cells_dim; i++)
 		{
 			for( int j = 0; j < cells_dim; j++)
 			{
-				cells[i][j] = new Cell( board_size , count );
+				cells[i][j] = new Cell( board_size );
 			}
 			
 		}
 		
-		//set Cell_Square attributes
+	    /*---------------------------------------------------------------
+        Set Square of Cells attributes
+        ---------------------------------------------------------------*/
 		for( int i = 0; i < cell_square_dim ; i++ )
 		{
 			for( int j = 0; j < cell_square_dim; j++ )
@@ -74,8 +128,14 @@ public class Board extends JPanel
 			}
 		}
 		
+	    /*---------------------------------------------------------------
+        Set layout for board as Grid for Sudoku Puzzle
+        ---------------------------------------------------------------*/
 		this.setLayout(new GridLayout( cell_square_dim, cell_square_dim, cell_square_dim + 2, cell_square_dim + 2));
 		
+	    /*---------------------------------------------------------------
+        Add cells to panel to give the Sudoku Puzzle Look
+        ---------------------------------------------------------------*/
 		for( int i = 0; i < cell_square_dim; i++)
 		{
 			for( int j = 0; j < cell_square_dim; j++ )
@@ -88,12 +148,22 @@ public class Board extends JPanel
 					}
 						
 				}
+			    /*---------------------------------------------------------------
+		        Add each Square of Cells to the Board Grid
+		        ---------------------------------------------------------------*/
 				this.add( cell_square[i][j] );
 			}
 		}
 		
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		setDimensions()
+	 * 
+	 * Description:
+	 * 		set dimensions for the board
+	 --------------------------------------------------------------------------------------*/
 	public void setDimensions()
 	{
 		if( this.board_size == BoardSize.NINE )
@@ -114,8 +184,28 @@ public class Board extends JPanel
 
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		enablePenMode()
+	 * 
+	 * Description:
+	 * 		Loop through cells and enable pen mode for each cell.
+	 --------------------------------------------------------------------------------------*/
 	public void enablePenMode()
 	{
+	    /*---------------------------------------------------------------
+        If pen_mode is set, save resources and return before altering
+        all cells.
+        ---------------------------------------------------------------*/
+		if( pen_mode )
+		{
+			return;
+		}
+		
+		pen_mode = true;
+		pencil_mode = false;
+		eraser_mode = false;
+		
 		for( int i = 0; i < cells_dim; i++)
 			for( int j = 0; j < cells_dim; j++)
 			{
@@ -123,12 +213,30 @@ public class Board extends JPanel
 				cells[i][j].setPenMode(true);
 				cells[i][j].setEraserMode(false);
 			}
-		this.repaint();
-		this.setVisible(true);
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		enablePencilMode()
+	 * 
+	 * Description:
+	 * 		Loop through cells and enable pencil mode for each cell
+	 --------------------------------------------------------------------------------------*/
 	public void enablePencilMode()
 	{
+	    /*---------------------------------------------------------------
+        If pencil_mode is set, save resources and return before altering
+        all cells.
+        ---------------------------------------------------------------*/
+		if( pencil_mode )
+		{
+			return;
+		}
+		
+		pen_mode = false;
+		pencil_mode = true;
+		eraser_mode = false;
+		
 		for( int i = 0; i < cells_dim; i++)
 			for( int j = 0; j < cells_dim; j++)
 			{
@@ -136,12 +244,30 @@ public class Board extends JPanel
 				cells[i][j].setPenMode(false);
 				cells[i][j].setEraserMode(false);
 			}
-		this.repaint();
-		this.setVisible(true);
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		enableEraserMode
+	 * 
+	 * Description:
+	 * 		Loop through cells and enable eraser mode for each cell
+	 --------------------------------------------------------------------------------------*/
 	public void enableEraserMode()
 	{
+	    /*---------------------------------------------------------------
+        If eraser_mode is set, save resources and return before altering
+        all cells.
+        ---------------------------------------------------------------*/
+		if( eraser_mode )
+		{
+			return;
+		}
+		
+		pen_mode = false;
+		pencil_mode = false;
+		eraser_mode = true;
+		
 		for( int i = 0; i < cells_dim; i++)
 			for( int j = 0; j < cells_dim; j++)
 			{
@@ -149,8 +275,6 @@ public class Board extends JPanel
 				cells[i][j].setPenMode(false);
 				cells[i][j].setEraserMode(true);
 			}
-		this.repaint();
-		this.setVisible(true);
 	}
 	
 }

@@ -160,8 +160,8 @@ public class LogIn extends UserService implements ActionListener
 	
 	public void clearFields()
 	{
-		username_field.setText("");
-		pw_field.setText("");
+		username_field.setText( "" );
+		pw_field.setText( "" );
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -242,7 +242,7 @@ public class LogIn extends UserService implements ActionListener
 				 Use option pane to alert user of failed
 				 attempt.
 				---------------------------------------*/
-				errorMessage("user name and password combo does not match stored records");
+				errorMessage( "user name and password combo does not match stored records" );
 				clearFields();
 				
 				}
@@ -251,7 +251,7 @@ public class LogIn extends UserService implements ActionListener
 			---------------------------------------*/
 			else
 				{
-				successMessage("Log In Successful");
+				successMessage( "Log In Successful" );
 				clearFields();
 				}
 		}

@@ -12,6 +12,7 @@
 -------------------------------------------------------------------------------------------------*/
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -37,10 +38,9 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 	private boolean pen_filled;                 // pen filled flag
 	
 	private int eraser_count;                   // # of eraser uses
-	
-	private JTextField pen_field;				// Pen Field
-	private JTextField pencil_field;			// Pencil Field
-	private FieldType  cell_type;				// Cell_type
+	private CellField pen_field;				// Pen Field
+	private CellField pencil_field;			    // Pencil Field
+	private FieldType cell_type;				// Cell_type
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -69,6 +69,8 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 	 --------------------------------------------------------------------------------------*/
 	private void initVariables()
 	{
+		this.pen_field = new CellField("", true );
+		this.pencil_field = new CellField("", false);
 		this.pen_mode = true;
 		this.pen_filled = false;
 		this.pencil_mode = false;
@@ -173,20 +175,17 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 		this.locked = flag;
 		if( locked )
 		{
-			//this.remove( pencil_field );
-			pen_field.setBackground( SudokuCommon.BUTTON_ACTIVATED_COLOR );
-			pen_field.setForeground( SudokuCommon.BUTTON_ACTIVATED_TEXT );
-			pencil_field.setBackground( SudokuCommon.BUTTON_ACTIVATED_COLOR );
+			pen_field.setForeground( Color.orange );
 			pencil_field.setText("");
 			pen_field.setEditable( !flag );
 			pencil_field.setEditable( !flag );
 		}
 		else
 		{
-			pen_field.setBackground( SudokuCommon.BACKGROUND_COLOR );
-			pen_field.setForeground( null );
-			pencil_field.setBackground( SudokuCommon.BACKGROUND_COLOR );
-			pencil_field.setForeground( null );
+			pen_field.setBackground( SudokuCommon.COMPONENT_COLOR );
+			pen_field.setForeground( SudokuCommon.PEN_COLOR );
+			pencil_field.setBackground( SudokuCommon.COMPONENT_COLOR );
+			pencil_field.setForeground(  SudokuCommon.PEN_COLOR );
 			pen_field.setEditable(!flag);
 			pencil_field.setEditable(flag);
 		}
@@ -274,27 +273,11 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 	 --------------------------------------------------------------------------------------*/
 	private void initFields()
 	{
-		this.pen_field = new JTextField("");
-		this.pen_field.setBorder( null );
-		this.pen_field.setHorizontalAlignment( JTextField.CENTER );
 		this.pen_field.addKeyListener(this);
 		this.pen_field.addMouseListener(this);
 		
-		this.pencil_field = new JTextField("");
-		this.pencil_field.setHorizontalAlignment( JTextField.CENTER );
-		this.pencil_field.setBorder( null );
-
 		pen_field.setDocument( new TextFieldLimit(1, cell_type) );
 		pencil_field.setDocument( new TextFieldLimit(6, cell_type) );
-		
-		this.pen_field.setBackground( SudokuCommon.BACKGROUND_COLOR );
-		this.pencil_field.setBackground( SudokuCommon.BACKGROUND_COLOR );
-		
-		this.pen_field.setFont( SudokuCommon.PEN_FONT );
-		this.pencil_field.setFont( SudokuCommon.PENCIL_FONT );
-		
-		this.pen_field.setForeground( SudokuCommon.PEN_COLOR );
-		this.pencil_field.setForeground( SudokuCommon.PENCIL_COLOR );
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -423,7 +406,7 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 		    /*---------------------------------------------------------------
 		    Change background to give visual cue that value was erased
 	        ---------------------------------------------------------------*/
-			this.pen_field.setBackground( SudokuCommon.BUTTON_ACTIVATED_COLOR );
+			this.pen_field.setBackground( SudokuCommon.BACKGROUND_COLOR );
 			this.pen_filled = false;
 			eraser_count = eraser_count + 1;
 			
@@ -446,7 +429,7 @@ public class Cell extends JPanel implements KeyListener, MouseListener
         ---------------------------------------------------------------*/
 		if( eraser_mode )
 		{
-			this.pen_field.setBackground( SudokuCommon.BACKGROUND_COLOR );
+			this.pen_field.setBackground( SudokuCommon.COMPONENT_COLOR );
 		}
 		
 	}

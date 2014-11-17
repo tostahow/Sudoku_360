@@ -13,7 +13,6 @@
 /*-------------------------------------------------------------------------------------------------
  									 	 Imports
 -------------------------------------------------------------------------------------------------*/
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -31,8 +30,8 @@ public class Register extends UserService implements ActionListener
 	/*-----------------------------------------------------------------------------------
 									Private Class Members
 	-----------------------------------------------------------------------------------*/			
-	private JButton	back_button;							// back button
-	private JButton reg_button;								// register button
+	private CustomButton back_button;						// back button
+	private CustomButton reg_button;						// register button
 	private JTextField username_field;						// username_field
 	private JPasswordField pw_field;						// field for password
 	private JPasswordField v_pw_field;						// verification field
@@ -91,11 +90,11 @@ public class Register extends UserService implements ActionListener
 		/*---------------------------------------------------------------
 								Initialize Variables
 		---------------------------------------------------------------*/
-		back_button = new JButton( "Back" );
+		back_button = new CustomButton( "Back", false );
 		g_layout = new GridLayout( 1, 0 );
 		button_panel = new JPanel();
 		reg_panel = new JPanel();
-		reg_button = new JButton( "Register" );
+		reg_button = new CustomButton( "Register", false );
 		username_field = new JTextField();
 		username_label = new JLabel( "User Name:" );
 		pw_label = new JLabel( "Password:" );
@@ -106,12 +105,10 @@ public class Register extends UserService implements ActionListener
 		/*---------------------------------------
 		 Set Fonts for each component
 		---------------------------------------*/		
-		back_button.setFont( SudokuCommon.TEXT_FONT );
 		username_field.setFont( SudokuCommon.TEXT_FONT );
 		username_label.setFont( SudokuCommon.TEXT_FONT );
 		pw_label.setFont( SudokuCommon.TEXT_FONT );
 		pw_field.setFont( SudokuCommon.TEXT_FONT );
-		reg_button.setFont( SudokuCommon.TEXT_FONT );
 		v_pw_label.setFont( SudokuCommon.TEXT_FONT );
 		v_pw_field.setFont( SudokuCommon.TEXT_FONT );
 		

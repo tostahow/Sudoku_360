@@ -132,6 +132,7 @@ public class Board extends JPanel
         Set layout for board as Grid for Sudoku Puzzle
         ---------------------------------------------------------------*/
 		this.setLayout(new GridLayout( cell_square_dim, cell_square_dim, cell_square_dim + 2, cell_square_dim + 2));
+		this.setBackground(Color.white);
 		
 	    /*---------------------------------------------------------------
         Add cells to panel to give the Sudoku Puzzle Look

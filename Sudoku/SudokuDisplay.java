@@ -33,20 +33,20 @@ public class SudokuDisplay extends Observable implements ActionListener
 	private long elapsed_time;
 	private int game_score;
 	
-	private ModeButton pencil_button;
-	private ModeButton eraser_button;
-	private ModeButton pen_button;
+	private CustomButton pencil_button;
+	private CustomButton eraser_button;
+	private CustomButton pen_button;
 	private JButton quit_button;
 	private JButton score_button;
 	private JButton solve_button;
-	private JButton	hint_button;
+	private JButton hint_button;
 	
-	private JLabel score;
-	private JLabel time;
-	private JLabel hint;
-	private JLabel score_label;
-	private JLabel time_label;
-	private JLabel hint_label;
+	private CustomLabel score;
+	private CustomLabel time;
+	private CustomLabel hint;
+	private CustomLabel score_label;
+	private CustomLabel time_label;
+	private CustomLabel hint_label;
 	
 	private JPanel display_panel;
 	private JPanel info_panel;
@@ -108,21 +108,14 @@ public class SudokuDisplay extends Observable implements ActionListener
 		GridLayout info_grid = new GridLayout(1,7);
 		info_panel = new JPanel( info_grid );
 		
-		score_label = new JLabel("Score: ");
-		score = new JLabel("0");
-		time_label = new JLabel("Time elapsed: ");
-		time = new JLabel("0.00");
-		score_button = new JButton( "Update Score!" );
-		hint_label = new JLabel("Hints Left: ");
-		hint = new JLabel("" + back_end.getHints());
+		score_label = new CustomLabel("Score: ");
+		score = new CustomLabel("0");
+		time_label = new CustomLabel("Time elapsed: ");
+		time = new CustomLabel("0.00");
+		score_button = new CustomButton( "Update Score!", true );
+		hint_label = new CustomLabel("Hints Left: ");
+		hint = new CustomLabel("" + back_end.getHints());
 		
-		score_label.setFont( SudokuCommon.PEN_FONT );
-		score.setFont( SudokuCommon.PEN_FONT );
-		time_label.setFont( SudokuCommon.PEN_FONT );
-		time.setFont( SudokuCommon.PEN_FONT );
-		hint_label.setFont( SudokuCommon.PEN_FONT );
-		hint.setFont( SudokuCommon.PEN_FONT );
-		score_button.setFont( SudokuCommon.PEN_FONT );
 		
 		score_button.addActionListener( this );
 		info_panel.add( score_label );
@@ -132,7 +125,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 		info_panel.add( hint_label );
 		info_panel.add( hint );
 		info_panel.add( score_button );
-		
+		info_panel.setBackground(SudokuCommon.BACKGROUND_COLOR);
 		display_panel.add(info_panel, BorderLayout.NORTH );
 	}
 	
@@ -148,20 +141,12 @@ public class SudokuDisplay extends Observable implements ActionListener
 		GridLayout button_grid = new GridLayout(1,6);
 		button_panel = new JPanel( button_grid );
 		
-		pencil_button = new ModeButton("Pencil Mode");
-		pen_button = new ModeButton("Pen Mode");
-		quit_button = new JButton("Quit");
-		solve_button = new JButton("Solve Now");
-		hint_button = new JButton("Hint");
-		eraser_button = new ModeButton("Eraser Mode");
-		
-		pencil_button.setFont( SudokuCommon.PEN_FONT );
-		quit_button.setFont( SudokuCommon.PEN_FONT );
-		pen_button.setFont( SudokuCommon.PEN_FONT );
-		hint_button.setFont( SudokuCommon.PEN_FONT );
-		solve_button.setFont( SudokuCommon.PEN_FONT );
-		eraser_button.setFont( SudokuCommon.PEN_FONT );
-		
+		pencil_button = new CustomButton("Pencil Mode", true);
+		pen_button = new CustomButton("Pen Mode", true);
+		quit_button = new CustomButton("Quit", true);
+		solve_button = new CustomButton("Solve Now", true);
+		hint_button = new CustomButton("Hint", true);
+		eraser_button = new CustomButton("Eraser Mode", true);
 		
 		pencil_button.addActionListener(this);
 		pen_button.addActionListener(this);

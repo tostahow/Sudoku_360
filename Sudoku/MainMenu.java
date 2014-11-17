@@ -24,7 +24,6 @@ import java.awt.event.WindowListener;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -44,9 +43,9 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	private User user;					// User that has logged in.	
 	private boolean stats_open; 		// Set when stat panel is open
 	private SudokuDisplay game;			// Game object
-	private JButton play_game_button; 	// Plays the SudokuDisplay Game
-	private JButton exit_button; 		// Exits Software
-	private JButton see_stats_button;	// opens Stats frame
+	private CustomButton play_game_button; 	// Plays the SudokuDisplay Game
+	private CustomButton exit_button; 		// Exits Software
+	private CustomButton see_stats_button;	// opens Stats frame
 	private JPanel menu_panel;			// Panel which holds Menu components
 	private JRadioButton size_nine;		// Radio Button for 9x9 Map
 	private JRadioButton size_sixteen;	// Radio Button for 16x16 Map
@@ -112,12 +111,9 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         button_panel = new JPanel();
         size_panel = new JPanel();
         diff_panel = new JPanel();
-        play_game_button = new JButton( "Play!" );
-        play_game_button.setFocusable(false);
-        see_stats_button = new JButton( "See Stats" );
-        see_stats_button.setFocusable(false);
-        exit_button = new JButton( "Exit!" );
-        exit_button.setFocusable(false);
+        play_game_button = new CustomButton( "Play!", false );
+        see_stats_button = new CustomButton( "See Stats", false );
+        exit_button = new CustomButton( "Exit!", false );
         menu_panel = new JPanel();
         size_group = new ButtonGroup();
         diff_group = new ButtonGroup();
@@ -125,15 +121,9 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         title = new JLabel( "Sudoku" );
         title.setHorizontalAlignment( SwingConstants.CENTER );
         
-        size_nine = new JRadioButton( "9x9" );
-        size_sixteen = new JRadioButton( "16x16" );
+        size_nine = new CustomRadioButton( "9x9" );
+        size_sixteen = new CustomRadioButton( "16x16" );
         
-        size_nine.setBackground( SudokuCommon.BACKGROUND_COLOR );
-        size_nine.setFont( SudokuCommon.TEXT_FONT );
-        size_nine.setFocusable( false );
-        size_sixteen.setBackground( SudokuCommon.BACKGROUND_COLOR );
-        size_sixteen.setFont( SudokuCommon.TEXT_FONT );
-        size_sixteen.setFocusable( false );
         
         size_group.add( size_nine );
         size_group.add( size_sixteen );
@@ -145,23 +135,10 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         size_panel.add( size_nine );
         size_panel.add( size_sixteen );
         
-        easy = new JRadioButton( "Easy" );
-        medium = new JRadioButton( "Medium" );
-        hard = new JRadioButton( "Hard" );
-        evil = new JRadioButton( "Evil" );
-        
-        easy.setFont( SudokuCommon.TEXT_FONT );
-        easy.setBackground( SudokuCommon.BACKGROUND_COLOR );
-        easy.setFocusable( false );
-        medium.setFont( SudokuCommon.TEXT_FONT );
-        medium.setBackground( SudokuCommon.BACKGROUND_COLOR );
-        medium.setFocusable( false );
-        hard.setFont( SudokuCommon.TEXT_FONT );
-        hard.setBackground( SudokuCommon.BACKGROUND_COLOR );
-        hard.setFocusable( false );
-        evil.setFont( SudokuCommon.TEXT_FONT );
-        evil.setBackground( SudokuCommon.BACKGROUND_COLOR );
-        evil.setFocusable( false );
+        easy = new CustomRadioButton( "Easy" );
+        medium = new CustomRadioButton( "Medium" );
+        hard = new CustomRadioButton( "Hard" );
+        evil = new CustomRadioButton( "Evil" );
         
         diff_group.add( easy );
         diff_group.add( medium );
@@ -205,16 +182,6 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         Set fonts for components
         ---------------------------------------*/
         title.setFont( SudokuCommon.TITLE_FONT );
-        play_game_button.setFont( SudokuCommon.TEXT_FONT );
-        see_stats_button.setFont( SudokuCommon.TEXT_FONT );
-        exit_button.setFont( SudokuCommon.TEXT_FONT );
-        
-        /*---------------------------------------
-        Set both buttons to be without borders
-        ---------------------------------------*/
-        play_game_button.setBorder( null );
-        see_stats_button.setBorder( null );
-        exit_button.setBorder( null );
         
         /*---------------------------------------
         Button panel will consist of two buttons

@@ -15,14 +15,10 @@
  										Imports
 -------------------------------------------------------------------------------------------------*/
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.*;
 import java.awt.GridLayout;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -38,8 +34,8 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
     private UserService register;		// register object for registering new users
 	private User current_user;			// Player currently signed in
 	
-	private JButton log_in_button;		// Button used for logging in
-	private JButton register_button;	// Button used for registering
+	private CustomButton log_in_button;		// Button used for logging in
+	private CustomButton register_button;	// Button used for registering
 	
 	private JPanel entry_panel;			// Initial Panel
 	private JFrame host_frame;			//Frame for services to occur in
@@ -134,8 +130,8 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 		---------------------------------------------------------------*/
 		b_layout = new BorderLayout();
 		button_panel = new JPanel();
-		log_in_button = new JButton( "Log In" );
-		register_button = new JButton( "Register" );
+		log_in_button = new CustomButton( "Log In", false );
+		register_button = new CustomButton( "Register", false );
 		entry_panel = new JPanel();
 		
 		title = new JLabel( "Sudoku" );
@@ -161,24 +157,11 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 		---------------------------------------*/
 		title.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		entry_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
-		log_in_button.setBackground(SudokuCommon.BACKGROUND_COLOR );
-		register_button.setBackground( SudokuCommon.BACKGROUND_COLOR );
-		
-		log_in_button.setFocusable(false);
-		register_button.setFocusable(false);
 		
 		/*---------------------------------------
 		 Set fonts for components
 		---------------------------------------*/
 		title.setFont( SudokuCommon.TITLE_FONT );
-		log_in_button.setFont( SudokuCommon.TEXT_FONT );
-		register_button.setFont( SudokuCommon.TEXT_FONT );
-		
-		/*---------------------------------------
-		 Set both buttons to be without borders
-		---------------------------------------*/
-		register_button.setBorder( BorderFactory.createLineBorder( Color.black, 8) );
-		log_in_button.setBorder( BorderFactory.createLineBorder( Color.black, 8 ) );
 		
 		/*---------------------------------------
 		 Button panel will consist of two buttons

@@ -29,9 +29,9 @@ public class SudokuDisplay extends Observable implements ActionListener
 	private Board board;
 	
 	private Thread timer_thread;
-	
 	private long start_time;
 	private long elapsed_time;
+	private int game_score;
 	
 	private ModeButton pencil_button;
 	private ModeButton eraser_button;
@@ -39,13 +39,14 @@ public class SudokuDisplay extends Observable implements ActionListener
 	private JButton quit_button;
 	private JButton score_button;
 	private JButton solve_button;
-	private JButton back_button;
+	private JButton	hint_button;
 	
 	private JLabel score;
 	private JLabel time;
+	private JLabel hint;
 	private JLabel score_label;
 	private JLabel time_label;
-	
+	private JLabel hint_label;
 	
 	private JPanel display_panel;
 	private JPanel info_panel;
@@ -63,6 +64,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 		addObserver( listener );
 		board_size = size;
 		this.difficulty = difficulty;
+		game_score = 0;
 		/*timer_thread = new Thread()
 		{
 			public void run()
@@ -84,6 +86,10 @@ public class SudokuDisplay extends Observable implements ActionListener
 		display_panel = new JPanel();
 		display_panel.setLayout( new BorderLayout() );
 		
+		back_end = new SudokuBackEnd( this.board_size, this.difficulty );
+		back_end.generateNewPuzzle();
+		back_end.printBoardContents();
+		
 		loadStatPanel();
 		loadButtonPanels();
 		loadBoardPanel();
@@ -99,19 +105,23 @@ public class SudokuDisplay extends Observable implements ActionListener
 	 --------------------------------------------------------------------------------------*/
 	public void loadStatPanel()
 	{
-		GridLayout info_grid = new GridLayout(1,5);
+		GridLayout info_grid = new GridLayout(1,7);
 		info_panel = new JPanel( info_grid );
 		
 		score_label = new JLabel("Score: ");
 		score = new JLabel("0");
 		time_label = new JLabel("Time elapsed: ");
 		time = new JLabel("0.00");
-		score_button = new JButton("Update Score!");
+		score_button = new JButton( "Update Score!" );
+		hint_label = new JLabel("Hints Left: ");
+		hint = new JLabel("" + back_end.getHints());
 		
 		score_label.setFont( SudokuCommon.PEN_FONT );
 		score.setFont( SudokuCommon.PEN_FONT );
 		time_label.setFont( SudokuCommon.PEN_FONT );
 		time.setFont( SudokuCommon.PEN_FONT );
+		hint_label.setFont( SudokuCommon.PEN_FONT );
+		hint.setFont( SudokuCommon.PEN_FONT );
 		score_button.setFont( SudokuCommon.PEN_FONT );
 		
 		score_button.addActionListener( this );
@@ -119,6 +129,8 @@ public class SudokuDisplay extends Observable implements ActionListener
 		info_panel.add( score );
 		info_panel.add( time_label );
 		info_panel.add( time );
+		info_panel.add( hint_label );
+		info_panel.add( hint );
 		info_panel.add( score_button );
 		
 		display_panel.add(info_panel, BorderLayout.NORTH );
@@ -139,30 +151,30 @@ public class SudokuDisplay extends Observable implements ActionListener
 		pencil_button = new ModeButton("Pencil Mode");
 		pen_button = new ModeButton("Pen Mode");
 		quit_button = new JButton("Quit");
-		score_button = new JButton("Solve Now");
-		back_button = new JButton("Main Menu");
+		solve_button = new JButton("Solve Now");
+		hint_button = new JButton("Hint");
 		eraser_button = new ModeButton("Eraser Mode");
 		
 		pencil_button.setFont( SudokuCommon.PEN_FONT );
 		quit_button.setFont( SudokuCommon.PEN_FONT );
 		pen_button.setFont( SudokuCommon.PEN_FONT );
-		back_button.setFont( SudokuCommon.PEN_FONT );
-		score_button.setFont( SudokuCommon.PEN_FONT );
+		hint_button.setFont( SudokuCommon.PEN_FONT );
+		solve_button.setFont( SudokuCommon.PEN_FONT );
 		eraser_button.setFont( SudokuCommon.PEN_FONT );
 		
 		
 		pencil_button.addActionListener(this);
 		pen_button.addActionListener(this);
 		quit_button.addActionListener(this);
-		score_button.addActionListener(this);
-		back_button.addActionListener(this);
+		solve_button.addActionListener(this);
+		hint_button.addActionListener(this);
 		eraser_button.addActionListener(this);
 		
 		button_panel.add( pen_button );
 		button_panel.add( pencil_button );
 		button_panel.add( eraser_button );
-		button_panel.add( score_button );
-		button_panel.add( back_button );
+		button_panel.add( solve_button );
+		button_panel.add( hint_button );
 		button_panel.add( quit_button );
 		
 		display_panel.add( button_panel, BorderLayout.SOUTH );
@@ -176,10 +188,13 @@ public class SudokuDisplay extends Observable implements ActionListener
 	 * 		create new Sudoku board and activate pen_mode
 	 --------------------------------------------------------------------------------------*/
 	public void loadBoardPanel()
-	{
+	{	
 		board = new Board( this.board_size, this.difficulty );
 		board.enablePenMode();
 		pen_button.activateButton();
+		
+		back_end.populateBoard(board.getCells());
+		
 		display_panel.add( board, BorderLayout.CENTER );
 	}
 	
@@ -224,6 +239,36 @@ public class SudokuDisplay extends Observable implements ActionListener
 		timer_thread = null;
 		setChanged();
 		notifyObservers( "Quit" );
+	}
+	
+	public void winGame()
+	{
+		board.clearBoard();
+		setChanged();
+		notifyObservers("Win");
+	}
+	
+	public void updateScore( Integer new_score )
+	{
+		if( !(new_score <= game_score) )
+		{
+			game_score = new_score;
+			this.score.setText( "" + game_score );
+			boolean win = back_end.isWin();
+			if( win == true )
+			{
+				System.out.println("Player wins!");
+				board.setWin();
+				setChanged();
+				notifyObservers( new_score );
+				winGame();
+			}
+			else
+			{
+				setChanged();
+				notifyObservers( new_score );
+			}
+		}
 	}
 	/*---------------------------------------------------------------------------------------
 	 *  						 All Listener Functions
@@ -288,11 +333,31 @@ public class SudokuDisplay extends Observable implements ActionListener
 		}
 		
 	    /*---------------------------------------------------------------
-        back to main menu
+        Give user hints
         ---------------------------------------------------------------*/
-		if( e.getSource() == back_button )
+		if( e.getSource() == hint_button )
 		{
+			boolean flag = back_end.hint( board.getCells() );
 			
+			if( !flag )
+			{
+				System.out.println("No More Hints Left");
+				return;
+			}
+			
+			hint.setText( "" + back_end.getHints() );
+		}
+		
+		if( e.getSource() == score_button )
+		{
+			System.out.println("Score Button Pressed!");
+			updateScore( back_end.scoreBoard( board.getCells() ) );
+		}
+		
+		if( e.getSource() == solve_button )
+		{
+			back_end.solve( board.getCells() );
+			updateScore(1);
 		}
 		
 	}

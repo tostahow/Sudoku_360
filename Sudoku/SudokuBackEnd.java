@@ -11,6 +11,7 @@
 -------------------------------------------------------------------------------------------------*/
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Random;
 
 // NOTE: Comments and code are WIP.
 // Much of this algorithm is based/taken from here: http://stackoverflow.com/questions/15690254/how-to-generate-a-complete-sudoku-board-algorithm-error
@@ -18,21 +19,43 @@ import java.util.HashSet;
 
 public class SudokuBackEnd
 {
-    private int blockSize = 3; // Length of each block.
-    private int fieldSize = 9; // Length of the entire board. It will be equal to blockSize^2.
+    private int blockSize; // Length of each block.
+    private int fieldSize; // Length of the entire board. It will be equal to blockSize^2.
     private int[][] board; // Double int array for the generated Sudoku board.
+    private BoardSize board_size;
+    private int numbers_shown;
+    private int hints;
+    private boolean win;
+    private Random rand;
     
     // Double ArrayList of HashSet<Integer> to store the tried numbers. Only used during board generation.
     private ArrayList<ArrayList<HashSet<Integer>>> triedNumbers;
     
-    public SudokuBackEnd()
+    public SudokuBackEnd( BoardSize size, Difficulty board_difficulty )
     {
+    	board_size = size;
+    	numbers_shown = 0;
+    	hints = 0;
+    	win = false;
+    	rand = new Random();
+    	setGivenHelp( board_difficulty );
         initBaseBoard();
     }
     
+    public void setHints( Difficulty difficulty )
+    {
+    	
+    }
     // Reset the board's state. Use this if it's assumed that the board will change dimensions.    
     private void initBaseBoard()
     {
+    	if( board_size == BoardSize.NINE)
+    		blockSize = 3;
+    	else
+    		blockSize = 4;
+    	
+    	fieldSize = blockSize*blockSize;
+    	
         board = new int[fieldSize][fieldSize];
         triedNumbers = new ArrayList<ArrayList<HashSet<Integer>>>();
         
@@ -77,21 +100,9 @@ public class SudokuBackEnd
     }
     
     // Generate a new Sudoku puzzle using the passed parameter as the length of each square of the new board.
-    public void generateNewPuzzle(int b)
+    public void generateNewPuzzle()
     {
-        // Only call the more computationally expensive initBaseBoard if the blockSize changed. Otherwise, call
-        // resetBoard.
-        if (b != blockSize)
-        {
-            blockSize = b;
-            fieldSize = b * b;
-            initBaseBoard();
-        }
-        else
-        {
-            resetBoard();
-        }
-        
+    	resetBoard();
         // Call the recursive algorithm for generating the board.
         generateFullField(1, 1);
     }
@@ -286,5 +297,149 @@ public class SudokuBackEnd
     public int numberOfCells() 
     {
         return fieldSize * fieldSize;
+    }
+    
+    public void setGivenHelp( Difficulty diff )
+    {
+    	if( board_size == BoardSize.NINE )
+    	{
+	    	switch(diff)
+	    	{
+	    	case EASY:
+	    		numbers_shown = 35;
+	    		hints = 5;
+	    		break;
+	    	case MEDIUM:
+	    		hints = 4;
+	    		numbers_shown = 30;
+	    		break;
+	    	case HARD:
+	    		hints = 2;
+	    		numbers_shown = 20;
+	    		break;
+	    	case EVIL:
+	    		hints = 0;
+	    		numbers_shown = 15;
+	    		break;
+	    	}
+    	}
+    	else
+    	{
+	    	switch(diff)
+	    	{
+	    	case EASY:
+	    		hints = 8;
+	    		numbers_shown = 65;
+	    		break;
+	    	case MEDIUM:
+	    		hints = 7;
+	    		numbers_shown = 60;
+	    		break;
+	    	case HARD:
+	    		hints = 4;
+	    		numbers_shown = 50;
+	    		break;
+	    	case EVIL:
+	    		hints = 1;
+	    		numbers_shown = 45;
+	    		break;
+	    	}
+    	}
+    	
+    }
+    
+    public int getHints()
+    {
+    	return this.hints;
+    }
+    
+    public int getRandomValue()
+    {
+    	return rand.nextInt( this.fieldSize );
+    }
+    
+    public boolean hint( Cell[][] cells )
+    {	
+    	boolean hint_given = false;
+    	int i = getRandomValue();
+    	int j = getRandomValue();
+    	
+    	if( hints == 0 )
+    		return hint_given;
+    	
+    	if( win == true )
+    		return hint_given;
+    	
+    	while( !hint_given  )
+    	{
+    		if( !cells[i][j].getPenField().equals(SudokuCommon.values[board[i][j]]) )
+    		{
+    			cells[i][j].setPenField( board[i][j] );
+    			cells[i][j].setLocked(true);
+    			hint_given = true;
+    			hints--;
+    		}
+        	i = getRandomValue();
+        	j = getRandomValue();
+    	}
+    	return hint_given;
+    	
+    }
+    public void populateBoard( Cell[][] cells )
+    {
+    	Random rand = new Random();
+    	int cells_filled = 0;
+    	int i = 0;
+    	int j = 0;
+    	while( cells_filled < numbers_shown )
+    	{
+    		i = rand.nextInt( this.fieldSize );
+    		j = rand.nextInt( this.fieldSize );
+    		
+    		if( cells[i][j].getPenField().equals("") )
+    		{
+    			cells[i][j].setPenField( board[i][j] );
+    			cells[i][j].setLocked(true);
+    			cells_filled++;
+    		}
+    	}
+    }
+    
+    public int scoreBoard( Cell[][] cells )
+    {
+    	int score = 0;
+    	win = true;
+    	for( int i = 0; i < fieldSize; i++ )
+    	{
+    		for( int j = 0; j < fieldSize; j++)
+    		{
+    			if( cells[i][j].getPenField().equals(SudokuCommon.values[board[i][j]]) )
+    			{
+    				if( !cells[i][j].isLocked() )
+    					score += 50;
+    			}
+    			else
+    			{
+    				win = false;
+    			}
+    		}
+    	}
+    	return score;	
+    }
+    
+    public void solve( Cell[][] cells )
+    {
+    	for( int i = 0; i < fieldSize; i++ )
+    		for( int j = 0; j < fieldSize; j++ )
+    		{
+    			cells[i][j].setPenField( board[i][j] );
+    			cells[i][j].setLocked(true);
+    		}
+    	win = true;
+    }
+    
+    public boolean isWin()
+    {
+    	return this.win;
     }
 }

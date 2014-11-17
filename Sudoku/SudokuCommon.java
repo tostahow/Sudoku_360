@@ -34,5 +34,5 @@ public class SudokuCommon
 	public static final Color PENCIL_COLOR = Color.black;		//Pencil field color
 	public static final Color PEN_COLOR = Color.black;			//Pen color
 	
-	
+	public static String[] values = {"", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g" };
 }

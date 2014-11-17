@@ -55,6 +55,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	private ButtonGroup diff_group;		// Groups the Difficulty Buttons
 	private ButtonGroup size_group;		// Groups the Size Buttons
 	
+	private JPanel current_panel;
 	private JFrame main_frame;			// Frame generated to hold Main menu
 	private JFrame stats_frame;			// Frame for User Stats
 	
@@ -69,6 +70,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	{
 		this.user = new_user;
 		main_frame = new JFrame();
+		current_panel = new JPanel();
 		initMenu();
 	}
 	
@@ -251,7 +253,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         play_game_button.addActionListener( this );
         see_stats_button.addActionListener( this );
         exit_button.addActionListener( this );
-        
+;
         /*---------------------------------------
         Add the menu panel to the main frame
         so that it is displayed
@@ -375,7 +377,6 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		JPanel new_panel;	//panel to be added to frame
 		
 		/*-------------------------------------------
 		 *  Play button was pressed. Create board,
@@ -384,9 +385,9 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 		if( e.getSource() == play_game_button )
 		{
 			game = new SudokuDisplay(this, getDesiredBoardSize(), getDesiredDifficulty() );
-            new_panel = game.getGamePanel();
+			current_panel = game.getGamePanel();
             main_frame.getContentPane().remove( menu_panel );
-            main_frame.add( new_panel );
+            main_frame.add( current_panel );
             main_frame.setVisible( true );
 		}
 		
@@ -468,13 +469,30 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	}
 
 	@Override
-	public void update(Observable subject, Object object_changed) {
+	public void update(Observable subject, Object object_changed) 
+	{
 		if( ( subject instanceof SudokuDisplay ) && ( object_changed instanceof String ) )
 		{
 			if( ((String)object_changed).equals("Quit") )
 			{
 				main_frame.dispatchEvent( new WindowEvent( main_frame, WindowEvent.WINDOW_CLOSING ) );
 			}
+			
+			if( ((String)object_changed).equals("Win") )
+			{
+				main_frame.remove(current_panel);
+				main_frame.add(menu_panel);
+				main_frame.repaint();
+				main_frame.setVisible(true);
+				user.incrementMapsCompleted();
+				game = null;
+			}
+		}
+		
+		if( ( subject instanceof SudokuDisplay ) && ( object_changed instanceof Integer ) )
+		{
+			user.setScore( (int)object_changed );
+			System.out.println( "User Score Updated to " + user.getScore() );
 		}
 	}
 

@@ -99,10 +99,10 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 	 * Description:
 	 * 		set the text of pen field so long as the cell is not locked
 	 --------------------------------------------------------------------------------------*/
-	public void setPenField( String value )
+	public void setPenField( int value )
 	{
 		if( this.locked != true )
-			this.pen_field.setText( value );
+			this.pen_field.setText( SudokuCommon.values[value] );
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -171,9 +171,25 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 	public void setLocked( boolean flag )
 	{
 		this.locked = flag;
-		this.remove( pencil_field );
-		pen_field.setBackground( Color.LIGHT_GRAY );
-		pen_field.setEditable(!flag);
+		if( locked )
+		{
+			//this.remove( pencil_field );
+			pen_field.setBackground( SudokuCommon.BUTTON_ACTIVATED_COLOR );
+			pen_field.setForeground( SudokuCommon.BUTTON_ACTIVATED_TEXT );
+			pencil_field.setBackground( SudokuCommon.BUTTON_ACTIVATED_COLOR );
+			pencil_field.setText("");
+			pen_field.setEditable( !flag );
+			pencil_field.setEditable( !flag );
+		}
+		else
+		{
+			pen_field.setBackground( SudokuCommon.BACKGROUND_COLOR );
+			pen_field.setForeground( null );
+			pencil_field.setBackground( SudokuCommon.BACKGROUND_COLOR );
+			pencil_field.setForeground( null );
+			pen_field.setEditable(!flag);
+			pencil_field.setEditable(flag);
+		}
 		this.repaint();
 	}
 	
@@ -298,6 +314,18 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 		this.setPreferredSize( new Dimension(50, 50) );
 	}
 	
+	
+	public void clear()
+	{
+		this.pen_field.setText("");
+		this.pencil_field.setText("");
+		pen_filled = false;
+		pencil_mode = false;
+		pen_mode = true;
+		eraser_mode = false;
+		locked = false;
+		eraser_count = 0;
+	}
 	/*---------------------------------------------------------------------------------------
 	 *  						 All Listener Functions
 	 --------------------------------------------------------------------------------------*/
@@ -391,7 +419,7 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 		if( eraser_mode && !( this.getPenField().equals("") ) && !locked ) 
 		{
 		
-			setPenField("");
+			setPenField(0);
 		    /*---------------------------------------------------------------
 		    Change background to give visual cue that value was erased
 	        ---------------------------------------------------------------*/

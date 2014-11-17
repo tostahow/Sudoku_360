@@ -54,4 +54,14 @@ public class User implements Serializable {
 	{
 		return password_hash;
 	}
+	
+	public void setScore( int score )
+	{
+		total_score += score;
+	}
+	
+	public void incrementMapsCompleted()
+	{
+		maps_completed++;
+	}
 }

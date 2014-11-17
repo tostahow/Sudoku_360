@@ -144,7 +144,7 @@ public class Board extends JPanel
 				{
 					for( int l = 0; l < cell_square_dim; l++ )
 					{
-						cell_square[i][j].add( cells[l+i*cell_square_dim][k+j*cell_square_dim] );
+						cell_square[i][j].add( cells[k+i*cell_square_dim][l+j*cell_square_dim] );
 					}
 						
 				}
@@ -274,6 +274,27 @@ public class Board extends JPanel
 				cells[i][j].setPencilMode(false);
 				cells[i][j].setPenMode(false);
 				cells[i][j].setEraserMode(true);
+			}
+	}
+	
+	public void setWin()
+	{
+		for( int i = 0; i < cells_dim; i++)
+			for( int j = 0; j < cells_dim; j++)
+			{
+				cells[i][j].setLocked(true);
+			}
+		this.setBackground(Color.white);
+	}
+	
+	public void clearBoard()
+	{
+		this.setBackground(Color.black);
+		for( int i = 0; i < cells_dim; i++)
+			for( int j = 0; j < cells_dim; j++)
+			{
+				cells[i][j].setLocked(false);
+				cells[i][j].clear();
 			}
 	}
 	

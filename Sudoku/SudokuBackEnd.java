@@ -107,6 +107,26 @@ public class SudokuBackEnd
         generateFullField(1, 1);
     }
     
+    public void generatePuzzleBasedOnFile(String[] boardData)
+    {
+        resetBoard();
+        
+        String[][] tempBoard = new String[boardData.length][boardData.length];
+        
+        for (int i = 0; i < boardData.length; i++)
+        {
+            tempBoard[i] = boardData[i].split("[ ]+");
+        }
+        
+        for (int i = 0; i < tempBoard.length; i++)
+        {
+            for (int j = 0; j < tempBoard[i].length; j++)
+            {
+                board[i][j] = Character.getNumericValue(tempBoard[i][j].charAt(0));
+            }
+        }
+    }
+    
     // Recursive algorithm for generation of the entire board.
     private void generateFullField(int row, int column) 
     {

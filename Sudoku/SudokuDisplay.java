@@ -13,6 +13,10 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -27,6 +31,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 	private Difficulty difficulty;
 	private SudokuBackEnd back_end;
 	private Board board;
+	private File file;
 	
 	private Thread timer_thread;
 	private long start_time;
@@ -94,6 +99,89 @@ public class SudokuDisplay extends Observable implements ActionListener
 		loadButtonPanels();
 		loadBoardPanel();
 	}
+	
+	 /*---------------------------------------------------------------------------------------
+     * Method:
+     *      SudokuDisplay() - Alternate Constructor
+     * 
+     * Description:
+     *      Set Up all Components to generate board
+     --------------------------------------------------------------------------------------*/
+	public SudokuDisplay( Observer listener, Difficulty difficulty, File file )
+	{
+	    addObserver( listener );
+	    
+	    //board_size = BoardSize.NINE;
+	    this.difficulty = difficulty;	    
+	    
+	    this.file = file;
+	    game_score = 0;
+	    
+	    String[] data = readBoardFile(file);
+	    	    
+        display_panel = new JPanel();
+        display_panel.setLayout( new BorderLayout() );
+        
+        back_end = new SudokuBackEnd( this.board_size, this.difficulty );
+        //back_end.generateNewPuzzle();
+        back_end.generatePuzzleBasedOnFile(data);
+        back_end.printBoardContents();
+        
+        loadStatPanel();
+        loadButtonPanels();
+        loadBoardPanel();
+	}
+	
+	 /*---------------------------------------------------------------------------------------
+     * Method:
+     *      readBoardFile()
+     * 
+     * Description:
+     *      Converts the passed in file to a String.
+     --------------------------------------------------------------------------------------*/
+    public String[] readBoardFile(File file) 
+    {
+        StringBuffer fileBuffer = null;
+        String fileString = null;
+        String line = null;
+
+        try 
+        {
+            FileReader in = new FileReader(file);
+            BufferedReader brd = new BufferedReader(in);
+            fileBuffer = new StringBuffer();
+
+            while ((line = brd.readLine()) != null) 
+            {
+                fileBuffer.append(line).append(System.getProperty("line.separator"));
+            }
+
+            in.close();
+            fileString = fileBuffer.toString();
+        } 
+        catch (IOException e) 
+        {
+            return null;
+        }
+
+        String[] lines = fileString.split("\\r?\\n");
+        
+        if (lines.length == 9)
+        {
+            board_size = BoardSize.NINE;
+        }
+        else if (lines.length == 16)
+        {
+            board_size = BoardSize.SIXTEEN;
+        }
+        else
+        {
+            System.out.println("Error, there is an unexpected number of rows present in this file.");
+        }
+        
+        return lines;
+    }
+
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:

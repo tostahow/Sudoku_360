@@ -21,9 +21,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -32,6 +34,9 @@ import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
+import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 
@@ -46,6 +51,10 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	private CustomButton play_game_button; 	// Plays the SudokuDisplay Game
 	private CustomButton exit_button; 		// Exits Software
 	private CustomButton see_stats_button;	// opens Stats frame
+	
+	private CustomButton load_board_button; // Opens a file chooser for loading a game board.
+	private CustomButton load_save_button;
+	
 	private JPanel menu_panel;			// Panel which holds Menu components
 	private JRadioButton size_nine;		// Radio Button for 9x9 Map
 	private JRadioButton size_sixteen;	// Radio Button for 16x16 Map
@@ -54,7 +63,9 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	private ButtonGroup diff_group;		// Groups the Difficulty Buttons
 	private ButtonGroup size_group;		// Groups the Size Buttons
 	
+	private JPanel file_panel; // Panel which holds the file options.
 	private JPanel current_panel;
+	
 	private JFrame main_frame;			// Frame generated to hold Main menu
 	private JFrame stats_frame;			// Frame for User Stats
 	
@@ -88,6 +99,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         JPanel button_panel;        // panel that holds buttons
         JPanel size_panel;			// panel for size options
         JPanel diff_panel;			// panel for difficulties
+        
         JPanel option_panel;		// panel to hold all options
         JLabel title;
         BorderLayout b_layout;      // layout of panel
@@ -111,6 +123,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         button_panel = new JPanel();
         size_panel = new JPanel();
         diff_panel = new JPanel();
+        file_panel = new JPanel();
         play_game_button = new CustomButton( "Play!", false );
         see_stats_button = new CustomButton( "See Stats", false );
         exit_button = new CustomButton( "Exit!", false );
@@ -123,8 +136,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         
         size_nine = new CustomRadioButton( "9x9" );
         size_sixteen = new CustomRadioButton( "16x16" );
-        
-        
+                
         size_group.add( size_nine );
         size_group.add( size_sixteen );
         
@@ -154,6 +166,17 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         diff_panel.add( hard );
         diff_panel.add( evil );
         
+        load_board_button = new CustomButton( "Load Board", false );
+        load_save_button = new CustomButton( "Resume Saved Game", false );
+        
+        Border file_border = BorderFactory.createTitledBorder( BorderFactory.createLineBorder(Color.black), "File Options" );
+        file_panel.setBorder( file_border );
+        file_panel.setLayout( new FlowLayout() );
+        file_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
+        file_panel.add( load_board_button );
+        file_panel.add( load_save_button );
+        
+        
         /*---------------------------------------
         Set vertical and horizontal spacing
         so buttons seem well distanced
@@ -169,7 +192,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         button_layout.setHgap( 5 );
         button_layout.setVgap( 5 );
         
-        option_layout = new GridLayout( 3, 1);
+        option_layout = new GridLayout( 4, 1);
         option_panel = new JPanel( option_layout );
         option_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
         /*---------------------------------------
@@ -195,6 +218,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         
         option_panel.add( size_panel );
         option_panel.add( diff_panel );
+        option_panel.add( file_panel );
         option_panel.add( button_panel );
         /*---------------------------------------
         Add title to the entry panel north, and
@@ -220,7 +244,8 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         play_game_button.addActionListener( this );
         see_stats_button.addActionListener( this );
         exit_button.addActionListener( this );
-;
+        load_board_button.addActionListener( this );
+        
         /*---------------------------------------
         Add the menu panel to the main frame
         so that it is displayed
@@ -376,6 +401,28 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 		if( e.getSource() == exit_button )
 		{   
 			main_frame.dispatchEvent( new WindowEvent( main_frame, WindowEvent.WINDOW_CLOSING ) );
+		}
+		
+		if( e.getSource() == load_board_button)
+		{
+		    File file = null;
+		    
+		    JFileChooser fileOpen = new JFileChooser();
+		    FileFilter filter = new FileNameExtensionFilter("txt files", "txt");
+		    fileOpen.addChoosableFileFilter(filter);
+		    int ret = fileOpen.showDialog(file_panel, "Open Sudoku board");
+
+            if (ret == JFileChooser.APPROVE_OPTION) 
+            {
+                file = fileOpen.getSelectedFile();
+            }
+            
+            game = new SudokuDisplay(this, getDesiredDifficulty(), file);
+            current_panel = game.getGamePanel();
+            main_frame.getContentPane().remove( menu_panel );
+            main_frame.add( current_panel );
+            main_frame.setVisible( true );
+		    
 		}
 		
 	}

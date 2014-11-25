@@ -1,12 +1,12 @@
 /*-------------------------------------------------------------------------------------------------
  * Document:
  * 		Register.java
- * 
+ *
  * Description:
- * 		Register contains many methods in order to register a user, so that the user information 
+ * 		Register contains many methods in order to register a user, so that the user information
  * 		can be stored and used within the Sudoku system. When a user is registered, a notification
  * 		will be sent to any listening objects in order to delete the register object.
- * 
+ *
  * Author:
  * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
@@ -29,19 +29,19 @@ public class Register extends UserService implements ActionListener
 {
 	/*-----------------------------------------------------------------------------------
 									Private Class Members
-	-----------------------------------------------------------------------------------*/			
+	-----------------------------------------------------------------------------------*/
 	private CustomButton back_button;						// back button
 	private CustomButton reg_button;						// register button
 	private JTextField username_field;						// username_field
 	private JPasswordField pw_field;						// field for password
 	private JPasswordField v_pw_field;						// verification field
-	
+
 	private boolean success;								// Flag for successful register
-	
+
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		Register
-	 * 
+	 *
 	 * Description:
 	 * 		add new observer on creation
 	 --------------------------------------------------------------------------------------*/
@@ -49,12 +49,12 @@ public class Register extends UserService implements ActionListener
 	{
 		super( listener );
 		this.setPanel( generatePanel() );
-	}	
-	
+	}
+
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		register_user()
-	 * 
+	 *
 	 * Description:
 	 * 		Let listeners know that there is a successful user registration.
 	 --------------------------------------------------------------------------------------*/
@@ -65,11 +65,11 @@ public class Register extends UserService implements ActionListener
 		setChanged();
 		notifyObservers( this.getUser() );
 	}
-	
+
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		generatePanel()
-	 * 
+	 *
 	 * Description:
 	 * 		The panel users will use when attempting to register. This panel consists of a
 	 * 		fields for the user name and password along with a JButton that will attempt
@@ -86,7 +86,7 @@ public class Register extends UserService implements ActionListener
 		JLabel pw_label;			// label for password field
 		JLabel username_label;		// name label
 		JLabel v_pw_label;			// verification label
-		
+
 		/*---------------------------------------------------------------
 								Initialize Variables
 		---------------------------------------------------------------*/
@@ -101,31 +101,31 @@ public class Register extends UserService implements ActionListener
 		pw_field = new JPasswordField();
 		v_pw_label = new JLabel( "Verify Password:" );
 		v_pw_field = new JPasswordField();
-		
+
 		/*---------------------------------------
 		 Set Fonts for each component
-		---------------------------------------*/		
+		---------------------------------------*/
 		username_field.setFont( SudokuCommon.TEXT_FONT );
 		username_label.setFont( SudokuCommon.TEXT_FONT );
 		pw_label.setFont( SudokuCommon.TEXT_FONT );
 		pw_field.setFont( SudokuCommon.TEXT_FONT );
 		v_pw_label.setFont( SudokuCommon.TEXT_FONT );
 		v_pw_field.setFont( SudokuCommon.TEXT_FONT );
-		
+
 		/*---------------------------------------
 		 Set field limits for text fields
 		---------------------------------------*/
 		username_field.setDocument( new TextFieldLimit( 10, FieldType.USERNAME ) );
 		pw_field.setDocument( new TextFieldLimit( 30, FieldType.PASSWORD ) );
 		v_pw_field.setDocument( new TextFieldLimit( 30, FieldType.PASSWORD ) );
-		
+
 		/*---------------------------------------
-		 Set background color for panel and 
+		 Set background color for panel and
 		 button.
-		---------------------------------------*/		
+		---------------------------------------*/
 		button_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		reg_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
-		
+
 		/*---------------------------------------------------------------
 							  Set up Log in Panel
 		---------------------------------------------------------------*/
@@ -134,7 +134,7 @@ public class Register extends UserService implements ActionListener
 		button_panel.setLayout( g_layout );
 		button_panel.add( reg_button );
 		button_panel.add( back_button );
-		
+
 		reg_panel.setLayout( new GridLayout( 0, 1 ) );
 		reg_panel.add( username_label );
 		reg_panel.add( username_field );
@@ -143,15 +143,15 @@ public class Register extends UserService implements ActionListener
 		reg_panel.add( v_pw_label );
 		reg_panel.add( v_pw_field );
 		reg_panel.add( button_panel );
-	
-		
+
+
 		reg_button.addActionListener(this);
 		back_button.addActionListener(this);
-		
+
 		return reg_panel;
-		
+
 	}
-	
+
 	// clears all fields
 	public void clearFields()
 	{
@@ -162,11 +162,11 @@ public class Register extends UserService implements ActionListener
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		register_request()
-	 * 
+	 *
 	 * Description:
 	 * 		attemps to register a new user into database.
 	 --------------------------------------------------------------------------------------*/
-	private boolean register_request( String user_name, char[] password)
+	public boolean register_request( String user_name, char[] password)
 	{
 		/*---------------------------------------------------------------
 								Instance Variables
@@ -175,8 +175,8 @@ public class Register extends UserService implements ActionListener
 		boolean flag;					// return success or fail
 		String salt;					// random salt for user
 		String hash;					// secure password hash
-		
-		
+
+
 		if( Database.find_user(user_name) != null )
 			{
 			/*---------------------------------------
@@ -187,23 +187,23 @@ public class Register extends UserService implements ActionListener
 		else
 			{
 			flag = true;
-			
+
 			/*---------------------------------------
-			 Attempt to create a new user with 
+			 Attempt to create a new user with
 			 random salt and securely hashed password
 			---------------------------------------*/
 			try
 				{
-				salt = Password.generate_Salt();	
+				salt = Password.generate_Salt();
 				hash = Password.get_SHA_256_secure_password(password, salt );
 				reg_user = new User( user_name, hash, salt );
-				
+
 				/*---------------------------------------
-				 notify listeners that update has 
+				 notify listeners that update has
 				 occurred.
 				---------------------------------------*/
 				updateUser( reg_user );
-				
+
 				}
 			/*---------------------------------------
 			 Something went wrong during the pass
@@ -216,12 +216,12 @@ public class Register extends UserService implements ActionListener
 				e.getStackTrace();
 				flag = false;
 				}
-			}	
-		
+			}
+
 		return flag;
-	}	
-	
-	
+	}
+
+
 	public void actionPerformed( ActionEvent e)
 	{
 		/*---------------------------------------
@@ -233,7 +233,7 @@ public class Register extends UserService implements ActionListener
 			clearFields();
 			goBack();
 		}
-		
+
 		/*---------------------------------------
 		 When log_in button is pressed. Check to
 		 see if user name and password entries
@@ -247,46 +247,46 @@ public class Register extends UserService implements ActionListener
 			 inform user, and do not process request
 			 to log in.
 			---------------------------------------*/
-			if( ( username_field.getText().length() < 6 ) 
+			if( ( username_field.getText().length() < 6 )
 			||  ( pw_field.getPassword().length < 6) )
 				{
-				
+
 				errorMessage("Entered user name or password must exceed 6 characters.");
 				v_pw_field.setText("");
 				pw_field.setText("");
-				
+
 				return;
 				}
-			
+
 			if( ( !Arrays.equals( pw_field.getPassword(), v_pw_field.getPassword() ) ) )
 				{
-				
+
 				errorMessage("Passwords do not match!");
 				clearFields();
-				
+
 				return;
 				}
 			/*---------------------------------------
 			 Call log_in_request which will attempt
 			 to find the user within the system.
 			---------------------------------------*/
-			success = register_request( username_field.getText(), 
-									 	pw_field.getPassword() 
+			success = register_request( username_field.getText(),
+									 	pw_field.getPassword()
 								 	  );
 			/*---------------------------------------
-			 if the register_request fails. Reset 
+			 if the register_request fails. Reset
 			 the entry fields.
 			---------------------------------------*/
 			if( success == false )
 				{
-				
+
 				/*---------------------------------------
 				 Use option pane to alert user of failed
 				 attempt.
 				---------------------------------------*/
 				errorMessage("User Name Exists.");
 				clearFields();
-				
+
 				}
 			/*---------------------------------------
 			 if the register_request succeeds.

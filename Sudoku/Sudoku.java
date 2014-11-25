@@ -1,12 +1,12 @@
 /*-------------------------------------------------------------------------------------------------
  * Document:
  * 		Sudoku.java
- * 
+ *
  * Description:
  * 		Controls all of the components of the main display for the Sudoku Gui application.
  * 		Sudoku subscribes to LogIn and Registration services and generates the main frame that
  * 		the board and actions will be hosted on.
- * 
+ *
  * Author:
  * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
@@ -26,10 +26,10 @@ public class Sudoku implements Observer
 	private User 			current_user;	// Player currently signed in
 	private ServiceFrame 	service;		// Log-in and register frame
 	private MainMenu		game_menu;		// Game menu
-	
+
 	/*--------------------------------------------------------------------
 	 *  main()
-	 *  
+	 *
 	 *  Description:
 	 *  	Creates a new instance of Sudoku
  	-------------------------------------------------------------------*/
@@ -40,7 +40,7 @@ public class Sudoku implements Observer
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		Sudoku - constructor
-	 * 
+	 *
 	 * Description:
 	 * 		Calls ServiceFrame so that new user can log in or register.
 	---------------------------------------------------------------------------------------*/
@@ -49,7 +49,7 @@ public class Sudoku implements Observer
 		service = new ServiceFrame( this );
 		game_menu = null;
 	}
-	
+
 	public void gameMenu()
 	{
 		game_menu = new MainMenu( this.current_user );
@@ -58,15 +58,15 @@ public class Sudoku implements Observer
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		update()
-	 * 
+	 *
 	 * Description:
-	 * 		Listens for any notification from the objects being observed and performs tasks 
+	 * 		Listens for any notification from the objects being observed and performs tasks
 	 * 		based on what was notified/updated.
 	---------------------------------------------------------------------------------------*/
 	@Override
-	public void update(Observable subject, Object object_changed) 
+	public void update(Observable subject, Object object_changed)
 	{
-		
+
 		/*---------------------------------------
 		 LogIn service completed. Set current
 		 user into logged in user.
@@ -75,16 +75,16 @@ public class Sudoku implements Observer
 			{
 			System.out.println( "User Loaded" );
 			current_user = (User)object_changed;
-			
+
 			// Destroy any references to ServiceFrame
 			service.deleteObservers();
 			service.destroy();
 			service = null;
-			
+
 			//Create new Game Menu
 			gameMenu();
 			}
-		
+
 		/*---------------------------------------
 		 ServiceFrame was closed. Log In was not
 		 complete. Exit process
@@ -93,7 +93,7 @@ public class Sudoku implements Observer
 			{
 			System.out.println( "ServiceFrame was closed. Exit system!" );
 			System.exit(1);
-			
-			}	
+
+			}
 	}
 }

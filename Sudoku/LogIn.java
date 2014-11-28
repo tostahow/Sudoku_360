@@ -27,13 +27,13 @@ import java.util.Observer;
 public class LogIn extends UserService implements ActionListener
 {
 	/*-----------------------------------------------------------------------------------
-									Private Class Members
+									*Private Class Members
 	-----------------------------------------------------------------------------------*/
-	private CustomButton log_in_button;						// button to log in with
-	private CustomButton back_button;						// back button
-	private JPasswordField pw_field;    				// password field
-	private JTextField username_field;					// field for User name
-	private boolean success;							// flag set if log in credentials are valid
+	public CustomButton log_in_button;						// button to log in with
+	public CustomButton back_button;						// back button
+	public JPasswordField pw_field;    				// password field
+	public JTextField username_field;					// field for User name
+	public boolean success;							// flag set if log in credentials are valid
 
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -218,6 +218,7 @@ public class LogIn extends UserService implements ActionListener
 			||  ( pw_field.getPassword().length < 6 ) )
 				{
 				errorMessage( "user name or password does not meet 6 character limit");
+				success = false;
 				return;
 				}
 

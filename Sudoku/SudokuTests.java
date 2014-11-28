@@ -17,62 +17,96 @@ import java.util.Observer;
 
 public class SudokuTests //implements Observer // Overall strategy: Test game window-by-window, from the ground up, starting with the Login and Registration window.
 {
-	public static Agent testingAgent = new Agent();
-	public static LogIn log_in;
-	public static Register register;
+	static Agent testingAgent = new Agent();
+	static LogIn test_log_in;
+	static Register test_register;
+	static String usrName, pswd;
 
 	public static void main(String args[])
 	{
-		int regCase = 0;
-		while(!testRegMenu(regCase))
+		int regCase = -1;
+		test_register = new Register( testingAgent );
+		while(!(testRegMenu(regCase) && !testRegMenu(regCase)))//redundancy test for case where username already exists
 			regCase++;
-		int loginCase = 0;
+		System.out.println("Successfull register test: Unit Case " + regCase);
+		System.out.println("Username: " + usrName);
+		System.out.println("Password: " + pswd);
+		test_register.back_button.doClick();
+		int loginCase = -1;
+		test_log_in = new LogIn( testingAgent );
 		while(!testLoginMenu(loginCase))
 			loginCase++;
+		System.out.println("Successfull login test: complete");
 		testMainMenu();
 		testStatWindow();
 	}
 
 	public static boolean testRegMenu(int C) // Test the register component of "ServiceFrame.java", testing cases expected to fail first
 	{
-		register = new Register( testingAgent );
-		switch(C)
+		switch(C) // Registration test cases
 		{
-		case 0: // Register >> username out of bounds (5 and 11 letters)
-			char[] pswd = {'p','p','p','p','p','p'}; // 6 character expected passable password.
-			return register.register_request( "aaaaa", pswd) || register.register_request( "aaaaaaaaaaa", pswd);
-
-		case 1: // Register >> password out of bounds (5 and 31 characters)
+		case 0: // Register >> username out of bounds (5 letters)
+			usrName = "aaaaa";
+			pswd = "pppppp";
 		break;
-
-		case 2:
+		case 1: // Register >> username out of bounds (11 letters)
+			usrName = "aaaaaaaaaaa";
+			pswd = "pppppp";
 		break;
-
-		default:
+		case 2: // Register >> username contains special characters
+			usrName = "a@aaaaa";
+			pswd = "pppppp";
 		break;
+		case 3: // Register >> password out of bounds (5 letters)
+			usrName = "aaaaa";
+			pswd = "ppppp";
+		break;
+		case 4: // Register >> password out of bounds (31 letters)
+			usrName = "aaaaaa";
+			pswd = "ppppppppppppppppppppppppppppppp";
+		break;
+		default: // Expected Successfull Registeeration
+			usrName = "Success" + C;
+			pswd = "P@ssword" + C;
 		}
-		return true;
+		test_register.username_field.setText(usrName);
+		test_register.pw_field.setText(pswd);
+		test_register.v_pw_field.setText(pswd);
+		test_register.reg_button.doClick();
+		return test_register.success;
 	}
 
 	public static boolean testLoginMenu(int C) // Test the login component of "ServiceFrame.java", testing cases expected to fail first
 	{
-		log_in = new LogIn( testingAgent );
 		switch(C) // Login test cases
 		{
-		case 0: // Login >> username out of bounds (5 and 11 letters)
-			//return register.register_request( String user_name, char[] password);
+		case 0: // Login >> username out of bounds (5 letters)
+			test_log_in.username_field.setText("aaaaa");
+			test_log_in.pw_field.setText(pswd);
 		break;
-
-		case 1: // Login >> password out of bounds (5 and 31 characters)
+		case 1: // Login >> username out of bounds (11 characters)
+			test_log_in.username_field.setText("aaaaaaaaaaa");
+			test_log_in.pw_field.setText(pswd);
 		break;
-
-		case 2:
+		case 2: // Login >> password out of bounds (5 letters)
+			test_log_in.username_field.setText(usrName);
+			test_log_in.pw_field.setText("ppppp");
 		break;
-
+		case 3: // Login >> password out of bounds (31 letters)
+			test_log_in.username_field.setText(usrName);
+			test_log_in.pw_field.setText("ppppppppppppppppppppppppppppppp");
+		break;
+		case 4:// Login >> password wrong
+			test_log_in.username_field.setText(usrName);
+			test_log_in.pw_field.setText("WrongP@ss");
+		break;
 		default:
+			test_log_in.username_field.setText(usrName);
+			test_log_in.pw_field.setText(pswd);
 		break;
 		}
-		return true;
+		test_log_in.log_in_button.doClick();
+		return test_log_in.success;
 	}
 
 	//

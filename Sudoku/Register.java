@@ -30,13 +30,13 @@ public class Register extends UserService implements ActionListener
 	/*-----------------------------------------------------------------------------------
 									Private Class Members
 	-----------------------------------------------------------------------------------*/
-	private CustomButton back_button;						// back button
-	private CustomButton reg_button;						// register button
-	private JTextField username_field;						// username_field
-	private JPasswordField pw_field;						// field for password
-	private JPasswordField v_pw_field;						// verification field
+	public CustomButton back_button;						// back button
+	public CustomButton reg_button;						// register button
+	public JTextField username_field;						// username_field
+	public JPasswordField pw_field;						// field for password
+	public JPasswordField v_pw_field;						// verification field
 
-	private boolean success;								// Flag for successful register
+	public boolean success;								// Flag for successful register
 
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -166,7 +166,7 @@ public class Register extends UserService implements ActionListener
 	 * Description:
 	 * 		attemps to register a new user into database.
 	 --------------------------------------------------------------------------------------*/
-	public boolean register_request( String user_name, char[] password)
+	private boolean register_request( String user_name, char[] password)
 	{
 		/*---------------------------------------------------------------
 								Instance Variables
@@ -254,7 +254,7 @@ public class Register extends UserService implements ActionListener
 				errorMessage("Entered user name or password must exceed 6 characters.");
 				v_pw_field.setText("");
 				pw_field.setText("");
-
+				success = false;
 				return;
 				}
 
@@ -263,7 +263,7 @@ public class Register extends UserService implements ActionListener
 
 				errorMessage("Passwords do not match!");
 				clearFields();
-
+				success = false;
 				return;
 				}
 			/*---------------------------------------

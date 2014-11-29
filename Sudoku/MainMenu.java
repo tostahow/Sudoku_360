@@ -111,8 +111,8 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         ---------------------------------------------------------------*/
         main_frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         main_frame.setTitle("Sudoku Main Menu");
-        main_frame.setSize( 1500, 900 );
-        main_frame.setResizable(false);
+        main_frame.setSize( 1400, 800 );
+        main_frame.setResizable(true);
         main_frame.setLocation( 300 , 125 );
         main_frame.addWindowListener(this);
         

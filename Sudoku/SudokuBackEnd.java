@@ -46,6 +46,7 @@ public class SudokuBackEnd
     {
     	
     }
+    
     // Reset the board's state. Use this if it's assumed that the board will change dimensions.    
     private void initBaseBoard()
     {
@@ -368,9 +369,24 @@ public class SudokuBackEnd
     	
     }
     
+    public int[][] getBoard()
+    {
+    	return this.board;
+    }
+    
+    public void setBoard(int[][] b)
+    {
+    	board = b;
+    }
+    
     public int getHints()
     {
     	return this.hints;
+    }
+    
+    public void setHints(int h)
+    {
+        hints = h;
     }
     
     public int getRandomValue()

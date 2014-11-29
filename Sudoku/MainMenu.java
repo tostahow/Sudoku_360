@@ -22,6 +22,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.BorderFactory;
@@ -53,7 +56,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	private CustomButton see_stats_button;	// opens Stats frame
 	
 	private CustomButton load_board_button; // Opens a file chooser for loading a game board.
-	private CustomButton load_save_button;
+	private CustomButton load_save_button; // Opena a file chooser for loading a game state.
 	
 	private JPanel menu_panel;			// Panel which holds Menu components
 	private JRadioButton size_nine;		// Radio Button for 9x9 Map
@@ -245,6 +248,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         see_stats_button.addActionListener( this );
         exit_button.addActionListener( this );
         load_board_button.addActionListener( this );
+        load_save_button.addActionListener( this );
         
         /*---------------------------------------
         Add the menu panel to the main frame
@@ -403,6 +407,10 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 			main_frame.dispatchEvent( new WindowEvent( main_frame, WindowEvent.WINDOW_CLOSING ) );
 		}
 		
+	     /*-------------------------------------------
+         *  Load board button was pressed. Open a file
+         *  chooser dialog to select a board.
+        -------------------------------------------*/
 		if( e.getSource() == load_board_button)
 		{
 		    File file = null;
@@ -421,8 +429,33 @@ public class MainMenu implements Observer, ActionListener, WindowListener
             current_panel = game.getGamePanel();
             main_frame.getContentPane().remove( menu_panel );
             main_frame.add( current_panel );
-            main_frame.setVisible( true );
+            main_frame.setVisible( true );		    
+		}
+		
+	     /*-------------------------------------------
+         *  Resume saved game button was pressed. Open
+         *  a file chooser dialog to select a saved
+         *  game
+        -------------------------------------------*/
+		if (e.getSource() == load_save_button)
+		{
+		    File file = null;
 		    
+		    JFileChooser fileOpen = new JFileChooser();
+		    FileFilter filter = new FileNameExtensionFilter("save files", "save");
+		    fileOpen.addChoosableFileFilter(filter);
+		    int ret = fileOpen.showDialog(file_panel, "Open Sudoku saved game");
+		    
+            if (ret == JFileChooser.APPROVE_OPTION) 
+            {
+                file = fileOpen.getSelectedFile();
+            }
+            
+            game = new SudokuDisplay(this, file);
+            current_panel = game.getGamePanel();
+            main_frame.getContentPane().remove( menu_panel );
+            main_frame.add( current_panel );
+            main_frame.setVisible( true );
 		}
 		
 	}

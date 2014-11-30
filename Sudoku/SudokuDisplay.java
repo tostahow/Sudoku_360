@@ -180,16 +180,12 @@ public class SudokuDisplay extends Observable implements ActionListener
 		
         display_panel = new JPanel();
         display_panel.setLayout( new BorderLayout() );        
-        
-        //back_end.generateNewPuzzle();
-        //back_end.generatePuzzleBasedOnFile(data);
         back_end.printBoardContents();
         
         loadStatPanel();
         loadButtonPanels();
-        loadBoardPanel(true);
-        
-        board.setCells(c); /// --- GO HERE for BUG.
+        loadBoardPanel(c);
+
         back_end.setHints(numHints);
 	}
 	
@@ -338,8 +334,15 @@ public class SudokuDisplay extends Observable implements ActionListener
 		
 		display_panel.add( board, BorderLayout.CENTER );
 	}
-	
-	
+
+    public void loadBoardPanel(Cell[][] c)
+    {   
+        board = new Board( this.board_size, this.difficulty, c );
+        board.enablePenMode();
+        pen_button.activateButton();
+        display_panel.add( board, BorderLayout.CENTER );
+    }
+    
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		getGamePanel()
@@ -404,7 +407,8 @@ public class SudokuDisplay extends Observable implements ActionListener
 			out.writeObject(board_size);
 			out.writeObject(difficulty);
 		    out.writeObject(back_end.getBoard());
-		    out.writeObject(board.getCells());
+
+		    out.writeObject(board.getCells()); // Problem is here. While saving, the display gets messed up.
 		    out.writeInt(back_end.getHints());
 		    out.close();
 		}
@@ -507,6 +511,8 @@ public class SudokuDisplay extends Observable implements ActionListener
 		{
 			System.out.println("Calling Quit from Menu Frame!");
 			saveAndQuitGame();
+	        display_panel.repaint();
+	        display_panel.setVisible(true);
 		}
 		
 	    /*---------------------------------------------------------------
@@ -516,6 +522,8 @@ public class SudokuDisplay extends Observable implements ActionListener
 		{
 			System.out.println("Calling Quit from Menu Frame!");
 			quitGame();
+	        display_panel.repaint();
+	        display_panel.setVisible(true);
 		}
 		
 	    /*---------------------------------------------------------------

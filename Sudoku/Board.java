@@ -54,6 +54,28 @@ public class Board extends JPanel
 		generateBoard();
 	}
 	
+    /*---------------------------------------------------------------------------------------
+     * Method:
+     *       Board - Alternate Constructor for an already generated cell double array.
+     * 
+     * Description:
+     *      Set Dimension of Board and Generate all of the cells into a panel using an already
+     *      initialized cell array.
+     --------------------------------------------------------------------------------------*/
+    public Board( BoardSize b_size, Difficulty difficulty, Cell[][] c )
+    {
+        this.setBackground( Color.BLACK );
+        this.board_size = b_size;
+        this.diff = difficulty;
+        
+        pen_mode = false;
+        pencil_mode = false;
+        eraser_mode = false;
+        
+        setDimensions();
+        generateBoard(c);
+    }
+	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		getCells()
@@ -158,6 +180,77 @@ public class Board extends JPanel
 		}
 		
 	}
+	
+    /*---------------------------------------------------------------------------------------
+     * Method:
+     *      generateBoard(Cell[][])
+     * 
+     * Description:
+     *      arrange the cells depending on the requested dimensions, using the Cell array c
+     *      as the cells array to be used.
+     --------------------------------------------------------------------------------------*/
+    public void generateBoard(Cell[][] c)
+    {
+        /*---------------------------------------------------------------
+        Generate 2d Arrays for Cells and Panels for Holding Cells
+        ---------------------------------------------------------------*/
+        this.cells = new Cell[ this.cells_dim ][ this.cells_dim ];
+        this.cell_square = new JPanel[ this.cell_square_dim ][ this.cell_square_dim ];
+        
+        /*---------------------------------------------------------------
+        Generate All Cells
+        ---------------------------------------------------------------*/
+        for( int i = 0; i < cells_dim; i++)
+        {
+            for( int j = 0; j < cells_dim; j++)
+            {
+                cells[i][j] = new Cell( board_size );
+                cells[i][j] = c[i][j];
+            }
+            
+        }
+        
+        /*---------------------------------------------------------------
+        Set Square of Cells attributes
+        ---------------------------------------------------------------*/
+        for( int i = 0; i < cell_square_dim ; i++ )
+        {
+            for( int j = 0; j < cell_square_dim; j++ )
+            {
+                cell_square[i][j] = new JPanel( new GridLayout( cell_square_dim, cell_square_dim ) );
+                cell_square[i][j].setBorder( BorderFactory.createLineBorder(Color.BLACK) );
+            }
+        }
+        
+        /*---------------------------------------------------------------
+        Set layout for board as Grid for Sudoku Puzzle
+        ---------------------------------------------------------------*/
+        this.setLayout(new GridLayout( cell_square_dim, cell_square_dim, cell_square_dim + 2, cell_square_dim + 2));
+        this.setBackground(Color.white);
+        
+        /*---------------------------------------------------------------
+        Add cells to panel to give the Sudoku Puzzle Look
+        ---------------------------------------------------------------*/
+        for( int i = 0; i < cell_square_dim; i++)
+        {
+            for( int j = 0; j < cell_square_dim; j++ )
+            {
+                for( int k = 0; k < cell_square_dim; k++ )
+                {
+                    for( int l = 0; l < cell_square_dim; l++ )
+                    {
+                        cell_square[i][j].add( cells[k+i*cell_square_dim][l+j*cell_square_dim] );
+                    }
+                        
+                }
+                /*---------------------------------------------------------------
+                Add each Square of Cells to the Board Grid
+                ---------------------------------------------------------------*/
+                this.add( cell_square[i][j] );
+            }
+        }
+        
+    }
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:

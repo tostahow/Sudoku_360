@@ -41,10 +41,10 @@ public class SudokuDisplay extends Observable implements ActionListener
 	private CustomButton pencil_button;
 	private CustomButton eraser_button;
 	private CustomButton pen_button;
-	private JButton quit_button;
-	private JButton score_button;
-	private JButton solve_button;
-	private JButton hint_button;
+	private CustomButton quit_button;
+	private CustomButton score_button;
+	private CustomButton solve_button;
+	private CustomButton hint_button;
 	
 	private CustomLabel score;
 	private CustomLabel time;

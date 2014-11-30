@@ -67,7 +67,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	private JPanel current_panel;
 	
 	private JFrame main_frame;			// Frame generated to hold Main menu
-	private JFrame stats_frame;			// Frame for User Stats
+	private Statistics stats;			// Frame for User Stats
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -81,6 +81,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 		this.user = new_user;
 		main_frame = new JFrame();
 		current_panel = new JPanel();
+		stats = new Statistics( user );
 		initMenu();
 	}
 	
@@ -111,8 +112,8 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         ---------------------------------------------------------------*/
         main_frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         main_frame.setTitle("Sudoku Main Menu");
-        main_frame.setSize( 1500, 900 );
-        main_frame.setResizable(false);
+        main_frame.setSize( 1400, 800 );
+        main_frame.setResizable(true);
         main_frame.setLocation( 300 , 125 );
         main_frame.addWindowListener(this);
         
@@ -299,71 +300,6 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 			return BoardSize.NINE;
 	}
 	/*---------------------------------------------------------------------------------------
-	 * Method:
-	 * 		showStats()
-	 * 
-	 * Description:
-	 * 		create a frame showing user statistics
-	 --------------------------------------------------------------------------------------*/
-	public void showStats()
-	{
-		stats_open = true;	// ensures that user cant make multiple frames.
-		
-	    /*---------------------------------------------------------------
-        Stats Frame has already been created.
-        ---------------------------------------------------------------*/
-		if( stats_frame != null )
-		{
-			System.out.println("Setting Stats Frame Visible!");
-			stats_frame.setVisible(true);
-		}
-	    /*---------------------------------------------------------------
-        Stats Frame has yet to be created. Create the frame.
-        ---------------------------------------------------------------*/
-		else
-		{
-		    /*---------------------------------------------------------------
-	        Local Variables
-	        ---------------------------------------------------------------*/
-			stats_frame = new JFrame( user.getName() + " Stats" );
-			JPanel stats_panel = new JPanel();
-			GridLayout stats_grid = new GridLayout(3,2);
-			JLabel score_label = new JLabel( "Score: " );
-			JLabel score = new JLabel( "" + user.getScore() );
-			JLabel maps_comp_label = new JLabel( "Maps Completed: " );
-			JLabel maps = new JLabel( "" + user.getMapsCompleted() );
-			JLabel name_label = new JLabel( "Name: " );
-			JLabel name = new JLabel( "" + user.getName() );
-			
-		    /*---------------------------------------------------------------
-	        Set up panel for stats frame
-	        ---------------------------------------------------------------*/
-			stats_panel.setLayout( stats_grid );
-			stats_panel.add( name_label );
-			stats_panel.add( name );
-			stats_panel.add( score_label );
-			stats_panel.add( score );
-			stats_panel.add( maps_comp_label );
-			stats_panel.add( maps );
-			
-		    /*---------------------------------------------------------------
-	        Setting up stats_frame attributes
-	        ---------------------------------------------------------------*/
-			stats_frame.add(stats_panel);
-			stats_frame.setSize( 300 , 300 );
-			stats_frame.setLocation(300, 150);
-			stats_frame.setResizable(false);
-			stats_frame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
-			
-		    /*---------------------------------------------------------------
-	        show the stat_frame
-	        ---------------------------------------------------------------*/
-			stats_frame.addWindowListener(this);
-			stats_frame.setVisible(true);
-		}
-	}
-	
-	/*---------------------------------------------------------------------------------------
 	 *  						 All Listener Functions
 	 --------------------------------------------------------------------------------------*/
 	@Override
@@ -389,8 +325,8 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 		-------------------------------------------*/
 		if( e.getSource() == see_stats_button )
 		{
-			if( stats_open == false ) 
-				showStats();
+			if( stats.isShowing() == false )
+				stats.setShowing( true );
 			else
 				System.out.println("Stats already open");
 		}
@@ -452,11 +388,6 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	
 	@Override
 	public void windowClosed(WindowEvent e) {
-		// TODO Auto-generated method stub
-		if( e.getSource() == stats_frame )
-		{
-			stats_open = false;
-		}
 	}
 	
 	@Override
@@ -499,6 +430,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 				main_frame.repaint();
 				main_frame.setVisible(true);
 				user.incrementMapsCompleted();
+				stats.updateUserInformation( user );
 				game = null;
 			}
 		}
@@ -506,6 +438,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 		if( ( subject instanceof SudokuDisplay ) && ( object_changed instanceof Integer ) )
 		{
 			user.setScore( (int)object_changed );
+			stats.updateUserInformation( user );
 			System.out.println( "User Score Updated to " + user.getScore() );
 		}
 	}

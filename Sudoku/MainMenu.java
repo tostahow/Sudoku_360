@@ -30,11 +30,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -45,29 +43,28 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	/*-----------------------------------------------------------------------------------
 								Private Class Members
 	-----------------------------------------------------------------------------------*/
-	private User user;					// User that has logged in.	
-	private boolean stats_open; 		// Set when stat panel is open
-	private SudokuDisplay game;			// Game object
-	private CustomButton play_game_button; 	// Plays the SudokuDisplay Game
-	private CustomButton exit_button; 		// Exits Software
-	private CustomButton see_stats_button;	// opens Stats frame
+	private User user;							// User that has logged in.	
+	private SudokuDisplay game;					// Game object
+	private CustomButton play_game_button; 		// Plays the SudokuDisplay Game
+	private CustomButton exit_button; 			// Exits Software
+	private CustomButton see_stats_button;		// opens Stats frame
 	
-	private CustomButton load_board_button; // Opens a file chooser for loading a game board.
+	private CustomButton load_board_button; 	// Opens a file chooser for loading a game board.
 	private CustomButton load_save_button;
 	
-	private JPanel menu_panel;			// Panel which holds Menu components
-	private JRadioButton size_nine;		// Radio Button for 9x9 Map
-	private JRadioButton size_sixteen;	// Radio Button for 16x16 Map
-	private JRadioButton easy, medium; 	// Radio Buttons for Easy/Medium
-	private JRadioButton hard, evil;	// Radio Buttons for Hard/Evil
-	private ButtonGroup diff_group;		// Groups the Difficulty Buttons
-	private ButtonGroup size_group;		// Groups the Size Buttons
+	private JPanel menu_panel;					// Panel which holds Menu components
+	private CustomRadioButton size_nine;		// Radio Button for 9x9 Map
+	private CustomRadioButton size_sixteen;		// Radio Button for 16x16 Map
+	private CustomRadioButton easy, medium; 	// Radio Buttons for Easy/Medium
+	private CustomRadioButton hard, evil;		// Radio Buttons for Hard/Evil
+	private ButtonGroup diff_group;				// Groups the Difficulty Buttons
+	private ButtonGroup size_group;				// Groups the Size Buttons
 	
-	private JPanel file_panel; // Panel which holds the file options.
+	private JPanel file_panel; 					// Panel which holds the file options.
 	private JPanel current_panel;
 	
-	private JFrame main_frame;			// Frame generated to hold Main menu
-	private Statistics stats;			// Frame for User Stats
+	private JFrame main_frame;					// Frame generated to hold Main menu
+	private Statistics stats;					// Frame for User Stats
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:

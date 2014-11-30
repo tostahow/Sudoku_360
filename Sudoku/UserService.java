@@ -19,7 +19,8 @@ abstract class UserService extends Observable
 {
 	private JPanel service_panel;
 	private User client;
-	
+	private TextFieldLimit user_name_limit;
+	private TextFieldLimit password_limit;
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		UserService() - constructor
@@ -30,10 +31,21 @@ abstract class UserService extends Observable
 	public UserService( Observer listener )
 	{
 		addObserver( listener );
+		user_name_limit = new TextFieldLimit( 10, FieldType.USERNAME );
+		password_limit = new TextFieldLimit( 30, FieldType.PASSWORD );
 		service_panel = null;
 		client = null;
 	}
 	
+	public TextFieldLimit getUserNameLimit()
+	{
+		return user_name_limit;
+	}
+	
+	public TextFieldLimit getPasswordLimit()
+	{
+		return password_limit;
+	}
 	/*---------------------------------------------------------------------------------------
 	 *						         Getters and Setters
 	 --------------------------------------------------------------------------------------*/

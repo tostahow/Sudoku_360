@@ -115,9 +115,9 @@ public class Register extends UserService implements ActionListener
 		/*---------------------------------------
 		 Set field limits for text fields
 		---------------------------------------*/
-		username_field.setDocument( new TextFieldLimit( 10, FieldType.USERNAME ) );
-		pw_field.setDocument( new TextFieldLimit( 30, FieldType.PASSWORD ) );
-		v_pw_field.setDocument( new TextFieldLimit( 30, FieldType.PASSWORD ) );
+		username_field.setDocument( this.getUserNameLimit() );
+		pw_field.setDocument( this.getPasswordLimit() );
+		v_pw_field.setDocument( this.getPasswordLimit() );
 		
 		/*---------------------------------------
 		 Set background color for panel and 

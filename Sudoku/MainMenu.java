@@ -8,7 +8,7 @@
  * 		The Main Menu includes buttons for playing the game, seeing user stats, and quiting game.
  * 
  * Author:
- * 		Travis Ostahowski
+ * 		Travis Ostahowski, Xavier Tariq, Garett Winkler
 -------------------------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------------------------
 										    Imports
@@ -35,8 +35,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
-
 
 public class MainMenu implements Observer, ActionListener, WindowListener 
 {
@@ -190,7 +188,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         button_layout.setHgap( 5 );
         button_layout.setVgap( 5 );
         
-        option_layout = new GridLayout( 4, 1);
+        option_layout = new GridLayout( 4, 1 );
         option_panel = new JPanel( option_layout );
         option_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
         /*---------------------------------------
@@ -232,9 +230,9 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         symmetry
        ---------------------------------------*/
         menu_panel.add( new JLabel( "" ), BorderLayout.SOUTH );
-        menu_panel.add( new JLabel(""), BorderLayout.EAST );
-        menu_panel.add( new JLabel(""), BorderLayout.EAST);
-        menu_panel.add( new JLabel(""), BorderLayout.WEST );
+        menu_panel.add( new JLabel( "" ), BorderLayout.EAST );
+        menu_panel.add( new JLabel( "" ), BorderLayout.EAST);
+        menu_panel.add( new JLabel( "" ), BorderLayout.WEST );
         
         /*---------------------------------------
         Set action listeners for buttons
@@ -300,7 +298,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	 *  						 All Listener Functions
 	 --------------------------------------------------------------------------------------*/
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed( ActionEvent e ) {
 		
 		
 		/*-------------------------------------------
@@ -367,7 +365,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	 * 		Window is closing, write new info to database.
 	 --------------------------------------------------------------------------------------*/
 	@Override
-	public void windowClosing(WindowEvent e ) 
+	public void windowClosing( WindowEvent e ) 
 	{
 		if( e.getSource() == main_frame )
 		{

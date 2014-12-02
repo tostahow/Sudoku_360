@@ -26,11 +26,11 @@ public class TextFieldLimit extends PlainDocument
 								Private Class Members
 	-----------------------------------------------------------------------------------*/
 	private static final long 
-	serialVersionUID = 1L;				// id
-	private int max_length;				// max limit of field
-	private FieldType field_type; 		// Enum for username, password, cell9, cell16
+	serialVersionUID = 1L;							// id
+	private int max_length;							// max limit of field
+	private FieldType field_type; 					// Enum for username, password, cell9, cell16
 	private String[] invalid_username_characters = 
-		{ 								// List of Invalid Username Character
+		{ 											// List of Invalid Username Character
 			" ", "*", "/", "}", "]",
 		   "\\", "|", ",", "?",".",
 			">", "<", ";", ":", "=",
@@ -41,9 +41,9 @@ public class TextFieldLimit extends PlainDocument
 		};
 	
 	private String valid_cell9_characters = 
-			"123456789";				// list of valid 9x9 characters
+			"123456789";							// list of valid 9x9 characters
 	private String valid_cell16_characters = 
-			"123456789abcdefg";			// list of valid 16x16 characters
+			"123456789abcdefgABCDEFG";						// list of valid 16x16 characters
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -71,19 +71,29 @@ public class TextFieldLimit extends PlainDocument
 	{
 		if( str == null )
 			return;
-		
-		if( field_type == FieldType.USERNAME)
+	    /*---------------------------------------------------------------
+       	If type is user name, only accept username defined 
+       	entries
+        ---------------------------------------------------------------*/
+		if( field_type == FieldType.USERNAME )
 		{	
 			if(  ( getLength() + str.length() ) <= max_length && userNameValid( str ) )
-				super.insertString(offset, str, attr);
+				super.insertString( offset, str, attr );
 		}
 		
+	    /*---------------------------------------------------------------
+        If type is password, only accept password defined entries
+        ---------------------------------------------------------------*/
 		if( field_type == FieldType.PASSWORD )
 		{
-			if( (getLength() + str.length() ) <= max_length )
-				super.insertString(offset, str, attr);
+			if( ( getLength() + str.length() ) <= max_length )
+				super.insertString( offset, str, attr );
 		}
 		
+	    /*---------------------------------------------------------------
+       	If type is a Sudoku cell type. Only accept defined entries for
+       	sudoku cells 9x9 or 16x16
+        ---------------------------------------------------------------*/
 		if( field_type == FieldType.CELL9 || field_type == FieldType.CELL16 )
 		{
 			if( (getLength() + str.length() ) <= max_length && isValidCellEntry( str ) )
@@ -123,6 +133,9 @@ public class TextFieldLimit extends PlainDocument
 		{
 			for(int i = 0; i < str.length(); i ++ )
 			{
+			    /*---------------------------------------------------------------
+		        Do not accept characters that are not accepted by 9x9 entries
+		        ---------------------------------------------------------------*/
 				if( !this.valid_cell9_characters.contains( "" + str.charAt(i) ) )
 					return false;
 			}
@@ -131,6 +144,9 @@ public class TextFieldLimit extends PlainDocument
 		{
 			for(int i = 0; i < str.length(); i ++ )
 			{
+			    /*---------------------------------------------------------------
+		        Do not accept characters that are not accepted for 16x16 entries
+		        ---------------------------------------------------------------*/
 				if( !this.valid_cell16_characters.contains( "" + str.charAt(i) ) )
 					return false;
 			}

@@ -30,15 +30,15 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 	/*-----------------------------------------------------------------------------------
 								Private Class Members
 	-----------------------------------------------------------------------------------*/
-	private UserService log_in;			// LogIn object to aid with log in
-    private UserService register;		// register object for registering new users
-	private User current_user;			// Player currently signed in
+	private UserService log_in;				// LogIn object to aid with log in
+    private UserService register;			// register object for registering new users
+	private User current_user;				// Player currently signed in
 	
 	private CustomButton log_in_button;		// Button used for logging in
 	private CustomButton register_button;	// Button used for registering
 	
-	private JPanel entry_panel;			// Initial Panel
-	private JFrame host_frame;			//Frame for services to occur in
+	private JPanel entry_panel;				// Initial Panel
+	private JFrame host_frame;				//Frame for services to occur in
 	
 	/*-----------------------------------------------------------------------------------
 							Private Constant Class Members
@@ -67,14 +67,14 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 		register = new Register( this );
 		
 		/*---------------------------------------
-		 Read in registered users
+		Read in registered users
 		---------------------------------------*/
 		host_frame.addWindowListener(this);
 		Database.read_database();
 		
 		/*---------------------------------------
-		 * Generates the initial ui for users
-		 * to log in and register.
+		Generates the initial ui for users
+		to log in and register.
 		---------------------------------------*/
 		init_frame();
 	}
@@ -98,8 +98,8 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 		host_frame.setFont( SudokuCommon.TEXT_FONT );
 					
 		/*---------------------------------
-		 * Call entry_panel for users.
-		 --------------------------------*/
+		Call entry_panel for users.
+		--------------------------------*/
 		entry_panel();
 		
 		host_frame.setVisible( true );	
@@ -211,7 +211,7 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 	 * 		based on what was notified/updated.
 	--------------------------------------------------------------------------------------*/
 	@Override
-	public void update(Observable subject, Object object_changed) 
+	public void update( Observable subject, Object object_changed ) 
 	{
 		
 		/*---------------------------------------
@@ -219,7 +219,7 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 		 user into logged in user.
 		---------------------------------------*/
 		if( object_changed instanceof User )
-			{
+		{
 			System.out.println( "User Loaded" );
 			current_user = (User)object_changed;
 			
@@ -232,14 +232,14 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 			register = null;
 			
 			updateUser();			
-			}
+		}
 		
 		/*---------------------------------------
 		 Back button was pressed. Remove_panels
 		 and reload entry panel.
 		---------------------------------------*/
 		if ( object_changed instanceof String   )
-			{
+		{
 			System.out.println( "Going Back to Service Menu" );
 			
 			host_frame.getContentPane().removeAll();
@@ -247,7 +247,7 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 			host_frame.repaint();
 			host_frame.setVisible( true );
 			
-			}
+		}
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -258,10 +258,18 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 	 * 		send user object back to Sudoku
 	--------------------------------------------------------------------------------------*/
 	public void updateUser()
-	{
+	{	
+	    /*---------------------------------------------------------------
+        Set status of object to changed
+        ---------------------------------------------------------------*/
 		setChanged();
+		
+	    /*---------------------------------------------------------------
+        Notify Listening Classes that there is a new user
+        ---------------------------------------------------------------*/
 		notifyObservers( this.current_user );
 	}
+	
 	/*----------------------------------------------------------------------------------------
 	 									All Listeners
 	 ----------------------------------------------------------------------------------------*

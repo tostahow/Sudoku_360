@@ -117,7 +117,7 @@ public class Register extends UserService implements ActionListener
 		---------------------------------------*/
 		username_field.setDocument( this.getUserNameLimit() );
 		pw_field.setDocument( this.getPasswordLimit() );
-		v_pw_field.setDocument( this.getPasswordLimit() );
+		v_pw_field.setDocument( new TextFieldLimit( 30, FieldType.PASSWORD ) );
 		
 		/*---------------------------------------
 		 Set background color for panel and 
@@ -144,29 +144,35 @@ public class Register extends UserService implements ActionListener
 		reg_panel.add( v_pw_field );
 		reg_panel.add( button_panel );
 	
-		
-		reg_button.addActionListener(this);
-		back_button.addActionListener(this);
+		reg_button.addActionListener( this );
+		back_button.addActionListener( this );
 		
 		return reg_panel;
 		
 	}
 	
-	// clears all fields
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		clearFields()
+	 * 
+	 * Description:
+	 * 		clears all text fields
+	 --------------------------------------------------------------------------------------*/
 	public void clearFields()
 	{
-		username_field.setText("");
-		pw_field.setText("");
-		v_pw_field.setText("");
+		username_field.setText( "" );
+		pw_field.setText( "" );
+		v_pw_field.setText( "" );
 	}
+	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		register_request()
 	 * 
 	 * Description:
-	 * 		attemps to register a new user into database.
+	 * 		Attempts to register a new user into database.
 	 --------------------------------------------------------------------------------------*/
-	private boolean register_request( String user_name, char[] password)
+	private boolean registerRequest( String user_name, char[] password )
 	{
 		/*---------------------------------------------------------------
 								Instance Variables
@@ -177,15 +183,15 @@ public class Register extends UserService implements ActionListener
 		String hash;					// secure password hash
 		
 		
-		if( Database.find_user(user_name) != null )
-			{
+		if( Database.find_user( user_name ) != null )
+		{
 			/*---------------------------------------
 			 Username is already taken. Set to fail
 			---------------------------------------*/
 			flag = false;
-			}
+		}
 		else
-			{
+		{
 			flag = true;
 			
 			/*---------------------------------------
@@ -193,9 +199,9 @@ public class Register extends UserService implements ActionListener
 			 random salt and securely hashed password
 			---------------------------------------*/
 			try
-				{
+			{
 				salt = Password.generate_Salt();	
-				hash = Password.get_SHA_256_secure_password(password, salt );
+				hash = Password.get_SHA_256_secure_password( password, salt );
 				reg_user = new User( user_name, hash, salt );
 				
 				/*---------------------------------------
@@ -204,19 +210,19 @@ public class Register extends UserService implements ActionListener
 				---------------------------------------*/
 				updateUser( reg_user );
 				
-				}
+			}
 			/*---------------------------------------
 			 Something went wrong during the pass
 			 word securing process. Fail out.
 			---------------------------------------*/
 			catch( NoSuchProviderException | NoSuchAlgorithmException e)
-				{
-				System.out.print("Error when creating password elements");
+			{
+				System.out.print( "Error when creating password elements" );
 				reg_user = null;
 				e.getStackTrace();
 				flag = false;
-				}
-			}	
+			}
+		}	
 		
 		return flag;
 	}	
@@ -249,53 +255,53 @@ public class Register extends UserService implements ActionListener
 			---------------------------------------*/
 			if( ( username_field.getText().length() < 6 ) 
 			||  ( pw_field.getPassword().length < 6) )
-				{
+			{
 				
-				errorMessage("Entered user name or password must exceed 6 characters.");
-				v_pw_field.setText("");
-				pw_field.setText("");
+				errorMessage( "Entered user name or password must exceed 6 characters." );
+				v_pw_field.setText( "" );
+				pw_field.setText( "" );
 				
 				return;
-				}
+			}
 			
 			if( ( !Arrays.equals( pw_field.getPassword(), v_pw_field.getPassword() ) ) )
-				{
+			{
 				
 				errorMessage("Passwords do not match!");
 				clearFields();
 				
 				return;
-				}
+			}
 			/*---------------------------------------
 			 Call log_in_request which will attempt
 			 to find the user within the system.
 			---------------------------------------*/
-			success = register_request( username_field.getText(), 
-									 	pw_field.getPassword() 
-								 	  );
+			success = registerRequest( username_field.getText(), 
+									 	pw_field.getPassword() );
+			
 			/*---------------------------------------
 			 if the register_request fails. Reset 
 			 the entry fields.
 			---------------------------------------*/
 			if( success == false )
-				{
+			{
 				
 				/*---------------------------------------
 				 Use option pane to alert user of failed
 				 attempt.
 				---------------------------------------*/
-				errorMessage("User Name Exists.");
+				errorMessage( "User Name Exists." );
 				clearFields();
 				
-				}
+			}
 			/*---------------------------------------
 			 if the register_request succeeds.
 			---------------------------------------*/
 			else
-				{
-				successMessage("Registration Successful!");
+			{
+				successMessage( "Registration Successful!" );
 				clearFields();
-				}
+			}
 		}
 	}
 }

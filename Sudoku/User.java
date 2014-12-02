@@ -11,19 +11,18 @@
 -------------------------------------------------------------------------------------------------*/
 import java.io.*;
 
-
-/*---------------------------------------------------------------------------------------
- 							! More Work Needed to be Done !
- --------------------------------------------------------------------------------------*/
-
-public class User implements Serializable {
-
-	private static final long serialVersionUID = 2874928106330753461L;
-	private long total_score;
-	private String name;
-	private String password_hash;
-	private String password_salt;
-	private int maps_completed;
+public class User implements Serializable 
+{
+	/*-----------------------------------------------------------------------------------
+									Private Class Members
+	-----------------------------------------------------------------------------------*/
+	private static final long serialVersionUID = 1L;	// serial ID
+	
+	private long total_score;							// total user score
+	private String name;								// user name
+	private String password_hash;						// generated password hash
+	private String password_salt;						// unique salt for user
+	private int maps_completed;							// Sudoku maps completed
 	
 	public User(String user_name, String pw_hash, String pw_salt) 
 	{

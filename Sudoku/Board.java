@@ -145,14 +145,19 @@ public class Board extends JPanel
 				{
 					for( int l = 0; l < cell_square_dim; l++ )
 					{
-						cell_square[i][j].add( cells[k+i*cell_square_dim][l+j*cell_square_dim] );
+					    /*---------------------------------------------------------------
+				        This format ensure that board is being generated in correct
+				        row and column order. ie 	123456789
+				        						 	123456789
+				        ---------------------------------------------------------------*/
+						cell_square[ i ][ j ].add( cells[ ( k+i*cell_square_dim ) ][ ( l+j*cell_square_dim ) ] );
 					}
 						
 				}
 			    /*---------------------------------------------------------------
-		        Add each Square of Cells to the Board Grid
+		        Add each Square of Cells (3x3 or 4x4) to the Board Grid
 		        ---------------------------------------------------------------*/
-				this.add( cell_square[i][j] );
+				this.add( cell_square[ i ][ j ] );
 			}
 		}
 		
@@ -203,6 +208,9 @@ public class Board extends JPanel
 			return;
 		}
 		
+	    /*---------------------------------------------------------------
+	    Pen mode not set, apply pen mode
+        ---------------------------------------------------------------*/
 		pen_mode = true;
 		pencil_mode = false;
 		eraser_mode = false;
@@ -234,6 +242,9 @@ public class Board extends JPanel
 			return;
 		}
 		
+	    /*---------------------------------------------------------------
+	    Pencil mode not set, apply pencil mode
+        ---------------------------------------------------------------*/
 		pen_mode = false;
 		pencil_mode = true;
 		eraser_mode = false;
@@ -265,6 +276,9 @@ public class Board extends JPanel
 			return;
 		}
 		
+	    /*---------------------------------------------------------------
+	    Eraser mode not set, apply eraser mode
+        ---------------------------------------------------------------*/
 		pen_mode = false;
 		pencil_mode = false;
 		eraser_mode = true;
@@ -272,29 +286,43 @@ public class Board extends JPanel
 		for( int i = 0; i < cells_dim; i++)
 			for( int j = 0; j < cells_dim; j++)
 			{
-				cells[i][j].setPencilMode(false);
-				cells[i][j].setPenMode(false);
-				cells[i][j].setEraserMode(true);
+				cells[i][j].setPencilMode( false );
+				cells[i][j].setPenMode( false );
+				cells[i][j].setEraserMode( true );
 			}
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		setWin
+	 * 
+	 * Description:
+	 * 		set Cells to win state
+	 --------------------------------------------------------------------------------------*/
 	public void setWin()
 	{
 		for( int i = 0; i < cells_dim; i++)
 			for( int j = 0; j < cells_dim; j++)
 			{
-				cells[i][j].setLocked(true);
+				cells[i][j].setLocked( true );
 			}
-		this.setBackground(Color.white);
+		this.setBackground( Color.white );
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		clearBoard
+	 * 
+	 * Description:
+	 * 		clears the entire board
+	 --------------------------------------------------------------------------------------*/
 	public void clearBoard()
 	{
-		this.setBackground(Color.black);
+		this.setBackground( Color.black );
 		for( int i = 0; i < cells_dim; i++)
 			for( int j = 0; j < cells_dim; j++)
 			{
-				cells[i][j].setLocked(false);
+				cells[i][j].setLocked( false );
 				cells[i][j].clear();
 			}
 	}

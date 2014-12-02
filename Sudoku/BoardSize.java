@@ -8,7 +8,8 @@
  * Author:
  * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
-public enum BoardSize {
+public enum BoardSize 
+{
 	NINE,
 	SIXTEEN
 }

@@ -31,9 +31,9 @@ public class LogIn extends UserService implements ActionListener
 	-----------------------------------------------------------------------------------*/
 	private CustomButton log_in_button;						// button to log in with
 	private CustomButton back_button;						// back button
-	private JPasswordField pw_field;    				// password field
-	private JTextField username_field;					// field for User name
-	private boolean success;							// flag set if log in credentials are valid
+	private JPasswordField pw_field;    					// password field
+	private JTextField username_field;						// field for User name
+	private boolean success;								// flag set if log in credentials are valid
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -168,24 +168,41 @@ public class LogIn extends UserService implements ActionListener
 	 * 		Acquires user_name and password from the log in panel, and attempts to find the
 	 * 		user within the database so the user can play the game.
 	 --------------------------------------------------------------------------------------*/
-	private boolean log_in_request( String user_name, char[] password ) 
+	private boolean logInRequest( String user_name, char[] password ) 
 	{
-		User potential_user = Database.find_user( user_name );
 		boolean valid;
 		
+	    /*---------------------------------------------------------------
+        Attempt to find user that is attempting to log in
+        ---------------------------------------------------------------*/
+		User potential_user = Database.find_user( user_name );
+		
+	    /*---------------------------------------------------------------
+        User not found
+        ---------------------------------------------------------------*/
 		if( potential_user ==  null )
 		{
 			valid = false;
 		}
+	    /*---------------------------------------------------------------
+        User found
+        ---------------------------------------------------------------*/
 		else
 		{
+		    /*---------------------------------------------------------------
+	        Check if entered password matches the potential users password
+	        ---------------------------------------------------------------*/
 			valid = Password.verify_password( potential_user, password );
 			
+		    /*---------------------------------------------------------------
+	        Passwords match
+	        ---------------------------------------------------------------*/
 			if( valid == true )
 			{
 				updateUser( potential_user );
 			}
 		}
+
 		return valid;
 	}
 	
@@ -216,7 +233,7 @@ public class LogIn extends UserService implements ActionListener
 			if( ( username_field.getText().length() < 6) 
 			||  ( pw_field.getPassword().length < 6 ) )
 				{
-				errorMessage( "user name or password does not meet 6 character limit");
+				errorMessage( "user name or password does not meet 6 character limit" );
 				return;
 				}
 			
@@ -224,7 +241,7 @@ public class LogIn extends UserService implements ActionListener
 			 Call log_in_request which will attempt
 			 to find the user within the system.
 			---------------------------------------*/
-			success = log_in_request( username_field.getText(), 
+			success = logInRequest( username_field.getText(), 
 									  pw_field.getPassword() 
 									);
 			/*---------------------------------------

@@ -73,6 +73,9 @@ public class Statistics extends JFrame implements WindowListener
 	 --------------------------------------------------------------------------------------*/
 	public void initVariables()
 	{
+	    /*---------------------------------------------------------------
+		Initialize all variables/components
+        ---------------------------------------------------------------*/
 		showing = false;
 		stats_panel = new JPanel();
 		stats_grid = new GridLayout( 3, 2 );

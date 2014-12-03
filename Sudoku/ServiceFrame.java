@@ -55,13 +55,13 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 	{
 		addObserver( listener );
 		/*---------------------------------------------------------------
-								Frame Title
+		Set Frame Title
 		---------------------------------------------------------------*/
 		host_frame = new JFrame();
 		host_frame.setTitle( "Tex++ Log-in Service" );
 		
 		/*---------------------------------------------------------------
-		 					Instance Variables
+		Instance Variables
 		---------------------------------------------------------------*/
 		log_in = new LogIn( this );
 		register = new Register( this );
@@ -89,7 +89,7 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 	private void init_frame()
 	{
 		/*---------------------------------------------------------------
-		 					Set Frame Attributes
+		Set Frame Attributes
 		---------------------------------------------------------------*/
 		host_frame.setSize(display_width + 250, 750 );
 		host_frame.setLocation( 350, 100 );
@@ -126,7 +126,7 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 		GridLayout g_layout;		// orientation of buttons
 		
 		/*---------------------------------------------------------------
-	 						Initializing Variables
+	 	Initializing Variables
 		---------------------------------------------------------------*/
 		b_layout = new BorderLayout();
 		button_panel = new JPanel();
@@ -285,6 +285,9 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 	{
 		JPanel new_panel;
 		
+	    /*---------------------------------------------------------------
+		Log in button was pressed. Load Log In Panel
+        ---------------------------------------------------------------*/
 		if( e.getSource() == log_in_button )
 		{
 			host_frame.getContentPane().remove( entry_panel );
@@ -294,6 +297,9 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 			host_frame.setVisible( true );
 		}
 		
+	    /*---------------------------------------------------------------
+		Register button was pressed. Load Register Panel
+        ---------------------------------------------------------------*/
 		if( e.getSource() == register_button )
 		{
 			host_frame.getContentPane().remove( entry_panel );

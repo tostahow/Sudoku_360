@@ -216,6 +216,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         option_panel.add( diff_panel );
         option_panel.add( file_panel );
         option_panel.add( button_panel );
+        
         /*---------------------------------------
         Add title to the entry panel north, and
         place buttons into the center
@@ -294,17 +295,16 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 		else
 			return BoardSize.NINE;
 	}
+	
 	/*---------------------------------------------------------------------------------------
 	 *  						 All Listener Functions
 	 --------------------------------------------------------------------------------------*/
 	@Override
-	public void actionPerformed( ActionEvent e ) {
-		
-		
-		/*-------------------------------------------
-		 *  Play button was pressed. Create board,
-		 *  for now.
-		-------------------------------------------*/
+	public void actionPerformed( ActionEvent e ) 
+	{		
+	    /*---------------------------------------------------------------
+		Create a new game and display it within frame
+        ---------------------------------------------------------------*/
 		if( e.getSource() == play_game_button )
 		{
 			game = new SudokuDisplay(this, getDesiredBoardSize(), getDesiredDifficulty() );
@@ -314,10 +314,9 @@ public class MainMenu implements Observer, ActionListener, WindowListener
             main_frame.setVisible( true );
 		}
 		
-		/*-------------------------------------------
-		 *  See stats button pressed. Create frame
-		 *  showing user stats
-		-------------------------------------------*/
+	    /*---------------------------------------------------------------
+		Open Statistics frame if it isn't already open
+        ---------------------------------------------------------------*/
 		if( e.getSource() == see_stats_button )
 		{
 			if( stats.isShowing() == false )
@@ -326,14 +325,18 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 				System.out.println("Stats already open");
 		}
 		
-		/*-------------------------------------------
-		 *  Exit button was pressed. Close window
-		-------------------------------------------*/
+	    /*---------------------------------------------------------------
+		Exit software.
+        ---------------------------------------------------------------*/
 		if( e.getSource() == exit_button )
 		{   
 			main_frame.dispatchEvent( new WindowEvent( main_frame, WindowEvent.WINDOW_CLOSING ) );
 		}
 		
+	    /*---------------------------------------------------------------
+		Load Button was pressed. Open File Chooser so user can choose
+		puzzles to load
+        ---------------------------------------------------------------*/
 		if( e.getSource() == load_board_button)
 		{
 		    File file = null;
@@ -409,27 +412,33 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	}
 
 	@Override
-	public void update(Observable subject, Object object_changed) 
+	public void update( Observable subject, Object object_changed ) 
 	{
 		if( ( subject instanceof SudokuDisplay ) && ( object_changed instanceof String ) )
 		{
-			if( ((String)object_changed).equals("Quit") )
+			if( ( ( String )object_changed ).equals( "Quit" ) )
 			{
 				main_frame.dispatchEvent( new WindowEvent( main_frame, WindowEvent.WINDOW_CLOSING ) );
 			}
 			
-			if( ((String)object_changed).equals("Win") )
+		    /*---------------------------------------------------------------
+			Board has been solved. Reload main menu panel.
+	        ---------------------------------------------------------------*/
+			if( ( (String )object_changed ).equals( "Win" ) )
 			{
-				main_frame.remove(current_panel);
-				main_frame.add(menu_panel);
+				main_frame.remove( current_panel );
+				main_frame.add( menu_panel );
 				main_frame.repaint();
-				main_frame.setVisible(true);
+				main_frame.setVisible( true );
 				user.incrementMapsCompleted();
 				stats.updateUserInformation( user );
 				game = null;
 			}
 		}
 		
+	    /*---------------------------------------------------------------
+		Update User score
+        ---------------------------------------------------------------*/
 		if( ( subject instanceof SudokuDisplay ) && ( object_changed instanceof Integer ) )
 		{
 			user.setScore( (int)object_changed );

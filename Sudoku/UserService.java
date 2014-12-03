@@ -125,7 +125,7 @@ abstract class UserService extends Observable
 	public void goBack()
 	{
 		setChanged();
-		notifyObservers("");
+		notifyObservers( "" );
 	}
 	
 	/*---------------------------------------------------------------------------------------

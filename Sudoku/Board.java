@@ -14,7 +14,6 @@ import java.awt.GridLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-
 public class Board extends JPanel
 {
 	/*-----------------------------------------------------------------------------------
@@ -124,7 +123,7 @@ public class Board extends JPanel
 			for( int j = 0; j < cell_square_dim; j++ )
 			{
 				cell_square[i][j] = new JPanel( new GridLayout( cell_square_dim, cell_square_dim ) );
-				cell_square[i][j].setBorder( BorderFactory.createLineBorder(Color.BLACK) );
+				cell_square[i][j].setBorder( BorderFactory.createLineBorder( Color.BLACK ) );
 			}
 		}
 		

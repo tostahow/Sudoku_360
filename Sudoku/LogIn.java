@@ -23,7 +23,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observer;
 
-
 public class LogIn extends UserService implements ActionListener
 {	
 	/*-----------------------------------------------------------------------------------
@@ -85,7 +84,7 @@ public class LogIn extends UserService implements ActionListener
 		JLabel username_label;		// name label;
 	
 		/*---------------------------------------------------------------
-								Initialize Variables
+		Initialize Variables
 		---------------------------------------------------------------*/
 		back_button = new CustomButton( "Back", false );
 		button_panel = new JPanel();
@@ -97,29 +96,28 @@ public class LogIn extends UserService implements ActionListener
 		pw_label = new JLabel( "Password:" );
 		pw_field = new JPasswordField();
 		
-		/*---------------------------------------
-		 Set Fonts for each component
-		---------------------------------------*/
+	    /*---------------------------------------------------------------
+		Set fonts for user name and password fields
+        ---------------------------------------------------------------*/
 		username_field.setFont( SudokuCommon.TEXT_FONT );
 		username_label.setFont( SudokuCommon.TEXT_FONT );
 		pw_label.setFont( SudokuCommon.TEXT_FONT );
 		pw_field.setFont( SudokuCommon.TEXT_FONT );		
 		
-		/*---------------------------------------
-		 Set field limits for text fields
-		---------------------------------------*/
+	    /*---------------------------------------------------------------
+		Set text field limits for log in user name and password fields
+        ---------------------------------------------------------------*/
 		username_field.setDocument( this.getUserNameLimit() );
 		pw_field.setDocument( this.getPasswordLimit() );
 		
-		/*---------------------------------------
-		 Set background color for panel and 
-		 button.
-		---------------------------------------*/		
+	    /*---------------------------------------------------------------
+		Set background color for log in panel
+        ---------------------------------------------------------------*/	
 		log_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		
-		/*---------------------------------------------------------------
-							  Set up Log in Panel
-		---------------------------------------------------------------*/
+	    /*---------------------------------------------------------------
+		Set attributes for board panel and log panel, and add components
+        ---------------------------------------------------------------*/
 		g_layout.setHgap( 200 );
 		button_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		button_panel.setLayout( g_layout );
@@ -133,13 +131,12 @@ public class LogIn extends UserService implements ActionListener
 		log_panel.add( pw_label );
 		log_panel.add( pw_field );
 		log_panel.add( button_panel );
-	
-		/*---------------------------------------
-		 When log_in button is pressed. Check to
-		 see if user name and password entries
-		 are valid. If entries are valid request
-		 the log in service.
-		---------------------------------------*/
+		
+	    /*---------------------------------------------------------------
+		When log_in button is pressed. Check to see if user name and 
+		password entries are valid. If entries are valid request the 
+		log in service.
+        ---------------------------------------------------------------*/
 		log_in_button.addActionListener(this);
 		back_button.addActionListener(this);
 		
@@ -206,17 +203,19 @@ public class LogIn extends UserService implements ActionListener
 		return valid;
 	}
 	
-	/*---------------------------------------
-	 Method: actionPerformed
-	 
-	 Description:
-	 	Handles different buttons pressed.
-	---------------------------------------*/
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		actionPerformed
+	 * 
+	 * Description:
+	 * 		action listener fired. Do different operations depending on source
+	 --------------------------------------------------------------------------------------*/
 	public void actionPerformed( ActionEvent e )
 	{
-		/*-------------------------------------------
-		 Back button was pressed return to caller
-		 ------------------------------------------*/
+		
+	    /*---------------------------------------------------------------
+       	Back Button was pressed, return to calling class.
+        ---------------------------------------------------------------*/		 
 		if( e.getSource() == back_button )
 		{
 			clearFields();
@@ -225,11 +224,11 @@ public class LogIn extends UserService implements ActionListener
 		
 		if( e.getSource() == log_in_button )
 		{
-			/*---------------------------------------
-			 If password or username field are empty
-			 inform user, and do not process request
-			 to log in.
-			---------------------------------------*/
+
+		    /*---------------------------------------------------------------
+	        If password or user name field are empty inform user, and do not 
+	        process request to log in.
+	        ---------------------------------------------------------------*/
 			if( ( username_field.getText().length() < 6) 
 			||  ( pw_field.getPassword().length < 6 ) )
 				{
@@ -237,35 +236,36 @@ public class LogIn extends UserService implements ActionListener
 				return;
 				}
 			
-			/*---------------------------------------
-			 Call log_in_request which will attempt
-			 to find the user within the system.
-			---------------------------------------*/
+		    /*---------------------------------------------------------------
+			Call log_in_request which will attempt to find the user within 
+			the system.
+	        ---------------------------------------------------------------*/
 			success = logInRequest( username_field.getText(), 
 									  pw_field.getPassword() 
 									);
-			/*---------------------------------------
-			 if the log_in_request fails. Reset 
-			 the entry fields.
-			---------------------------------------*/
+			
+		    /*---------------------------------------------------------------
+			If the log_in_request fails. Reset the entry fields.
+	        ---------------------------------------------------------------*/
 			if( success == false )
 				{
 				
-				/*---------------------------------------
-				 Use option pane to alert user of failed
-				 attempt.
-				---------------------------------------*/
+			    /*---------------------------------------------------------------
+				Use option pane to alert user of failed attempt.
+		        ---------------------------------------------------------------*/
 				errorMessage( "user name and password combo does not match stored records" );
 				clearFields();
 				
 				}
-			/*---------------------------------------
-			 Show Success message!
-			---------------------------------------*/
+		    /*---------------------------------------------------------------
+			Show Success Message
+	        ---------------------------------------------------------------*/
 			else
 				{
+				
 				successMessage( "Log In Successful" );
 				clearFields();
+				
 				}
 		}
 	}

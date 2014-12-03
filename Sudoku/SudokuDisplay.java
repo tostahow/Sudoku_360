@@ -152,6 +152,8 @@ public class SudokuDisplay extends Observable implements ActionListener
 		Cell[][] c = null;
 		int numHints = 0;
 		
+		addObserver( listener );
+		
 		try 
 		{
 			ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
@@ -424,66 +426,19 @@ public class SudokuDisplay extends Observable implements ActionListener
     	            for( int j = 0; j < cells[i].length; j++)
     	            {
     	            	cells[i][j] = new Cell( board_size );
-    	                //cells[i][j].pen_mode = c[i][j].pen_mode;
-    	                //cells[i][j].pencil_mode = c[i][j].pencil_mode;
-    	                //cells[i][j].eraser_mode = c[i][j].eraser_mode;
     	                cells[i][j].setLocked(c[i][j].isLocked());
     	                cells[i][j].setPenFilled(c[i][j].isPenFilled());
     	                cells[i][j].setEraserCount(c[i][j].getEraserCount());
-    	            	
-    	                /*
-    		            if (c[i][j].pen_field.getFont() == SudokuCommon.PEN_FONT)
-    		            {
-    		                cells[i][j].pen_field = new CellField( "", true );
-    		            }
-    		            else
-    		            {
-    		                cells[i][j].pen_field = new CellField( "", false );
-    		            }
-    		            
-    		            if (c[i][j].pencil_field.getFont() == SudokuCommon.PEN_FONT)
-    		            {
-    		                cells[i][j].pencil_field = new CellField( "", true );
-    		            }
-    		            else
-    		            {
-    		                cells[i][j].pencil_field = new CellField( "", false );
-    		            }
-    		            */
-    		            
-    		            /*
-    	                cells[i][j].pen_field.setText( c[i][j].pen_field.getText() );
-    	                cells[i][j].pen_field.setEditable( (c[i][j].pen_field.isEditable()) );
-    	                cells[i][j].pen_field.setDocument( new TextFieldLimit(1, c[i][j].cell_type) );
-    	                cells[i][j].pen_field.setForeground( c[i][j].pen_field.getForeground() );
-    	                cells[i][j].pen_field.setBackground( c[i][j].pen_field.getBackground() );
-    	                
-    	                cells[i][j].pencil_field.setText( c[i][j].pencil_field.getText() );
-    	                cells[i][j].pencil_field.setEditable( (c[i][j].pencil_field.isEditable()) );                
-    	                cells[i][j].pencil_field.setDocument( new TextFieldLimit(6, c[i][j].cell_type) );
-    	                cells[i][j].pencil_field.setForeground( c[i][j].pencil_field.getForeground() );
-    	                cells[i][j].pencil_field.setBackground( c[i][j].pencil_field.getBackground() );
-    	                */
     
     	                // Store the text of the pen field into str.
-    	                cells[i][j].pen_field.str = c[i][j].pen_field.getText();
-    	                //cells[i][j].pen_field.editable = c[i][j].pen_field.isEditable();
-    	                //cells[i][j].pen_field.fgColor = c[i][j].pen_field.getForeground();
-    	                //cells[i][j].pen_field.bgColor = c[i][j].pen_field.getBackground();
-    	                //cells[i][j].pen_field.font = c[i][j].pen_field.getFont();
+    	                cells[i][j].getPenFieldObject().str = c[i][j].getPenField();
     	                
     	                // Store the text of the pencil field into str.
-    	                cells[i][j].pencil_field.str = c[i][j].pencil_field.getText();
-    	                //cells[i][j].pencil_field.editable = c[i][j].pencil_field.isEditable();
-    	                //cells[i][j].pencil_field.fgColor = c[i][j].pencil_field.getForeground();
-    	                //cells[i][j].pencil_field.bgColor = c[i][j].pencil_field.getBackground();
-    	                //cells[i][j].pencil_field.font = c[i][j].pencil_field.getFont();
-    	                
-    	                cells[i][j].cell_type = c[i][j].cell_type;
+    	                cells[i][j].getPencilFieldObject().str = c[i][j].getPencilField();
     	            }
     	        }
     	        
-    		    out.writeObject(cells); // Problem is here. While saving, the display gets messed up.
+    		    out.writeObject(cells);
     		    
     		    out.writeInt(game_score);
     		    out.writeInt(back_end.getHints());

@@ -39,9 +39,9 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 	private boolean pen_filled;                 // pen filled flag
 	
 	private int eraser_count;                   // # of eraser uses
-	public CellField pen_field;				    // Pen Field
-	public CellField pencil_field;			    // Pencil Field
-	public FieldType cell_type;				    // Cell_type
+	private CellField pen_field;				// Pen Field
+	private CellField pencil_field;			    // Pencil Field
+	private FieldType cell_type;				// Cell_type
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -303,12 +303,48 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 	}
 	
 	/*---------------------------------------------------------------------------------------
+     * Method:
+     *      getPenFieldObject()
+     * 
+     * Description:
+     *      return pen field object
+     --------------------------------------------------------------------------------------*/
+    public CellField getPenFieldObject()
+    {
+        return pen_field;
+    }
+    
+    /*---------------------------------------------------------------------------------------
+     * Method:
+     *      getPencilField()
+     * 
+     * Description:
+     *      return text of pencil field
+     --------------------------------------------------------------------------------------*/
+    public String getPencilField()
+    {
+        return pencil_field.getText();
+    }
+    
+    /*---------------------------------------------------------------------------------------
+     * Method:
+     *      getPencilFieldObject()
+     * 
+     * Description:
+     *      return pencil field object
+     --------------------------------------------------------------------------------------*/
+    public CellField getPencilFieldObject()
+    {
+        return pencil_field;
+    }
+	
+	/*--------------------------------------------------------------------------------------
 	 * Method:
 	 * 		getEraserCount()
 	 * 
 	 * Description:
 	 * 		return # of erases for cell
-	 --------------------------------------------------------------------------------------*/
+	--------------------------------------------------------------------------------------*/
 	public int getEraserCount()
 	{
 		return this.eraser_count;

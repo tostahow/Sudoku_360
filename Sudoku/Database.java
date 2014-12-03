@@ -35,6 +35,7 @@ public class Database
 	public Database()
 	{
 	}
+	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		add()
@@ -60,9 +61,7 @@ public class Database
 			return;
 		
 		for(int i = 0; i < database.size(); i++)
-			{
 			System.out.print( database.get( i ).getName() );
-			}
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -74,11 +73,17 @@ public class Database
 	 --------------------------------------------------------------------------------------*/
 	public static User find_user( String user_name )
 	{
+	    /*---------------------------------------------------------------
+        if database is empty, return null
+        ---------------------------------------------------------------*/
 		if( database == null )
 		{
 			return null;
 		}
 		
+	    /*---------------------------------------------------------------
+        search database for user
+        ---------------------------------------------------------------*/
 		for(int i = 0; i < database.size(); i++)
 		{
 			if( user_name.equals( database.get(i).getName() ) )
@@ -87,6 +92,9 @@ public class Database
 			}
 		}
 		
+	    /*---------------------------------------------------------------
+        user not found
+        ---------------------------------------------------------------*/
 		return null;
 	}
 	
@@ -102,27 +110,33 @@ public class Database
 	@SuppressWarnings("unchecked")
 	public static void read_database()
 	{
+	    /*---------------------------------------------------------------
+        attempt to read database file
+        ---------------------------------------------------------------*/
 		try
-			{
+		{
 			FileInputStream file_input = new FileInputStream( file );
 			ObjectInputStream object_input = new ObjectInputStream( file_input );
 			try
-				{
-					database = (ArrayList< User >)object_input.readObject();
-				}
+			{
+				database = (ArrayList< User >)object_input.readObject();
+			}
 			catch( ClassNotFoundException e )
-				{
+			{
 				System.out.println("Error encountered during input serialization");
 				e.printStackTrace();
-				}
+			}
 			
 			object_input.close();
 			file_input.close();
-			}
+		}
+	    /*---------------------------------------------------------------
+        Catch IO exception and print out that users.data does not exist
+        ---------------------------------------------------------------*/
 		catch( IOException e )
-			{
+		{
 			System.out.println("Error encountered while trying to read users.data");
-			}   
+		}   
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -136,20 +150,26 @@ public class Database
 	 --------------------------------------------------------------------------------------*/
 	public static void write_database()
 	{
+	    /*---------------------------------------------------------------
+        Attempt to write to database
+        ---------------------------------------------------------------*/
 		try
 		{
-		FileOutputStream file_out = new FileOutputStream( file );
-		ObjectOutputStream object_out = new ObjectOutputStream( file_out );
-		
-		object_out.writeObject( database );
-		
-		object_out.close();
-		file_out.close();
+			FileOutputStream file_out = new FileOutputStream( file );
+			ObjectOutputStream object_out = new ObjectOutputStream( file_out );
+			
+			object_out.writeObject( database );
+			
+			object_out.close();
+			file_out.close();
 		
 		}
-	catch( IOException e )
+	    /*---------------------------------------------------------------
+        Catch IO exception and alert of error
+        ---------------------------------------------------------------*/
+		catch( IOException e )
 		{
-		System.out.println("Error encountered while trying to write to users.data");
+			System.out.println("Error encountered while trying to write to users.data");
 		}
 	}
 

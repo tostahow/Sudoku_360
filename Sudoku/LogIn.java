@@ -23,7 +23,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observer;
 
-
 public class LogIn extends UserService implements ActionListener
 {	
 	/*-----------------------------------------------------------------------------------
@@ -31,9 +30,9 @@ public class LogIn extends UserService implements ActionListener
 	-----------------------------------------------------------------------------------*/
 	private CustomButton log_in_button;						// button to log in with
 	private CustomButton back_button;						// back button
-	private JPasswordField pw_field;    				// password field
-	private JTextField username_field;					// field for User name
-	private boolean success;							// flag set if log in credentials are valid
+	private JPasswordField pw_field;    					// password field
+	private JTextField username_field;						// field for User name
+	private boolean success;								// flag set if log in credentials are valid
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -85,7 +84,7 @@ public class LogIn extends UserService implements ActionListener
 		JLabel username_label;		// name label;
 	
 		/*---------------------------------------------------------------
-								Initialize Variables
+		Initialize Variables
 		---------------------------------------------------------------*/
 		back_button = new CustomButton( "Back", false );
 		button_panel = new JPanel();
@@ -97,29 +96,28 @@ public class LogIn extends UserService implements ActionListener
 		pw_label = new JLabel( "Password:" );
 		pw_field = new JPasswordField();
 		
-		/*---------------------------------------
-		 Set Fonts for each component
-		---------------------------------------*/
+	    /*---------------------------------------------------------------
+		Set fonts for user name and password fields
+        ---------------------------------------------------------------*/
 		username_field.setFont( SudokuCommon.TEXT_FONT );
 		username_label.setFont( SudokuCommon.TEXT_FONT );
 		pw_label.setFont( SudokuCommon.TEXT_FONT );
 		pw_field.setFont( SudokuCommon.TEXT_FONT );		
 		
-		/*---------------------------------------
-		 Set field limits for text fields
-		---------------------------------------*/
+	    /*---------------------------------------------------------------
+		Set text field limits for log in user name and password fields
+        ---------------------------------------------------------------*/
 		username_field.setDocument( this.getUserNameLimit() );
 		pw_field.setDocument( this.getPasswordLimit() );
 		
-		/*---------------------------------------
-		 Set background color for panel and 
-		 button.
-		---------------------------------------*/		
+	    /*---------------------------------------------------------------
+		Set background color for log in panel
+        ---------------------------------------------------------------*/	
 		log_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		
-		/*---------------------------------------------------------------
-							  Set up Log in Panel
-		---------------------------------------------------------------*/
+	    /*---------------------------------------------------------------
+		Set attributes for board panel and log panel, and add components
+        ---------------------------------------------------------------*/
 		g_layout.setHgap( 200 );
 		button_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		button_panel.setLayout( g_layout );
@@ -133,13 +131,12 @@ public class LogIn extends UserService implements ActionListener
 		log_panel.add( pw_label );
 		log_panel.add( pw_field );
 		log_panel.add( button_panel );
-	
-		/*---------------------------------------
-		 When log_in button is pressed. Check to
-		 see if user name and password entries
-		 are valid. If entries are valid request
-		 the log in service.
-		---------------------------------------*/
+		
+	    /*---------------------------------------------------------------
+		When log_in button is pressed. Check to see if user name and 
+		password entries are valid. If entries are valid request the 
+		log in service.
+        ---------------------------------------------------------------*/
 		log_in_button.addActionListener(this);
 		back_button.addActionListener(this);
 		
@@ -168,38 +165,57 @@ public class LogIn extends UserService implements ActionListener
 	 * 		Acquires user_name and password from the log in panel, and attempts to find the
 	 * 		user within the database so the user can play the game.
 	 --------------------------------------------------------------------------------------*/
-	private boolean log_in_request( String user_name, char[] password ) 
+	private boolean logInRequest( String user_name, char[] password ) 
 	{
-		User potential_user = Database.find_user( user_name );
 		boolean valid;
 		
+	    /*---------------------------------------------------------------
+        Attempt to find user that is attempting to log in
+        ---------------------------------------------------------------*/
+		User potential_user = Database.find_user( user_name );
+		
+	    /*---------------------------------------------------------------
+        User not found
+        ---------------------------------------------------------------*/
 		if( potential_user ==  null )
 		{
 			valid = false;
 		}
+	    /*---------------------------------------------------------------
+        User found
+        ---------------------------------------------------------------*/
 		else
 		{
+		    /*---------------------------------------------------------------
+	        Check if entered password matches the potential users password
+	        ---------------------------------------------------------------*/
 			valid = Password.verify_password( potential_user, password );
 			
+		    /*---------------------------------------------------------------
+	        Passwords match
+	        ---------------------------------------------------------------*/
 			if( valid == true )
 			{
 				updateUser( potential_user );
 			}
 		}
+
 		return valid;
 	}
 	
-	/*---------------------------------------
-	 Method: actionPerformed
-	 
-	 Description:
-	 	Handles different buttons pressed.
-	---------------------------------------*/
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		actionPerformed
+	 * 
+	 * Description:
+	 * 		action listener fired. Do different operations depending on source
+	 --------------------------------------------------------------------------------------*/
 	public void actionPerformed( ActionEvent e )
 	{
-		/*-------------------------------------------
-		 Back button was pressed return to caller
-		 ------------------------------------------*/
+		
+	    /*---------------------------------------------------------------
+       	Back Button was pressed, return to calling class.
+        ---------------------------------------------------------------*/		 
 		if( e.getSource() == back_button )
 		{
 			clearFields();
@@ -208,47 +224,48 @@ public class LogIn extends UserService implements ActionListener
 		
 		if( e.getSource() == log_in_button )
 		{
-			/*---------------------------------------
-			 If password or username field are empty
-			 inform user, and do not process request
-			 to log in.
-			---------------------------------------*/
+
+		    /*---------------------------------------------------------------
+	        If password or user name field are empty inform user, and do not 
+	        process request to log in.
+	        ---------------------------------------------------------------*/
 			if( ( username_field.getText().length() < 6) 
 			||  ( pw_field.getPassword().length < 6 ) )
 				{
-				errorMessage( "user name or password does not meet 6 character limit");
+				errorMessage( "user name or password does not meet 6 character limit" );
 				return;
 				}
 			
-			/*---------------------------------------
-			 Call log_in_request which will attempt
-			 to find the user within the system.
-			---------------------------------------*/
-			success = log_in_request( username_field.getText(), 
+		    /*---------------------------------------------------------------
+			Call log_in_request which will attempt to find the user within 
+			the system.
+	        ---------------------------------------------------------------*/
+			success = logInRequest( username_field.getText(), 
 									  pw_field.getPassword() 
 									);
-			/*---------------------------------------
-			 if the log_in_request fails. Reset 
-			 the entry fields.
-			---------------------------------------*/
+			
+		    /*---------------------------------------------------------------
+			If the log_in_request fails. Reset the entry fields.
+	        ---------------------------------------------------------------*/
 			if( success == false )
 				{
 				
-				/*---------------------------------------
-				 Use option pane to alert user of failed
-				 attempt.
-				---------------------------------------*/
+			    /*---------------------------------------------------------------
+				Use option pane to alert user of failed attempt.
+		        ---------------------------------------------------------------*/
 				errorMessage( "user name and password combo does not match stored records" );
 				clearFields();
 				
 				}
-			/*---------------------------------------
-			 Show Success message!
-			---------------------------------------*/
+		    /*---------------------------------------------------------------
+			Show Success Message
+	        ---------------------------------------------------------------*/
 			else
 				{
+				
 				successMessage( "Log In Successful" );
 				clearFields();
+				
 				}
 		}
 	}

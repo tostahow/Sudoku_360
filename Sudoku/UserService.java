@@ -10,6 +10,9 @@
  * 		Travis Ostahowski
 -------------------------------------------------------------------------------------------------*/
 
+/*-------------------------------------------------------------------------------------------------
+ 										Imports
+-------------------------------------------------------------------------------------------------*/
 import java.util.Observer;
 import java.util.Observable;
 import javax.swing.JOptionPane;
@@ -21,6 +24,7 @@ abstract class UserService extends Observable
 	private User client;
 	private TextFieldLimit user_name_limit;
 	private TextFieldLimit password_limit;
+	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		UserService() - constructor
@@ -36,34 +40,76 @@ abstract class UserService extends Observable
 		service_panel = null;
 		client = null;
 	}
-	
+	/*---------------------------------------------------------------------------------------
+	 *						         Getters and Setters
+	 --------------------------------------------------------------------------------------*/
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		getUserNameLimit
+	 * 
+	 * Description:
+	 * 		returns user name text field limit
+	 --------------------------------------------------------------------------------------*/
 	public TextFieldLimit getUserNameLimit()
 	{
 		return user_name_limit;
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		getPasswordLimit
+	 * 
+	 * Description:
+	 * 		returns password text field limit
+	 --------------------------------------------------------------------------------------*/
 	public TextFieldLimit getPasswordLimit()
 	{
 		return password_limit;
 	}
+	
 	/*---------------------------------------------------------------------------------------
-	 *						         Getters and Setters
+	 * Method:
+	 * 		setPanel
+	 * 
+	 * Description:
+	 * 		sets service panel to passed in panel argument
 	 --------------------------------------------------------------------------------------*/
 	public void setPanel( JPanel panel )
 	{
 		service_panel = panel;
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		getPanel
+	 * 
+	 * Description:
+	 * 		returns service panel for different user services
+	 --------------------------------------------------------------------------------------*/
 	public JPanel getPanel()
 	{
 		return service_panel;
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		setUser
+	 * 
+	 * Description:
+	 * 		set user to a new user
+	 --------------------------------------------------------------------------------------*/
 	public void setUser( User new_user )
 	{
 		client = new_user;
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		getUser
+	 * 
+	 * Description:
+	 * 		returns user
+	 --------------------------------------------------------------------------------------*/
 	public User getUser()
 	{
 		return client;
@@ -79,7 +125,7 @@ abstract class UserService extends Observable
 	public void goBack()
 	{
 		setChanged();
-		notifyObservers("");
+		notifyObservers( "" );
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -117,6 +163,7 @@ abstract class UserService extends Observable
     		JOptionPane.OK_OPTION
 		);
 	}
+	
 	/*---------------------------------------------------------------------------------------
 	 * 	   Abstract Classes to be implemented and redefined for each derived class 
 	 --------------------------------------------------------------------------------------*/

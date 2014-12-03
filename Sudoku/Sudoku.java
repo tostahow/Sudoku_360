@@ -17,7 +17,6 @@
 import java.util.Observable;
 import java.util.Observer;
 
-
 public class Sudoku implements Observer
 {
 	/*-----------------------------------------------------------------------------------
@@ -37,6 +36,7 @@ public class Sudoku implements Observer
 	{
 		new Sudoku();
 	}
+	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		Sudoku - constructor
@@ -50,11 +50,19 @@ public class Sudoku implements Observer
 		game_menu = null;
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		gameMenu
+	 * 
+	 * Description:
+	 * 		Calls MainMenu with current user
+	---------------------------------------------------------------------------------------*/
 	public void gameMenu()
 	{
 		game_menu = new MainMenu( this.current_user );
 		game_menu.show();
 	}
+	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		update()
@@ -72,28 +80,32 @@ public class Sudoku implements Observer
 		 user into logged in user.
 		---------------------------------------*/
 		if( object_changed instanceof User && ( subject instanceof ServiceFrame ) )
-			{
+		{
 			System.out.println( "User Loaded" );
 			current_user = (User)object_changed;
 			
-			// Destroy any references to ServiceFrame
+		    /*---------------------------------------------------------------
+	        Destroy references to previous information
+	        ---------------------------------------------------------------*/
 			service.deleteObservers();
 			service.destroy();
 			service = null;
 			
-			//Create new Game Menu
+		    /*---------------------------------------------------------------
+	        Load game menu
+	        ---------------------------------------------------------------*/
 			gameMenu();
-			}
+		}
 		
 		/*---------------------------------------
 		 ServiceFrame was closed. Log In was not
 		 complete. Exit process
 		---------------------------------------*/
 		if ( object_changed instanceof String  )
-			{
+		{
 			System.out.println( "ServiceFrame was closed. Exit system!" );
 			System.exit(1);
 			
-			}	
+		}	
 	}
 }

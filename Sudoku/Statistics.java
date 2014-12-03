@@ -1,3 +1,14 @@
+/*-------------------------------------------------------------------------------------------------
+ * Document:
+ *      Statistics.java
+ * 
+ * Description:
+ *      All of the statistical information a user might be interested in seeing displayed in
+ *      a separate frame.
+ *      
+ * Author:
+ * 		Travis Ostahowski
+-------------------------------------------------------------------------------------------------*/
 import java.awt.GridLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -43,6 +54,9 @@ public class Statistics extends JFrame implements WindowListener
 		initVariables();
 		addInformation( user );
 		
+	    /*---------------------------------------------------------------
+        set attributes for frame
+        ---------------------------------------------------------------*/
 		this.add( stats_panel );
 		this.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 		this.setSize( 500, 500 );
@@ -59,6 +73,9 @@ public class Statistics extends JFrame implements WindowListener
 	 --------------------------------------------------------------------------------------*/
 	public void initVariables()
 	{
+	    /*---------------------------------------------------------------
+		Initialize all variables/components
+        ---------------------------------------------------------------*/
 		showing = false;
 		stats_panel = new JPanel();
 		stats_grid = new GridLayout( 3, 2 );
@@ -69,6 +86,9 @@ public class Statistics extends JFrame implements WindowListener
 		score = new CustomLabel("Score");
 		maps_completed = new CustomLabel("Maps Completed");
 		
+	    /*---------------------------------------------------------------
+        add all components to stats panel
+        ---------------------------------------------------------------*/
 		stats_panel.setLayout( stats_grid );
 		stats_panel.add( name_label );
 		stats_panel.add( name );

@@ -144,7 +144,8 @@ public class SudokuDisplay extends Observable implements ActionListener
      * 
      * Description:
      *      Set up all Components to generate board. This time, use the passed in file to
-     *      to load a game state.
+     *      to load a game state (board size, board and Cell contents, score, time, hints,
+     *      etc.)
      --------------------------------------------------------------------------------------*/
 	public SudokuDisplay( Observer listener, File file )
 	{
@@ -157,7 +158,6 @@ public class SudokuDisplay extends Observable implements ActionListener
 			
 			board_size = (BoardSize) in.readObject();
 			difficulty = (Difficulty) in.readObject();
-			game_score = 0;
 			
 			System.out.println("BSize: " + board_size);
 			System.out.println("DIF: " + difficulty);			
@@ -167,6 +167,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 			
 			c = (Cell[][]) in.readObject();
 			
+			game_score = (int) in.readInt();
 			numHints = (int) in.readInt();
 			
 			System.out.println("Hints: " + numHints);
@@ -187,6 +188,10 @@ public class SudokuDisplay extends Observable implements ActionListener
         loadBoardPanel(c);
 
         back_end.setHints(numHints);
+        
+        // Update the UI fields.
+        score.setText( "" + game_score );
+        hint.setText( "" + back_end.getHints() );
 	}
 	
 	 /*---------------------------------------------------------------------------------------
@@ -397,26 +402,100 @@ public class SudokuDisplay extends Observable implements ActionListener
 	{
 		timer_thread = null;
 		
-		ObjectOutputStream out;
+		// Don't allow game state saving if the game is already complete.
+		if (!back_end.isWin())
+		{		
+    		ObjectOutputStream out;
+    		
+    		// Write the size of the board, difficulty, answer board contents, player input contents and number of
+    		// hints to the disk.
+    		try 
+    		{
+    			out = new ObjectOutputStream(new FileOutputStream(new File("DUMMY_" + board_size + "_" + difficulty + ".save")));
+    			out.writeObject(board_size);
+    			out.writeObject(difficulty);
+    		    out.writeObject(back_end.getBoard());
+    		    
+    		    Cell[][] c = board.getCells();
+    		    Cell[][] cells = new Cell[c.length][c.length];		    
+    		    
+    	        for( int i = 0; i < cells.length; i++)
+    	        {
+    	            for( int j = 0; j < cells[i].length; j++)
+    	            {
+    	            	cells[i][j] = new Cell( board_size );
+    	                //cells[i][j].pen_mode = c[i][j].pen_mode;
+    	                //cells[i][j].pencil_mode = c[i][j].pencil_mode;
+    	                //cells[i][j].eraser_mode = c[i][j].eraser_mode;
+    	                cells[i][j].setLocked(c[i][j].isLocked());
+    	                cells[i][j].setPenFilled(c[i][j].isPenFilled());
+    	                cells[i][j].setEraserCount(c[i][j].getEraserCount());
+    	            	
+    	                /*
+    		            if (c[i][j].pen_field.getFont() == SudokuCommon.PEN_FONT)
+    		            {
+    		                cells[i][j].pen_field = new CellField( "", true );
+    		            }
+    		            else
+    		            {
+    		                cells[i][j].pen_field = new CellField( "", false );
+    		            }
+    		            
+    		            if (c[i][j].pencil_field.getFont() == SudokuCommon.PEN_FONT)
+    		            {
+    		                cells[i][j].pencil_field = new CellField( "", true );
+    		            }
+    		            else
+    		            {
+    		                cells[i][j].pencil_field = new CellField( "", false );
+    		            }
+    		            */
+    		            
+    		            /*
+    	                cells[i][j].pen_field.setText( c[i][j].pen_field.getText() );
+    	                cells[i][j].pen_field.setEditable( (c[i][j].pen_field.isEditable()) );
+    	                cells[i][j].pen_field.setDocument( new TextFieldLimit(1, c[i][j].cell_type) );
+    	                cells[i][j].pen_field.setForeground( c[i][j].pen_field.getForeground() );
+    	                cells[i][j].pen_field.setBackground( c[i][j].pen_field.getBackground() );
+    	                
+    	                cells[i][j].pencil_field.setText( c[i][j].pencil_field.getText() );
+    	                cells[i][j].pencil_field.setEditable( (c[i][j].pencil_field.isEditable()) );                
+    	                cells[i][j].pencil_field.setDocument( new TextFieldLimit(6, c[i][j].cell_type) );
+    	                cells[i][j].pencil_field.setForeground( c[i][j].pencil_field.getForeground() );
+    	                cells[i][j].pencil_field.setBackground( c[i][j].pencil_field.getBackground() );
+    	                */
+    
+    	                // Store the text of the pen field into str.
+    	                cells[i][j].pen_field.str = c[i][j].pen_field.getText();
+    	                //cells[i][j].pen_field.editable = c[i][j].pen_field.isEditable();
+    	                //cells[i][j].pen_field.fgColor = c[i][j].pen_field.getForeground();
+    	                //cells[i][j].pen_field.bgColor = c[i][j].pen_field.getBackground();
+    	                //cells[i][j].pen_field.font = c[i][j].pen_field.getFont();
+    	                
+    	                // Store the text of the pencil field into str.
+    	                cells[i][j].pencil_field.str = c[i][j].pencil_field.getText();
+    	                //cells[i][j].pencil_field.editable = c[i][j].pencil_field.isEditable();
+    	                //cells[i][j].pencil_field.fgColor = c[i][j].pencil_field.getForeground();
+    	                //cells[i][j].pencil_field.bgColor = c[i][j].pencil_field.getBackground();
+    	                //cells[i][j].pencil_field.font = c[i][j].pencil_field.getFont();
+    	                
+    	                cells[i][j].cell_type = c[i][j].cell_type;
+    	            }
+    	        }
+    	        
+    		    out.writeObject(cells); // Problem is here. While saving, the display gets messed up.
+    		    
+    		    out.writeInt(game_score);
+    		    out.writeInt(back_end.getHints());
+    		    
+    		    out.close();
+    		}
+    		catch (IOException e) 
+    		{
+    			e.printStackTrace();
+    		}
+		}		
 		
-		// Write the size of the board, difficulty, answer board contents, player input contents and number of
-		// hints to the disk.
-		try 
-		{
-			out = new ObjectOutputStream(new FileOutputStream(new File("DUMMY.save")));
-			out.writeObject(board_size);
-			out.writeObject(difficulty);
-		    out.writeObject(back_end.getBoard());
-
-		    out.writeObject(board.getCells()); // Problem is here. While saving, the display gets messed up.
-		    out.writeInt(back_end.getHints());
-		    out.close();
-		}
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-
 		// Alert that changes have occurred, and notify obsevers that the program's ready to quit.
 		setChanged();
 		notifyObservers( "Quit" );

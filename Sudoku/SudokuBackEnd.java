@@ -439,7 +439,7 @@ public class SudokuBackEnd
     			cells_filled++;
     		}
     	}
-    }
+    }    
     
     public int scoreBoard( Cell[][] cells )
     {

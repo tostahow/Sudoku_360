@@ -204,10 +204,120 @@ public class Board extends JPanel
         {
             for( int j = 0; j < cells_dim; j++)
             {
-                cells[i][j] = new Cell( board_size );
-                cells[i][j] = c[i][j];
+                cells[i][j] = new Cell( board_size );                
+                //cells[i][j].pen_mode = c[i][j].pen_mode;
+                //cells[i][j].pencil_mode = c[i][j].pencil_mode;
+                //cells[i][j].eraser_mode = c[i][j].eraser_mode;
+                cells[i][j].setLocked(c[i][j].isLocked());
+                cells[i][j].setPenFilled(c[i][j].isPenFilled());
+                cells[i][j].setEraserCount(c[i][j].getEraserCount());
+                cells[i][j].cell_type = c[i][j].cell_type;
+
+                // Init the pen field and its text.
+				if (!c[i][j].pen_field.str.equals(""))
+				{
+					if (c[i][j].isLocked() == true)
+					{
+						cells[i][j].setLocked(false);		                
+
+		                if (Character.isDigit(c[i][j].pen_field.str.charAt(0)))
+		                	cells[i][j].setPenField( Integer.parseInt(c[i][j].pen_field.str) );
+		                else
+		                	cells[i][j].setPenField( Integer.parseInt( "" + ((Character.toUpperCase(c[i][j].pen_field.str.charAt(0))) - 65 + 10)) );
+		                
+		    			cells[i][j].setLocked(true);
+					}
+					else
+					{
+		                if (Character.isDigit(c[i][j].pen_field.str.charAt(0)))
+		                	cells[i][j].setPenField( Integer.parseInt(c[i][j].pen_field.str) );
+		                else
+		                	cells[i][j].setPenField( Integer.parseInt( "" + ((Character.toUpperCase(c[i][j].pen_field.str.charAt(0))) - 65 + 10)) );
+		                
+						//cells[i][j].setPenField( Integer.parseInt(c[i][j].pen_field.str) );
+					}
+				}
+				
+				// Init the pencil field and its text.
+				if (!c[i][j].pencil_field.str.equals(""))
+				{
+					cells[i][j].setPencilField( c[i][j].pencil_field.str );
+				}
+
+                
+                /*
+                // Getting hints.
+                if (!c[i][j].pen_field.str.equals(""))
+                {
+                	cells[i][j].setPenField( Integer.parseInt(c[i][j].pen_field.str) );
+                	cells[i][j].setLocked(true);
+                }
+                */
+                
+    			
+    			//cells[i][j].setLocked(true);
+                
+                /*
+                cells[i][j].pen_mode = c[i][j].pen_mode;
+                cells[i][j].pencil_mode = c[i][j].pencil_mode;
+                cells[i][j].eraser_mode = c[i][j].eraser_mode;
+                cells[i][j].locked = c[i][j].locked;
+                cells[i][j].pen_filled = c[i][j].pen_filled;
+                cells[i][j].eraser_count = c[i][j].eraser_count;
+                
+                if (c[i][j].pen_field.font == SudokuCommon.PEN_FONT)
+                {
+                    cells[i][j].pen_field = new CellField( "", true );
+                }
+                else
+                {
+                    cells[i][j].pen_field = new CellField( "", false );
+                }
+                
+                if (c[i][j].pencil_field.font == SudokuCommon.PEN_FONT)
+                {
+                    cells[i][j].pencil_field = new CellField( "", true );
+                }
+                else
+                {
+                    cells[i][j].pencil_field = new CellField( "", false );
+                }    
+                
+                //cells[i][j].pen_field = c[i][j].pen_field;
+                cells[i][j].pen_field.str = c[i][j].pen_field.str;
+                cells[i][j].pen_field.bgColor = c[i][j].pen_field.bgColor;
+                cells[i][j].pen_field.fgColor = c[i][j].pen_field.fgColor;
+                cells[i][j].pen_field.font = c[i][j].pen_field.font;
+                cells[i][j].pen_field.editable = c[i][j].pen_field.editable;
+                
+                
+                
+                cells[i][j].pencil_field = c[i][j].pencil_field;
+                
+                cells[i][j].cell_type = c[i][j].cell_type;
+                
+                */
+                
+                
+                
+                //System.out.print("|" + c[i][j].pen_field.str + "");
+                //System.out.print(c[i][j].pen_field.getText() + "| ");
+                
+                //cells[i][j] = c[i][j];
+                
+                //cells[i][j].pen_field.setText(cells[i][j].pen_field.str); //PROB HERE, not accepting new texts
+                //cells[i][j].setPenField(Integer.parseInt(cells[i][j].pen_field.str));
+                //cells[i][j].setLocked(!cells[i][j].pen_field.editable);
+                
+                cells[i][j].repaint();
+                
+                
+                //System.out.print("|" + c[i][j].pen_field.str + "");
+                //System.out.print(cells[i][j].pen_field.getText() + "| ");
+                
             }
             
+           // System.out.print("\n");
         }
         
         /*---------------------------------------------------------------

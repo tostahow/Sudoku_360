@@ -1,11 +1,15 @@
 import java.awt.Color;
+import java.awt.Font;
+import java.io.Serializable;
 
 import javax.swing.JTextField;
 
 
-public class CellField extends JTextField 
+public class CellField extends JTextField implements Serializable
 {
 	private static final long serialVersionUID = 1L;
+	
+	public String str = "";
 
 	public CellField( String name, boolean is_pen )
 	{

@@ -18,12 +18,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.Serializable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class Cell extends JPanel implements KeyListener, MouseListener
+public class Cell extends JPanel implements KeyListener, MouseListener, Serializable
 {
 	/*-----------------------------------------------------------------------------------
 								Private Class Members
@@ -38,9 +39,9 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 	private boolean pen_filled;                 // pen filled flag
 	
 	private int eraser_count;                   // # of eraser uses
-	private CellField pen_field;				// Pen Field
-	private CellField pencil_field;			    // Pencil Field
-	private FieldType cell_type;				// Cell_type
+	public CellField pen_field;				    // Pen Field
+	public CellField pencil_field;			    // Pencil Field
+	public FieldType cell_type;				    // Cell_type
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -109,6 +110,31 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
+	 * 		setPencilField
+	 * 
+	 * Description:
+	 * 		set the text of pencil field so long as the cell is not locked
+	 --------------------------------------------------------------------------------------*/
+	public void setPencilField( String value )
+	{
+		if( this.locked != true )
+			this.pencil_field.setText( value );
+	}
+	
+    /*---------------------------------------------------------------------------------------
+     * Method:
+     *      setPenFilled
+     * 
+     * Description:
+     *      set whether this Cell was filled in by a pen.
+     --------------------------------------------------------------------------------------*/
+    public void setPenFilled( boolean flag )
+    {
+        this.pen_filled = flag;
+    }
+    
+	/*---------------------------------------------------------------------------------------
+	 * Method:
 	 * 		setPencilMode
 	 * 
 	 * Description:
@@ -163,6 +189,18 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 			this.eraser_mode = flag;
 	}
 	
+    /*---------------------------------------------------------------------------------------
+     * Method:
+     *      setEraserCount
+     * 
+     * Description:
+     *      set the number of erases that happened in this Cell
+     --------------------------------------------------------------------------------------*/
+    public void setEraserCount( int count )
+    {
+        this.eraser_count = count;
+    }	
+	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		setLocked
@@ -214,6 +252,18 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 	public boolean isPencilMode()
 	{
 		return this.pencil_mode;
+	}
+	
+    /*---------------------------------------------------------------------------------------
+     * Method:
+     *      isPenFilled()
+     * 
+     * Description:
+     *      returns true if this was filled in by a pen
+     --------------------------------------------------------------------------------------*/
+	public boolean isPenFilled()
+	{
+	    return this.pen_filled;
 	}
 	
 	/*---------------------------------------------------------------------------------------

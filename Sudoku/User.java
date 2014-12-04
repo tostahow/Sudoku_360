@@ -19,6 +19,7 @@ public class User implements Serializable
 	private static final long serialVersionUID = 1L;	// serial ID
 	
 	private long total_score;							// total user score
+	private long time_played;							// total time played
 	private String name;								// user name
 	private String password_hash;						// generated password hash
 	private String password_salt;						// unique salt for user
@@ -115,6 +116,18 @@ public class User implements Serializable
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
+	 * 		getTimePlayed()
+	 * 
+	 * Description:
+	 * 		gets total time user has played for
+	 --------------------------------------------------------------------------------------*/
+	public long getTimePlayed()
+	{
+		return time_played;
+	}
+	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
 	 * 		incrementMapsCompleted
 	 * 
 	 * Description:
@@ -123,5 +136,10 @@ public class User implements Serializable
 	public void incrementMapsCompleted()
 	{
 		maps_completed++;
+	}
+	
+	public void updateTimePlayed( long time )
+	{
+		time_played += time;
 	}
 }

@@ -423,6 +423,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         ---------------------------------------------------------------*/
 		if( e.getSource() == load_board_button)
 		{
+			boolean closed = false;
 		    File file = null;
 		    
 		    JFileChooser fileOpen = new JFileChooser();
@@ -436,14 +437,18 @@ public class MainMenu implements Observer, ActionListener, WindowListener
             }
             else
             {
+            	closed = true;
             	System.out.println( "Open command cancelled by user!" );
             }
             
-            game = new SudokuDisplay(this, getDesiredDifficulty(), file);
-            current_panel = game.getGamePanel();
-            main_frame.getContentPane().remove( menu_panel );
-            main_frame.add( current_panel );
-            main_frame.setVisible( true );
+            if( !closed )
+            {
+	            game = new SudokuDisplay( this, getDesiredDifficulty(), file );
+	            current_panel = game.getGamePanel();
+	            main_frame.getContentPane().remove( menu_panel );
+	            main_frame.add( current_panel );
+	            main_frame.setVisible( true );
+            }
 		    
 		}
 		
@@ -454,6 +459,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 		if( e.getSource() == load_save_button)
 		{
 		    File file = null;
+		    boolean closed =  false;
 		    
 		    JFileChooser fileOpen = new JFileChooser();
 		    FileFilter filter = new FileNameExtensionFilter("save files", "save");
@@ -466,15 +472,19 @@ public class MainMenu implements Observer, ActionListener, WindowListener
             }
             else
             {
+            	closed = true;
             	System.out.println( "Open command cancelled by user!" );
             }
             
-            game = new SudokuDisplay(this, file);
-            current_panel = game.getGamePanel();
-            main_frame.getContentPane().remove( menu_panel );
-            main_frame.add( current_panel );
-            main_frame.setVisible( true );
-		    
+            if( !closed )
+            {
+	            game = new SudokuDisplay(this, file);
+	            current_panel = game.getGamePanel();
+	            main_frame.getContentPane().remove( menu_panel );
+	            main_frame.add( current_panel );
+	            main_frame.setVisible( true );
+            }
+			    
 		}
 		
 	}
@@ -535,8 +545,14 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	@Override
 	public void update( Observable subject, Object object_changed ) 
 	{
+		/*-----------------------------------------------------------------------------------
+		A string was sent from sudoku display. Either quit or win was performed.
+		-----------------------------------------------------------------------------------*/
 		if( ( subject instanceof SudokuDisplay ) && ( object_changed instanceof String ) )
 		{
+			/*-----------------------------------------------------------------------------------
+			Quit the game
+			-----------------------------------------------------------------------------------*/
 			if( ( ( String )object_changed ).equals( "Quit" ) )
 			{
 				main_frame.dispatchEvent( new WindowEvent( main_frame, WindowEvent.WINDOW_CLOSING ) );
@@ -565,6 +581,16 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 			user.setScore( (int)object_changed );
 			stats.updateUserInformation( user );
 			System.out.println( "User Score Updated to " + user.getScore() );
+		}
+		
+	    /*---------------------------------------------------------------
+		Update User time
+        ---------------------------------------------------------------*/
+		if( ( subject instanceof SudokuDisplay ) && ( object_changed instanceof Long ) )
+		{
+			user.updateTimePlayed( (long)object_changed );
+			stats.updateUserInformation( user );
+			System.out.println( "User Time Played Updated to " + user.getTimePlayed() + " in seconds." );
 		}
 	}
 

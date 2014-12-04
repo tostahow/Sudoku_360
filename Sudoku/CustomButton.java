@@ -14,11 +14,19 @@
 -------------------------------------------------------------------------------------------------*/
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import java.awt.Color;
 
-public class CustomButton extends JButton 
+import java.awt.Color;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+public class CustomButton extends JButton implements MouseListener
 {
+	/*-----------------------------------------------------------------------------------
+									Private Class Members
+	-----------------------------------------------------------------------------------*/
 	private static final long serialVersionUID = 1L;
+	private boolean in_game;							// is the button used in game
+	private boolean activated;							// flag for button being activated
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -34,7 +42,8 @@ public class CustomButton extends JButton
         call JButton constructor with name of button
         ---------------------------------------------------------------*/
 		super( name );
-		
+		activated = false;
+		this.in_game = in_game;
 	    /*---------------------------------------------------------------
         If the button is not in game. Apply non game attributes
         ---------------------------------------------------------------*/
@@ -59,6 +68,7 @@ public class CustomButton extends JButton
         ---------------------------------------------------------------*/
 		this.setBorder( BorderFactory.createLineBorder( Color.black, 4 ) );
 		this.setFocusable( false );
+		this.addMouseListener( this );
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -70,6 +80,7 @@ public class CustomButton extends JButton
 	 --------------------------------------------------------------------------------------*/
 	public void activateButton()
 	{
+		activated = true;
 		this.setBackground( SudokuCommon.COMPONENT_COLOR );
 		this.setForeground( SudokuCommon.PEN_COLOR );
 	}
@@ -83,8 +94,46 @@ public class CustomButton extends JButton
 	 --------------------------------------------------------------------------------------*/
 	public void deactivateButton()
 	{
+		activated = false;
 		this.setBackground( SudokuCommon.BACKGROUND_COLOR );
 		this.setForeground( null );
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		if( in_game && !activated )
+		{
+			this.setBackground( SudokuCommon.COMPONENT_COLOR );
+			this.setForeground( SudokuCommon.PEN_COLOR );	
+		}
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		if( in_game && !activated )
+		{
+			this.setBackground( SudokuCommon.BACKGROUND_COLOR );
+			this.setForeground( null );
+		}
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -536,9 +536,16 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 		// TODO Auto-generated method stub
 	}
 
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		mouseEntered()
+	 * 
+	 * Description:
+	 * 		change background and foreground when mousing over fields, depending on mode.
+	 --------------------------------------------------------------------------------------*/
 	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mouseEntered(MouseEvent arg0) 
+	{
 		if( !locked && isPenMode() )
 		{
 			pen_field.setBackground( SudokuCommon.BACKGROUND_COLOR );
@@ -553,7 +560,14 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 		}
 		
 	}
-
+	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		mouseExited()
+	 * 
+	 * Description:
+	 * 		reset fields to normal appearance on exit of field.
+	 --------------------------------------------------------------------------------------*/
 	@Override
 	public void mouseExited(MouseEvent arg0) {
 		// TODO Auto-generated method stub

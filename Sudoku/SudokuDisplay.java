@@ -13,60 +13,72 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 
-public class SudokuDisplay extends Observable implements ActionListener
+public class SudokuDisplay extends Observable implements ActionListener, KeyListener
 {	
 	/*-----------------------------------------------------------------------------------
 								Private Class Members
 	-----------------------------------------------------------------------------------*/
-	private BoardSize board_size;			// size of current board
-	private Difficulty difficulty;			// difficulty of board
-	private SudokuBackEnd back_end;			// back end sudoku board for functionality
-	private Board board;					// board panel of cells
-	private File file;						// file to load
+	private BoardSize board_size;				// size of current board
+	private Difficulty difficulty;				// difficulty of board
+	private SudokuBackEnd back_end;				// back end sudoku board for functionality
+	private Board board;						// board panel of cells
+	private File file;							// file to load
 			
-	private Thread timer_thread;
+	private Timer timer;						// timer to keep track of time
 	
-	private long start_time;				// start time
-	private long elapsed_time;				// elapsed time
-	private int game_score;					// current game score
+	private long start_time;					// start time
+	private long elapsed_time;					// elapsed time
+	private int game_score;						// current game score
 	
-	private CustomButton pencil_button;		// pencil mode button
-	private CustomButton eraser_button;		// eraser mode button
-	private CustomButton pen_button;		// pen mode button
-	private CustomButton quit_button;		// quit button
-	private CustomButton score_button;		// score button
-	private CustomButton solve_button;		// solve button
-	private CustomButton hint_button;		// hint button	
+	private CustomButton pencil_button;			// pencil mode button
+	private CustomButton eraser_button;			// eraser mode button
+	private CustomButton pen_button;			// pen mode button
+	private CustomButton save_and_quit_button; 	// save and quit button
+	private CustomButton quit_button;			// quit button
+	private CustomButton score_button;			// score button
+	private CustomButton solve_button;			// solve button
+	private CustomButton hint_button;			// hint button	
 	
-	private CustomLabel score;				// displays score
-	private CustomLabel time;				// displays elapsed time
-	private CustomLabel hint;				// displays remaining hints
-	private CustomLabel score_label;		// "Score:"
-	private CustomLabel time_label;			// "Elapsed Time:"
-	private CustomLabel hint_label;			// "Hints:"
+	private CustomLabel score;					// displays score
+	private CustomLabel time;					// displays elapsed time
+	private CustomLabel hint;					// displays remaining hints
+	private CustomLabel score_label;			// "Score:"
+	private CustomLabel time_label;				// "Elapsed Time:"
+	private CustomLabel hint_label;				// "Hints:"
 	
-	private JPanel display_panel;			// panel to hold all elements
-	private JPanel info_panel;				// houses score, hints, time, etc.
-	private JPanel button_panel;			// houses all buttons
+	private JPanel display_panel;				// panel to hold all elements
+	private JPanel info_panel;					// houses score, hints, time, etc.
+	private JPanel button_panel;				// houses all buttons
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		SudokuDisplay() - Constructor
 	 * 
 	 * Description:
-	 * 		Set Up all Components to generate board, and ensure game score is 0 and begin
+	 * 		Set up all Components to generate board, and ensure game score is 0 and begin
 	 * 		the timer.
 	 --------------------------------------------------------------------------------------*/
 	public SudokuDisplay( Observer listener, BoardSize size, Difficulty difficulty )
@@ -76,24 +88,16 @@ public class SudokuDisplay extends Observable implements ActionListener
 		this.difficulty = difficulty;
 		game_score = 0;
 		
-		/*timer_thread = new Thread()
-		{
-			public void run()
-			{
-				while(true)
+		timer = new Timer( 1000, 
+				new ActionListener()
 				{
-					elapsed_time = (System.currentTimeMillis() - start_time)/1000;
-					time.setText("" + elapsed_time );
-					
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					public void actionPerformed( ActionEvent ae )
+					{
+						elapsed_time++;
+						time.setText("" +  elapsed_time );
 					}
 				}
-			}
-		};*/
+			);
 		
 	    /*---------------------------------------------------------------
         Create new panel to hold all elements of sudoku game
@@ -113,12 +117,13 @@ public class SudokuDisplay extends Observable implements ActionListener
         ---------------------------------------------------------------*/
 		loadStatPanel();
 		loadButtonPanels();
-		loadBoardPanel();
+		loadBoardPanel(false);
+		startTimer();
 	}
 	
 	 /*---------------------------------------------------------------------------------------
      * Method:
-     *      SudokuDisplay() - Alternate Constructor
+     *      SudokuDisplay() - Alternate Constructor for loading custom game board
      * 
      * Description:
      *      Set Up all Components to generate board and load a file to act as a new 
@@ -128,34 +133,118 @@ public class SudokuDisplay extends Observable implements ActionListener
 	{
 	    addObserver( listener );
 	    
-	    //board_size = BoardSize.NINE;
 	    this.difficulty = difficulty;	    
 	    
 	    this.file = file;
 	    game_score = 0;
 	    
-	    String[] data = readBoardFile(file);
+	    String[] data = readBoardFile( file );
 	    	    
         display_panel = new JPanel();
         display_panel.setLayout( new BorderLayout() );
         
         back_end = new SudokuBackEnd( this.board_size, this.difficulty );
-        //back_end.generateNewPuzzle();
-        back_end.generatePuzzleBasedOnFile(data);
+        back_end.generatePuzzleBasedOnFile( data );
         back_end.printBoardContents();
         
         loadStatPanel();
         loadButtonPanels();
-        loadBoardPanel();
+        loadBoardPanel(false);
+        startTimer();
 	}
 	
 	 /*---------------------------------------------------------------------------------------
-     * Method:
-     *      readBoardFile()
-     * 
-     * Description:
-     *      Converts the passed in file to a String.
-     --------------------------------------------------------------------------------------*/
+	 * Method:
+	 *      SudokuDisplay() - Alternate Constructor for loading a game save for a particular
+	 *      board.
+	 * 
+	 * Description:
+	 *      Set up all Components to generate board. This time, use the passed in file to
+	 *      to load a game state (board size, board and Cell contents, score, time, hints,
+	 *      etc.)
+	 --------------------------------------------------------------------------------------*/
+	public SudokuDisplay( Observer listener, File file )
+	{
+		Cell[][] c = null;
+		int numHints = 0;
+		
+		addObserver( listener );
+		
+		try 
+		{
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
+			
+			board_size = (BoardSize) in.readObject();
+			difficulty = (Difficulty) in.readObject();
+			
+			System.out.println("BSize: " + board_size);
+			System.out.println("DIF: " + difficulty);			
+			
+			back_end = new SudokuBackEnd( this.board_size, this.difficulty );
+			back_end.setBoard((int[][]) in.readObject());
+			
+			c = (Cell[][]) in.readObject();
+			
+			game_score = (int) in.readInt();
+			numHints = (int) in.readInt();
+			
+			System.out.println("Hints: " + numHints);
+	
+			in.close();
+		} 
+		catch (ClassNotFoundException | IOException e1) 
+		{
+			e1.printStackTrace();
+		}
+		
+        display_panel = new JPanel();
+        display_panel.setLayout( new BorderLayout() );        
+        back_end.printBoardContents();
+        
+        loadStatPanel();
+        loadButtonPanels();
+        loadBoardPanel(c);
+
+        back_end.setHints(numHints);
+        
+        // Update the UI fields.
+        score.setText( "" + game_score );
+        hint.setText( "" + back_end.getHints() );
+        startTimer();
+	}
+	
+	 /*---------------------------------------------------------------------------------------
+	 * Method:
+	 *      startTimer()
+	 * 
+	 * Description:
+	 *      start the timer!
+	 --------------------------------------------------------------------------------------*/
+	public void startTimer()
+	{
+		timer.start();
+	}
+	
+	 /*---------------------------------------------------------------------------------------
+	 * Method:
+	 *      startTimer()
+	 * 
+	 * Description:
+	 *      start the timer!
+	 --------------------------------------------------------------------------------------*/
+	public void stopTimer()
+	{
+		timer.stop();
+	
+	}
+	
+	 /*---------------------------------------------------------------------------------------
+	 * Method:
+	 *      readBoardFile()
+	 * 
+	 * Description:
+	 *      Converts the passed in file to a String.
+	 --------------------------------------------------------------------------------------*/
     public String[] readBoardFile(File file) 
     {
 	    /*---------------------------------------------------------------
@@ -276,7 +365,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 	    /*---------------------------------------------------------------
         Set up grid layout for button panel
         ---------------------------------------------------------------*/
-		GridLayout button_grid = new GridLayout(1,6);
+		GridLayout button_grid = new GridLayout(1,7);
 		button_panel = new JPanel( button_grid );
 		
 	    /*---------------------------------------------------------------
@@ -285,6 +374,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 		pencil_button = new CustomButton( "Pencil Mode", true );
 		pen_button = new CustomButton( "Pen Mode", true );
 		quit_button = new CustomButton( "Quit", true );
+		save_and_quit_button = new CustomButton( "Save & Quit", true );
 		solve_button = new CustomButton( "Solve Now", true );
 		hint_button = new CustomButton( "Hint", true );
 		eraser_button = new CustomButton( "Eraser Mode", true );
@@ -295,6 +385,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 		pencil_button.addActionListener( this );
 		pen_button.addActionListener( this );
 		quit_button.addActionListener( this );
+		save_and_quit_button.addActionListener( this );
 		solve_button.addActionListener( this );
 		hint_button.addActionListener( this );
 		eraser_button.addActionListener( this );
@@ -307,6 +398,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 		button_panel.add( eraser_button );
 		button_panel.add( solve_button );
 		button_panel.add( hint_button );
+		button_panel.add( save_and_quit_button );
 		button_panel.add( quit_button );
 		
 	    /*---------------------------------------------------------------
@@ -322,16 +414,35 @@ public class SudokuDisplay extends Observable implements ActionListener
 	 * Description:
 	 * 		create new Sudoku board and activate pen_mode
 	 --------------------------------------------------------------------------------------*/
-	public void loadBoardPanel()
+	public void loadBoardPanel( boolean isLoadingSave )
 	{	
 		board = new Board( this.board_size, this.difficulty );
 		board.enablePenMode();
 		pen_button.activateButton();
 		
-		back_end.populateBoard( board.getCells() );
+		if (!isLoadingSave)
+		{
+			back_end.populateBoard(board.getCells());
+		}
 		
 		display_panel.add( board, BorderLayout.CENTER );
 	}
+	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		loadBoardPanel()
+	 * 
+	 * Description:
+	 * 		loads in a new board based on 2d array of cells
+	 --------------------------------------------------------------------------------------*/
+	public void loadBoardPanel( Cell[][] c )
+    {   
+        board = new Board( this.board_size, this.difficulty, c );
+        board.enablePenMode();
+        pen_button.activateButton();
+        display_panel.add( board, BorderLayout.CENTER );
+    }
+    
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -371,9 +482,100 @@ public class SudokuDisplay extends Observable implements ActionListener
 	 --------------------------------------------------------------------------------------*/
 	public void quitGame()
 	{
-		timer_thread = null;
+		timer = null;
 		setChanged();
 		notifyObservers( "Quit" );
+	}
+	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		saveAndQuitGame()
+	 * 
+	 * Description:
+	 * 		save the game's state and quit the game. If sucessful, return true, otherwise 
+	 *      return false
+	 --------------------------------------------------------------------------------------*/
+	public boolean saveAndQuitGame()
+	{
+		timer= null;
+		
+		// Don't allow game state saving if the game is already complete.
+		if ( !back_end.isWin() )
+		{		    
+		    // Get the path and file name that the user wants to save.
+    		ObjectOutputStream out;
+    		
+            JFileChooser fileOpen = new JFileChooser();
+            FileFilter filter = new FileNameExtensionFilter("save files", "save");
+            fileOpen.addChoosableFileFilter(filter);
+            File file = null;
+         
+            int ret = fileOpen.showSaveDialog(new JPanel());
+            
+            if (ret == JFileChooser.APPROVE_OPTION) 
+            {
+                // Make sure to attach the ".save" extension to the end of the file if it doesn't have it already.
+                if (!fileOpen.getSelectedFile().getName().endsWith(".save"))
+                {
+                    file = new File(fileOpen.getSelectedFile() + ".save");
+                }
+                else
+                {
+                    file = fileOpen.getSelectedFile();
+                }
+            } 
+            else 
+            {
+                return false;
+            }
+    		
+    		// Write the size of the board, difficulty, answer board contents, player input contents and number of
+    		// hints to the disk.
+    		try 
+    		{
+    			out = new ObjectOutputStream(new FileOutputStream(file));
+    			out.writeObject(board_size);
+    			out.writeObject(difficulty);
+    		    out.writeObject( back_end.getBoard() );
+    		    
+    		    Cell[][] c = board.getCells();
+    		    Cell[][] cells = new Cell[c.length][c.length];		    
+    		    
+    	        for( int i = 0; i < cells.length; i++)
+    	        {
+    	            for( int j = 0; j < cells[i].length; j++)
+    	            {
+    	            	cells[i][j] = new Cell( board_size );
+    	                cells[i][j].setLocked(c[i][j].isLocked());
+    	                cells[i][j].setPenFilled(c[i][j].isPenFilled());
+    	                cells[i][j].setEraserCount(c[i][j].getEraserCount());
+    
+    	                // Store the text of the pen field into str.
+    	                cells[i][j].getPenFieldObject().str = c[i][j].getPenField();
+    	                
+    	                // Store the text of the pencil field into str.
+    	                cells[i][j].getPencilFieldObject().str = c[i][j].getPencilField();
+    	            }
+    	        }
+    	        
+    		    out.writeObject(cells);
+    		    
+    		    out.writeInt(game_score);
+    		    out.writeInt(back_end.getHints());
+    		    
+    		    out.close();
+    		}
+    		catch (IOException e) 
+    		{
+    			e.printStackTrace();
+    		}
+		}		
+		
+		// Alert that changes have occurred, and notify obsevers that the program's ready to quit.
+		setChanged();
+		notifyObservers( "Quit" );
+		
+		return true;
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -385,6 +587,14 @@ public class SudokuDisplay extends Observable implements ActionListener
 	 --------------------------------------------------------------------------------------*/
 	public void winGame()
 	{
+        JOptionPane.showMessageDialog
+        (
+            null,
+            "Congratulations! You scored " + game_score + " points in " + "0.00" + " seconds!",
+            "Results",
+            JOptionPane.OK_OPTION
+        );
+        
 		board.clearBoard();
 		setChanged();
 		notifyObservers( "Win" );
@@ -490,6 +700,22 @@ public class SudokuDisplay extends Observable implements ActionListener
 		{ 
 			System.out.println( "Calling Quit from Menu Frame!" );
 			quitGame();
+	        display_panel.repaint();
+	        display_panel.setVisible( true );
+		}
+		
+	    /*---------------------------------------------------------------
+        Save the current game's state, and quit the game.
+        ---------------------------------------------------------------*/
+		if( e.getSource() == save_and_quit_button )
+		{
+			System.out.println( "Calling Quit from Menu Frame!" );
+			
+			if ( saveAndQuitGame() )
+			{
+			    display_panel.repaint();
+	            display_panel.setVisible(true);
+			}
 		}
 		
 	    /*---------------------------------------------------------------
@@ -498,7 +724,6 @@ public class SudokuDisplay extends Observable implements ActionListener
 		if( e.getSource() == hint_button )
 		{
 			boolean flag = back_end.hint( board.getCells() );
-			
 			if( !flag )
 			{
 				System.out.println( "No More Hints Left" );
@@ -507,6 +732,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 			
 			hint.setText( "" + back_end.getHints() );
 		}
+		
 	    /*---------------------------------------------------------------
         Score the current map
         ---------------------------------------------------------------*/
@@ -515,14 +741,40 @@ public class SudokuDisplay extends Observable implements ActionListener
 			System.out.println( "Score Button Pressed!" );
 			updateScore( back_end.scoreBoard( board.getCells() ) );
 		}
+		
 	    /*---------------------------------------------------------------
         Solve the current map for user
         ---------------------------------------------------------------*/
 		if( e.getSource() == solve_button )
 		{
-			back_end.solve( board.getCells() );
-			updateScore(1);
+		    JOptionPane.showMessageDialog(
+		            null,
+		            "Board will be populated with correct answers. You will be scored for # of correct entries",
+		            "Solving now..",
+		            JOptionPane.OK_OPTION
+		            );
+		    
+		    updateScore( back_end.scoreBoard( board.getCells() ) );
+		    back_end.solve( board.getCells() );
+		    winGame();
 		}
 		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+	
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
 	}
 }

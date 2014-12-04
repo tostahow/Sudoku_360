@@ -424,6 +424,10 @@ public class MainMenu implements Observer, ActionListener, WindowListener
             {
                 file = fileOpen.getSelectedFile();
             }
+            else 
+            {
+                System.out.println("Open command cancelled by user.");
+            }
             
             game = new SudokuDisplay(this, getDesiredDifficulty(), file);
             current_panel = game.getGamePanel();
@@ -449,6 +453,10 @@ public class MainMenu implements Observer, ActionListener, WindowListener
             if (ret == JFileChooser.APPROVE_OPTION) 
             {
                 file = fileOpen.getSelectedFile();
+            }
+            else 
+            {
+                System.out.println("Open command cancelled by user.");
             }
             
             game = new SudokuDisplay(this, file);

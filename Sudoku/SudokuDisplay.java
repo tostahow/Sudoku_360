@@ -26,8 +26,12 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 public class SudokuDisplay extends Observable implements ActionListener
@@ -398,22 +402,48 @@ public class SudokuDisplay extends Observable implements ActionListener
 	 * 		saveAndQuitGame()
 	 * 
 	 * Description:
-	 * 		save the game's state and quit the game
+	 * 		save the game's state and quit the game. If sucessful, return true, otherwise 
+	 *      return false
 	 --------------------------------------------------------------------------------------*/
-	public void saveAndQuitGame()
+	public boolean saveAndQuitGame()
 	{
 		timer_thread = null;
 		
 		// Don't allow game state saving if the game is already complete.
 		if (!back_end.isWin())
-		{		
+		{		    
+		    // Get the path and file name that the user wants to save.
     		ObjectOutputStream out;
+    		
+            JFileChooser fileOpen = new JFileChooser();
+            FileFilter filter = new FileNameExtensionFilter("save files", "save");
+            fileOpen.addChoosableFileFilter(filter);
+            File file = null;
+         
+            int ret = fileOpen.showSaveDialog(new JPanel());
+            
+            if (ret == JFileChooser.APPROVE_OPTION) 
+            {
+                // Make sure to attach the ".save" extension to the end of the file if it doesn't have it already.
+                if (!fileOpen.getSelectedFile().getName().endsWith(".save"))
+                {
+                    file = new File(fileOpen.getSelectedFile() + ".save");
+                }
+                else
+                {
+                    file = fileOpen.getSelectedFile();
+                }
+            } 
+            else 
+            {
+                return false;
+            }
     		
     		// Write the size of the board, difficulty, answer board contents, player input contents and number of
     		// hints to the disk.
     		try 
     		{
-    			out = new ObjectOutputStream(new FileOutputStream(new File("DUMMY_" + board_size + "_" + difficulty + ".save")));
+    			out = new ObjectOutputStream(new FileOutputStream(file));
     			out.writeObject(board_size);
     			out.writeObject(difficulty);
     		    out.writeObject(back_end.getBoard());
@@ -454,10 +484,19 @@ public class SudokuDisplay extends Observable implements ActionListener
 		// Alert that changes have occurred, and notify obsevers that the program's ready to quit.
 		setChanged();
 		notifyObservers( "Quit" );
+		
+		return true;
 	}
 	
 	public void winGame()
 	{
+        JOptionPane.showMessageDialog(
+                null,
+                "Congratulations! You scored " + game_score + " points in " + "0.00" + " seconds!",
+                "Results",
+                JOptionPane.OK_OPTION
+                );
+        
 		board.clearBoard();
 		setChanged();
 		notifyObservers("Win");
@@ -544,9 +583,11 @@ public class SudokuDisplay extends Observable implements ActionListener
 		if( e.getSource() == save_and_quit_button )
 		{
 			System.out.println("Calling Quit from Menu Frame!");
-			saveAndQuitGame();
-	        display_panel.repaint();
-	        display_panel.setVisible(true);
+			if (saveAndQuitGame())
+			{
+			    display_panel.repaint();
+	            display_panel.setVisible(true);
+			}
 		}
 		
 	    /*---------------------------------------------------------------
@@ -584,9 +625,16 @@ public class SudokuDisplay extends Observable implements ActionListener
 		
 		if( e.getSource() == solve_button )
 		{
-			back_end.solve( board.getCells() );
-			updateScore(1);
-		}
-		
+		    JOptionPane.showMessageDialog(
+		            null,
+		            "Board will be populated with correct answers. You will be scored for # of correct entries",
+		            "Solving now..",
+		            JOptionPane.OK_OPTION
+		            );
+		    
+		    updateScore( back_end.scoreBoard( board.getCells() ) );
+		    back_end.solve( board.getCells() );
+		    winGame();
+		}		
 	}
 }

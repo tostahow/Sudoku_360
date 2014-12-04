@@ -364,6 +364,38 @@ public class Board extends JPanel
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
+	 * 		pauseBoard()
+	 * 
+	 * Description:
+	 * 		Loop through cells and pause all cells
+	 --------------------------------------------------------------------------------------*/
+	public void pauseBoard( boolean flag )
+	{	
+		for( int i = 0; i < cells_dim; i++)
+			for( int j = 0; j < cells_dim; j++)
+			{
+				cells[ i ][ j ].setPaused( flag );
+			}
+	}
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		disableBoard()
+	 * 
+	 * Description:
+	 * 		Loop through cells and disable modes
+	 --------------------------------------------------------------------------------------*/
+	public void disableBoard()
+	{
+		for( int i = 0; i < cells_dim; i++)
+			for( int j = 0; j < cells_dim; j++)
+			{
+				cells[i][j].setPencilMode(false);
+				cells[i][j].setPenMode(false);
+				cells[i][j].setEraserMode(false);
+			}
+	}
+	/*---------------------------------------------------------------------------------------
+	 * Method:
 	 * 		enablePencilMode()
 	 * 
 	 * Description:

@@ -175,8 +175,9 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 		if( this.locked != true && this.pen_filled == false)
 		{
 			this.pen_mode = flag;
-			this.pen_field.setEditable(flag);
+			this.pen_field.setEditable( flag );
 		}
+		this.pen_mode = flag;
 	}
 	
     /*---------------------------------------------------------------------------------------
@@ -239,7 +240,6 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 			pencil_field.setEditable(flag);
 		}
 		
-		this.repaint();
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -372,6 +372,7 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 	{
 		this.pen_field.addKeyListener( this );
 		this.pen_field.addMouseListener( this );
+		this.pencil_field.addMouseListener( this );
 		
 	    /*---------------------------------------------------------------
         Limit what values can be entered in each field
@@ -426,6 +427,48 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 		eraser_count = 0;
 		
 	}
+	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		setPaused()
+	 * 
+	 * Description:
+	 * 		set cells in paused state
+	 --------------------------------------------------------------------------------------*/
+	public void setPaused( boolean flag )
+	{
+	    /*---------------------------------------------------------------
+        if paused is set, make cells gray
+        ---------------------------------------------------------------*/
+		if( flag )
+		{
+			pen_field.setBackground( Color.gray );
+			pen_field.setForeground( Color.gray );
+			pencil_field.setBackground( Color.gray );
+			pencil_field.setForeground( Color.gray );
+		}
+	    /*---------------------------------------------------------------
+        paused is not set, set cells to normal state
+        ---------------------------------------------------------------*/
+		else
+		{
+			if( locked )
+			{
+				pen_field.setBackground( SudokuCommon.COMPONENT_COLOR );
+				pen_field.setForeground( Color.orange );
+				pencil_field.setBackground( SudokuCommon.COMPONENT_COLOR );
+				pencil_field.setForeground( Color.orange );
+			}
+			else
+			{
+				pen_field.setBackground( SudokuCommon.COMPONENT_COLOR );
+				pen_field.setForeground( SudokuCommon.PEN_COLOR );
+				pencil_field.setBackground( SudokuCommon.COMPONENT_COLOR );
+				pencil_field.setForeground( SudokuCommon.PEN_COLOR );
+			}
+		}
+	}
+	
 	/*---------------------------------------------------------------------------------------
 	 *  						 All Listener Functions
 	 --------------------------------------------------------------------------------------*/
@@ -496,12 +539,36 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
 		// TODO Auto-generated method stub
+		if( !locked && isPenMode() )
+		{
+			pen_field.setBackground( SudokuCommon.BACKGROUND_COLOR );
+			pen_field.setForeground( null );
+			pen_field.setCaretColor( null );
+		}
+		else if( !locked && isPencilMode() )
+		{
+			pencil_field.setBackground( SudokuCommon.BACKGROUND_COLOR );
+			pencil_field.setForeground( null );
+			pencil_field.setCaretColor( null );
+		}
 		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent arg0) {
 		// TODO Auto-generated method stub
+		if( !locked && isPenMode() )
+		{
+			pen_field.setBackground( SudokuCommon.COMPONENT_COLOR );
+			pen_field.setForeground( SudokuCommon.PEN_COLOR );
+			pen_field.setCaretColor( Color.white );
+		}
+		else if( !locked && isPencilMode() )
+		{
+			pencil_field.setBackground( SudokuCommon.COMPONENT_COLOR );
+			pencil_field.setForeground( SudokuCommon.PEN_COLOR );
+			pencil_field.setCaretColor( Color.white );
+		}
 		
 	}
 	

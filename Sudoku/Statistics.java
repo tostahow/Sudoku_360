@@ -40,6 +40,8 @@ public class Statistics extends JFrame implements WindowListener
 	private JLabel score;					// user score
 	private JLabel maps_completed_label;	// maps completed label
 	private JLabel maps_completed;			// user # of maps completed
+	private JLabel time_label;				// label for time played
+	private JLabel time;					// total time played
 
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -78,13 +80,15 @@ public class Statistics extends JFrame implements WindowListener
         ---------------------------------------------------------------*/
 		showing = false;
 		stats_panel = new JPanel();
-		stats_grid = new GridLayout( 3, 2 );
+		stats_grid = new GridLayout( 4, 2 );
 		name_label = new CustomLabel("Username: ");
 		maps_completed_label = new CustomLabel("Maps Completed: ");
 		score_label = new CustomLabel("Total Score: ");
 		name = new CustomLabel("Name");
 		score = new CustomLabel("Score");
 		maps_completed = new CustomLabel("Maps Completed");
+		time_label = new CustomLabel( "Time Played:" );
+		time = new CustomLabel("Time");
 		
 	    /*---------------------------------------------------------------
         add all components to stats panel
@@ -96,6 +100,8 @@ public class Statistics extends JFrame implements WindowListener
 		stats_panel.add( maps_completed );
 		stats_panel.add( score_label );
 		stats_panel.add( score );
+		stats_panel.add( time_label );
+		stats_panel.add( time );
 		stats_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
 	}
 	
@@ -111,6 +117,8 @@ public class Statistics extends JFrame implements WindowListener
 		name.setText( user.getName() );
 		maps_completed.setText( "" + user.getMapsCompleted() );
 		score.setText( "" + user.getScore() );
+		time.setText( "" + user.getTimePlayed() + " seconds");
+		
 	}
 	
 	/*---------------------------------------------------------------------------------------

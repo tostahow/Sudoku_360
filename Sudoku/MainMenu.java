@@ -31,6 +31,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.ButtonGroup;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
@@ -45,10 +47,11 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	private SudokuDisplay game;					// Game object
 	private CustomButton play_game_button; 		// Plays the SudokuDisplay Game
 	private CustomButton exit_button; 			// Exits Software
+	private CustomButton info_button;			// Loads information frame
 	private CustomButton see_stats_button;		// opens Stats frame
 	
 	private CustomButton load_board_button; 	// Opens a file chooser for loading a game board.
-	private CustomButton load_save_button;
+	private CustomButton load_save_button;		// Opens a file chooser for loading saved game board.
 	
 	private JPanel menu_panel;					// Panel which holds Menu components
 	private CustomRadioButton size_nine;		// Radio Button for 9x9 Map
@@ -62,7 +65,9 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	private JPanel current_panel;
 	
 	private JFrame main_frame;					// Frame generated to hold Main menu
+	private JFrame info_frame;					// Frame for showing game info
 	private Statistics stats;					// Frame for User Stats
+	private boolean info_open;					// determine whether or not info frame is open
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -121,8 +126,9 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         diff_panel = new JPanel();
         file_panel = new JPanel();
         play_game_button = new CustomButton( "Play!", false );
-        see_stats_button = new CustomButton( "See Stats", false );
+        see_stats_button = new CustomButton( "Stats", false );
         exit_button = new CustomButton( "Exit!", false );
+        info_button = new CustomButton( "Info", false );
         menu_panel = new JPanel();
         size_group = new ButtonGroup();
         diff_group = new ButtonGroup();
@@ -163,11 +169,16 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         diff_panel.add( evil );
         
         load_board_button = new CustomButton( "Load Board", false );
-        load_save_button = new CustomButton( "Resume Saved Game", false );
+        load_save_button = new CustomButton( "Resume Board", false );
+        
+        GridLayout file_layout = new GridLayout( 1, 2 );
+        file_layout.setHgap( 100 );
+        file_layout.setVgap( 250 );
+        
         
         Border file_border = BorderFactory.createTitledBorder( BorderFactory.createLineBorder(Color.black), "File Options" );
         file_panel.setBorder( file_border );
-        file_panel.setLayout( new FlowLayout() );
+        file_panel.setLayout( file_layout );
         file_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
         file_panel.add( load_board_button );
         file_panel.add( load_save_button );
@@ -210,6 +221,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         button_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
         button_panel.add( play_game_button );
         button_panel.add( see_stats_button );
+        button_panel.add( info_button );
         button_panel.add( exit_button );
         
         option_panel.add( size_panel );
@@ -242,6 +254,8 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         see_stats_button.addActionListener( this );
         exit_button.addActionListener( this );
         load_board_button.addActionListener( this );
+        load_save_button.addActionListener( this );
+        info_button.addActionListener( this );
         
         /*---------------------------------------
         Add the menu panel to the main frame
@@ -262,6 +276,68 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 		main_frame.setVisible(true);
 	}
 	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		showInfo()
+	 * 
+	 * Description:
+	 * 		show the information frame for the MainMenu
+	 --------------------------------------------------------------------------------------*/
+	public void showInfo() 
+	{
+		info_open = true;
+		  
+		/*---------------------------------------------------------------
+		Info Frame has already been created.
+		---------------------------------------------------------------*/
+		    
+		if( info_frame != null )
+		{
+			System.out.println("Setting Info Frame Visible");
+			info_frame.setVisible(true);
+		}
+	   
+		/*---------------------------------------------------------------
+		Info Frame has yet to be created. Create the frame.
+		---------------------------------------------------------------*/
+		else
+		{
+		  info_frame = new JFrame("Info");
+		     
+		  /*---------------------------------------------------------------
+		  Set up panel for Info frame
+		  ---------------------------------------------------------------*/
+		
+		 
+		 JPanel info_panel = new JPanel();
+		 JTextArea information = new JTextArea( "\t\tSudoku\n\n\tWhat is Sudoku?\na puzzle game in with a 9x9 or 16x16 board..etc\nPencil Mode: " );
+		 information.setEditable( false );
+		 info_panel.add( information, BorderLayout.CENTER );
+		 
+		 JScrollPane info_scroll = new JScrollPane( info_panel );
+		 info_scroll.setVerticalScrollBarPolicy( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS );
+		    
+		  
+		 /*---------------------------------------------------------------
+		 Setting up Info frame
+		 ---------------------------------------------------------------*/
+		     
+	     info_frame.add( info_scroll );
+	     info_frame.setLocation(300, 150);
+	     info_frame.setSize( 500, 500 );
+	     info_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);         
+		     
+		     
+		 /*---------------------------------------------------------------
+		 Show the info_frame
+		 ---------------------------------------------------------------*/  
+		   
+	     info_frame.addWindowListener(this);
+	     info_frame.setVisible(true);
+	    
+		}
+		  
+	}
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		getDesiredDifficulty()
@@ -325,6 +401,14 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 				System.out.println("Stats already open");
 		}
 		
+		if ( e.getSource() == info_button )
+		{
+			if ( info_open == false )
+				showInfo();
+         	else
+         		System.out.println("Info window already open");
+		}
+		
 	    /*---------------------------------------------------------------
 		Exit software.
         ---------------------------------------------------------------*/
@@ -350,8 +434,42 @@ public class MainMenu implements Observer, ActionListener, WindowListener
             {
                 file = fileOpen.getSelectedFile();
             }
+            else
+            {
+            	System.out.println( "Open command cancelled by user!" );
+            }
             
             game = new SudokuDisplay(this, getDesiredDifficulty(), file);
+            current_panel = game.getGamePanel();
+            main_frame.getContentPane().remove( menu_panel );
+            main_frame.add( current_panel );
+            main_frame.setVisible( true );
+		    
+		}
+		
+	    /*---------------------------------------------------------------
+		Resume saved game button pressed. Open a file chooser dialog to
+		select a saved game
+        ---------------------------------------------------------------*/
+		if( e.getSource() == load_save_button)
+		{
+		    File file = null;
+		    
+		    JFileChooser fileOpen = new JFileChooser();
+		    FileFilter filter = new FileNameExtensionFilter("save files", "save");
+		    fileOpen.addChoosableFileFilter(filter);
+		    int ret = fileOpen.showDialog(file_panel, "Open Sudoku saved game");
+
+            if (ret == JFileChooser.APPROVE_OPTION) 
+            {
+                file = fileOpen.getSelectedFile();
+            }
+            else
+            {
+            	System.out.println( "Open command cancelled by user!" );
+            }
+            
+            game = new SudokuDisplay(this, file);
             current_panel = game.getGamePanel();
             main_frame.getContentPane().remove( menu_panel );
             main_frame.add( current_panel );
@@ -376,6 +494,9 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 			Database.write_database();
 			System.exit(0);
 		}
+		
+		if( e.getSource() == info_frame )
+			info_open = false;
 	}
 	
 	@Override

@@ -17,10 +17,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.Serializable;
+
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-public class Cell extends JPanel implements KeyListener, MouseListener
+public class Cell extends JPanel implements KeyListener, MouseListener, Serializable
 {
 	/*-----------------------------------------------------------------------------------
 								Private Class Members
@@ -104,6 +106,32 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 			this.pen_field.setText( SudokuCommon.values[value] );
 	}
 	
+	
+    /*---------------------------------------------------------------------------------------
+     * Method:
+     *      setPenFilled
+     * 
+     * Description:
+     *      set whether this Cell was filled in by a pen.
+     --------------------------------------------------------------------------------------*/
+    public void setPenFilled( boolean flag )
+    {
+        this.pen_filled = flag;
+    }
+	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		setPencilField
+	 * 
+	 * Description:
+	 * 		set the text of pencil field so long as the cell is not locked
+	 --------------------------------------------------------------------------------------*/
+	public void setPencilField( String value )
+	{
+		if( this.locked != true )
+			this.pencil_field.setText( value );
+	}
+	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		setPencilMode
@@ -151,6 +179,18 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 		}
 	}
 	
+    /*---------------------------------------------------------------------------------------
+     * Method:
+     *      setEraserCount
+     * 
+     * Description:
+     *      set the number of erases that happened in this Cell
+     --------------------------------------------------------------------------------------*/
+    public void setEraserCount( int count )
+    {
+        this.eraser_count = count;
+    }
+
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		setEraserMode
@@ -200,6 +240,18 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 		}
 		
 		this.repaint();
+	}
+	
+	/*---------------------------------------------------------------------------------------
+     * Method:
+     *      isPenFilled()
+     * 
+     * Description:
+     *      returns true if this was filled in by a pen
+     --------------------------------------------------------------------------------------*/
+	public boolean isPenFilled()
+	{
+		    return this.pen_filled;
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -274,6 +326,41 @@ public class Cell extends JPanel implements KeyListener, MouseListener
 		return this.eraser_count;
 	}
 	
+ 	/*---------------------------------------------------------------------------------------
+     * Method:
+     *      getPenFieldObject()
+     * 
+     * Description:
+     *      return pen field object
+     --------------------------------------------------------------------------------------*/
+    public CellField getPenFieldObject()
+    {
+        return pen_field;
+    }
+    
+    /*---------------------------------------------------------------------------------------
+     * Method:
+     *      getPencilField()
+     * 
+     * Description:
+     *      return text of pencil field
+     --------------------------------------------------------------------------------------*/
+    public String getPencilField()
+    {
+        return pencil_field.getText();
+    }
+    
+    /*---------------------------------------------------------------------------------------
+     * Method:
+     *      getPencilFieldObject()
+     * 
+     * Description:
+     *      return pencil field object
+     --------------------------------------------------------------------------------------*/
+    public CellField getPencilFieldObject()
+    {
+        return pencil_field;
+    }
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		initFields()

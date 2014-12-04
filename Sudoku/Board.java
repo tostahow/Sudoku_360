@@ -54,6 +54,28 @@ public class Board extends JPanel
 	}
 	
 	/*---------------------------------------------------------------------------------------
+     * Method:
+     *       Board - Alternate Constructor for an already generated cell double array.
+     * 
+     * Description:
+     *      Set Dimension of Board and Generate all of the cells into a panel using an already
+     *      initialized cell array.
+     --------------------------------------------------------------------------------------*/
+    public Board( BoardSize b_size, Difficulty difficulty, Cell[][] c )
+    {
+        this.setBackground( Color.BLACK );
+        this.board_size = b_size;
+        this.diff = difficulty;
+        
+        pen_mode = false;
+        pencil_mode = false;
+        eraser_mode = false;
+        
+        setDimensions();
+        generateBoard(c);
+    }
+    
+	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		getCells()
 	 * 
@@ -161,6 +183,123 @@ public class Board extends JPanel
 		}
 		
 	}
+	
+	 /*---------------------------------------------------------------------------------------
+     * Method:
+     *      generateBoard(Cell[][])
+     * 
+     * Description:
+     *      arrange the cells depending on the requested dimensions, using the Cell array c
+     *      as the cells array to be used.
+     --------------------------------------------------------------------------------------*/
+    public void generateBoard(Cell[][] c)
+    {
+        /*---------------------------------------------------------------
+        Generate 2d Arrays for Cells and Panels for Holding Cells
+        ---------------------------------------------------------------*/
+        this.cells = new Cell[ this.cells_dim ][ this.cells_dim ];
+        this.cell_square = new JPanel[ this.cell_square_dim ][ this.cell_square_dim ];
+        
+        /*---------------------------------------------------------------
+        Generate all cells using the assigned Cell array
+        ---------------------------------------------------------------*/
+        for( int i = 0; i < cells_dim; i++)
+        {
+            for( int j = 0; j < cells_dim; j++)
+            {
+                cells[i][j] = new Cell( board_size );                
+                cells[i][j].setLocked(c[i][j].isLocked());
+                cells[i][j].setPenFilled(c[i][j].isPenFilled());
+                cells[i][j].setEraserCount(c[i][j].getEraserCount());
+                cells[i][j].setCellType(board_size);
+
+                // Init the pen field and its text.
+				if (!c[i][j].getPenFieldObject().str.equals(""))
+				{
+					if (c[i][j].isLocked() == true)
+					{
+						cells[i][j].setLocked(false);		                
+
+		                if (Character.isDigit(c[i][j].getPenFieldObject().str.charAt(0)))
+		                	cells[i][j].setPenField( Integer.parseInt(c[i][j].getPenFieldObject().str) );
+		                else
+		                	cells[i][j].setPenField( Integer.parseInt( "" + ((Character.toUpperCase(c[i][j].getPenFieldObject().str.charAt(0))) - 65 + 10)) );
+		                
+		    			cells[i][j].setLocked(true);
+					}
+					else
+					{
+		                if (Character.isDigit(c[i][j].getPenFieldObject().str.charAt(0)))
+		                	cells[i][j].setPenField( Integer.parseInt(c[i][j].getPenFieldObject().str) );
+		                else
+		                	cells[i][j].setPenField( Integer.parseInt( "" + ((Character.toUpperCase(c[i][j].getPenFieldObject().str.charAt(0))) - 65 + 10)) );
+					}
+				}
+				
+				// Init the pencil field and its text.
+				if (!c[i][j].getPencilFieldObject().str.equals(""))
+				{
+					cells[i][j].setPencilField( c[i][j].getPencilFieldObject().str );
+				}
+
+                cells[i][j].repaint();                
+            }
+        }
+        
+        /*---------------------------------------------------------------
+        Set Square of Cells attributes
+        ---------------------------------------------------------------*/
+        for( int i = 0; i < cell_square_dim ; i++ )
+        {
+            for( int j = 0; j < cell_square_dim; j++ )
+            {
+                cell_square[i][j] = new JPanel( new GridLayout( cell_square_dim, cell_square_dim ) );
+                cell_square[i][j].setBorder( BorderFactory.createLineBorder(Color.BLACK) );
+            }
+        }
+        
+        /*---------------------------------------------------------------
+        Set layout for board as Grid for Sudoku Puzzle
+        ---------------------------------------------------------------*/
+        this.setLayout(new GridLayout( cell_square_dim, cell_square_dim, cell_square_dim + 2, cell_square_dim + 2));
+        this.setBackground(Color.white);
+        
+        /*---------------------------------------------------------------
+        Add cells to panel to give the Sudoku Puzzle Look
+        ---------------------------------------------------------------*/
+        for( int i = 0; i < cell_square_dim; i++)
+        {
+            for( int j = 0; j < cell_square_dim; j++ )
+            {
+                for( int k = 0; k < cell_square_dim; k++ )
+                {
+                    for( int l = 0; l < cell_square_dim; l++ )
+                    {
+                        cell_square[i][j].add( cells[k+i*cell_square_dim][l+j*cell_square_dim] );
+                    }
+                        
+                }
+                /*---------------------------------------------------------------
+                Add each Square of Cells to the Board Grid
+                ---------------------------------------------------------------*/
+                this.add( cell_square[i][j] );
+            }
+        }
+        
+    }
+    
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		setCells()
+	 * 
+	 * Description:
+	 * 		set 2d array of Cells
+	 --------------------------------------------------------------------------------------*/
+	public void setCells(Cell[][] c)
+	{
+		cells = c;
+	}
+	
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:

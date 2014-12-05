@@ -411,17 +411,10 @@ public class Cell extends Observable implements KeyListener, MouseListener, Seri
 	    display_panel.setLayout( new BorderLayout() );
 	    display_panel.setBorder( BorderFactory.createLineBorder( Color.black ) );
 	    display_panel.setPreferredSize( new Dimension(50, 50) );
-	    
-		//setLayout( new BorderLayout() );
-		//setBorder( BorderFactory.createLineBorder( Color.black ) );
-		//setPreferredSize( new Dimension(50, 50) );
 		
 	    /*---------------------------------------------------------------
-        add fields to cell panel
+        add fields to cell's display panel
         ---------------------------------------------------------------*/
-		//this.add( pen_field, BorderLayout.CENTER );
-		//this.add( pencil_field, BorderLayout.NORTH );
-		
 		display_panel.add( pen_field, BorderLayout.CENTER );
 		display_panel.add( pencil_field, BorderLayout.NORTH );
 	}
@@ -543,7 +536,7 @@ public class Cell extends Observable implements KeyListener, MouseListener, Seri
        	Once key is entered and released do not allow player to edit it
        	Notify observers that the user penned in this Cell.
         ---------------------------------------------------------------*/
-		if( !this.pen_field.getText().equals("") )
+		if( !this.pen_field.getText().equals("") && !this.locked)
 		{
 		    boolean wasFilledBefore = this.pen_filled;
 		    
@@ -554,7 +547,7 @@ public class Cell extends Observable implements KeyListener, MouseListener, Seri
 			if (!wasFilledBefore)
 			{
 			    setChanged();
-                notifyObservers( "Penned" ); // Why is this getting called even if its locked?
+                notifyObservers( "Penned" );
 			}
 		}
 	}
@@ -603,8 +596,8 @@ public class Cell extends Observable implements KeyListener, MouseListener, Seri
 	 * 		reset fields to normal appearance on exit of field.
 	 --------------------------------------------------------------------------------------*/
 	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mouseExited(MouseEvent arg0) 
+	{
 		if( !locked && isPenMode() )
 		{
 			pen_field.setBackground( SudokuCommon.COMPONENT_COLOR );
@@ -616,8 +609,7 @@ public class Cell extends Observable implements KeyListener, MouseListener, Seri
 			pencil_field.setBackground( SudokuCommon.COMPONENT_COLOR );
 			pencil_field.setForeground( SudokuCommon.PEN_COLOR );
 			pencil_field.setCaretColor( Color.white );
-		}
-		
+		}		
 	}
 	
 	/*---------------------------------------------------------------------------------------

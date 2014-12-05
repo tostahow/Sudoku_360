@@ -622,7 +622,6 @@ public class SudokuBackEnd
     public boolean doAIMove( Cell[][] cells )
     {
         hints++;
-        
         boolean check = false;
         
         /*-----------------------------------------------------------------
@@ -674,8 +673,15 @@ public class SudokuBackEnd
     	
     	while ( !hint_given  )
     	{
+            /*------------------------------------------------------------
+            If there's a spot on the board that is not already locked
+            ------------------------------------------------------------*/
     		if ( !cells[i][j].getPenField().equals( SudokuCommon.values[ board[i][j] ] ) )
     		{
+    	        /*--------------------------------------------------------------------
+    	        Add to the hint to this particular Cell as long as it's allowed to
+    	        override player entries, or the Cell's pen field is empty
+    	        --------------------------------------------------------------------*/
     		    if ( overridePlayerEntries || cells[i][j].getPenField().equals("") )
     		    {
                     System.out.println(cells[i][j].getPenField());

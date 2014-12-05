@@ -111,7 +111,7 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
         ---------------------------------------------------------------*/
 		loadStatPanel();
 		loadButtonPanels();
-		loadBoardPanel(false);
+		loadBoardPanel();
 		initTimer();
 		startTimer();
 	}
@@ -149,7 +149,7 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
         
         loadStatPanel();
         loadButtonPanels();
-        loadBoardPanel(false);
+        loadBoardPanel();
         initTimer();
         startTimer();
 	}
@@ -466,16 +466,12 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
 	 * Description:
 	 * 		create new Sudoku board and activate pen_mode
 	 --------------------------------------------------------------------------------------*/
-	public void loadBoardPanel( boolean isLoadingSave )
+	public void loadBoardPanel()
 	{	
 		board = new Board( this, this.board_size, this.difficulty );
 		board.enablePenMode();
 		pen_button.activateButton();
-		
-		if (!isLoadingSave)
-		{
-			back_end.populateBoard( board.getCells() );
-		}
+		back_end.populateBoard( board.getCells() );
 		
 		display_panel.add( board, BorderLayout.CENTER );
 	}
@@ -800,7 +796,7 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
         ---------------------------------------------------------------*/
 		if( e.getSource() == hint_button && !paused )
 		{
-			boolean flag = back_end.hint( board.getCells() );
+			boolean flag = back_end.hint( board.getCells(), true );
 			if( !flag )
 			{
 				System.out.println( "No More Hints Left" );
@@ -881,10 +877,13 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
         if ( subject instanceof Cell && object_changed instanceof String)
         {
             if ( ( ( String ) object_changed ).equals( "Penned" ) )
-            {                
+            {
+                /*---------------------------------------------------------------------
+                If the AI is set to be run, do the AI's move.
+                ---------------------------------------------------------------------*/
                 if (isAIRunning)
                 {
-                    System.out.println("AI would have made a move here.");
+                    back_end.doAIMove( board.getCells() );
                 }
             }
         }        

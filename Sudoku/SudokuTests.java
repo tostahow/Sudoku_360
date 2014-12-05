@@ -38,6 +38,7 @@ public class SudokuTests //implements Observer // Overall strategy: Test game wi
 			loginCase++;
 		System.out.println("Successfull login test: complete");
 		testMainMenu();
+		testGame();
 		testStatWindow();
 	}
 
@@ -112,6 +113,12 @@ public class SudokuTests //implements Observer // Overall strategy: Test game wi
 	//
 	public static void testMainMenu()
 	{
+		MainMenu test_main = new MainMenu(null); // test to see what happens if null user passed. !no complaints!
+	}
+
+	public static void testGame()
+	{
+		testGame = new SudokuDisplay(test_main, test_main.getDesiredDifficulty(), test_main.file);
 	}
 
 	//

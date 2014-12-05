@@ -613,26 +613,26 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 					game = null;
 				}
 			}
-		}
-		
-	    /*---------------------------------------------------------------
-		Update User score
-        ---------------------------------------------------------------*/
-		if( ( subject instanceof SudokuDisplay ) && ( object_changed instanceof Integer ) )
-		{
-			user.setScore( (int)object_changed );
-			stats.updateUserInformation( user );
-			System.out.println( "User Score Updated to " + user.getScore() );
-		}
-		
-	    /*---------------------------------------------------------------
-		Update User time
-        ---------------------------------------------------------------*/
-		if( ( subject instanceof SudokuDisplay ) && ( object_changed instanceof Long ) )
-		{
-			user.updateTimePlayed( (long)object_changed );
-			stats.updateUserInformation( user );
-			System.out.println( "User Time Played Updated to " + user.getTimePlayed() + " in seconds." );
+			
+		    /*---------------------------------------------------------------
+	        Update User score
+	        ---------------------------------------------------------------*/
+	        if ( object_changed instanceof Integer)
+	        {
+	            user.setScore( (int) object_changed );
+	            stats.updateUserInformation( user );
+	            System.out.println( "User Score Updated to " + user.getScore() );
+	        }
+	        
+	        /*---------------------------------------------------------------
+	        Update User time
+	        ---------------------------------------------------------------*/
+	        if ( object_changed instanceof Long )
+	        {
+	            user.updateTimePlayed( (long) object_changed );
+	            stats.updateUserInformation( user );
+	            System.out.println( "User Time Played Updated to " + user.getTimePlayed() + " in seconds." );
+	        }
 		}
 	}
 

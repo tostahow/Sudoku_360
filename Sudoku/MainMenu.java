@@ -58,8 +58,13 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	private CustomRadioButton size_sixteen;		// Radio Button for 16x16 Map
 	private CustomRadioButton easy, medium; 	// Radio Buttons for Easy/Medium
 	private CustomRadioButton hard, evil;		// Radio Buttons for Hard/Evil
+	
+	private CustomRadioButton playWithAI;       // Radio Button for playing with the AI
+	private CustomRadioButton dontPlayWithAI;   // Radio Button for not playing with the AI	
+	
 	private ButtonGroup diff_group;				// Groups the Difficulty Buttons
 	private ButtonGroup size_group;				// Groups the Size Buttons
+	private ButtonGroup ai_group;				// Groups the ai option Buttons
 	
 	private JPanel file_panel; 					// Panel which holds the file options.
 	private JPanel current_panel;
@@ -100,6 +105,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         JPanel button_panel;        // panel that holds buttons
         JPanel size_panel;			// panel for size options
         JPanel diff_panel;			// panel for difficulties
+        JPanel ai_panel;			// panel for ai options
         
         JPanel option_panel;		// panel to hold all options
         JLabel title;
@@ -124,7 +130,8 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         button_panel = new JPanel();
         size_panel = new JPanel();
         diff_panel = new JPanel();
-        file_panel = new JPanel();
+        ai_panel = new JPanel();
+        file_panel = new JPanel();        
         play_game_button = new CustomButton( "Play!", false );
         see_stats_button = new CustomButton( "Stats", false );
         exit_button = new CustomButton( "Exit!", false );
@@ -132,6 +139,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         menu_panel = new JPanel();
         size_group = new ButtonGroup();
         diff_group = new ButtonGroup();
+        ai_group = new ButtonGroup();
         
         title = new JLabel( "Sudoku" );
         title.setHorizontalAlignment( SwingConstants.CENTER );
@@ -168,13 +176,25 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         diff_panel.add( hard );
         diff_panel.add( evil );
         
+        dontPlayWithAI = new CustomRadioButton( "Don't play with AI" );
+        playWithAI = new CustomRadioButton( " Play with AI" );
+        
+        ai_group.add(dontPlayWithAI);
+        ai_group.add(playWithAI);
+        
+        Border ai_border = BorderFactory.createTitledBorder( BorderFactory.createLineBorder(Color.black), "AI Options" );
+        ai_panel.setBorder( ai_border );
+        ai_panel.setLayout( new FlowLayout() );
+        ai_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
+        ai_panel.add( dontPlayWithAI );
+        ai_panel.add( playWithAI );
+        
         load_board_button = new CustomButton( "Load Board", false );
         load_save_button = new CustomButton( "Resume Board", false );
         
         GridLayout file_layout = new GridLayout( 1, 2 );
         file_layout.setHgap( 100 );
-        file_layout.setVgap( 250 );
-        
+        file_layout.setVgap( 250 );        
         
         Border file_border = BorderFactory.createTitledBorder( BorderFactory.createLineBorder(Color.black), "File Options" );
         file_panel.setBorder( file_border );
@@ -199,7 +219,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         button_layout.setHgap( 5 );
         button_layout.setVgap( 5 );
         
-        option_layout = new GridLayout( 4, 1 );
+        option_layout = new GridLayout( 5, 1 );
         option_panel = new JPanel( option_layout );
         option_panel.setBackground( SudokuCommon.BACKGROUND_COLOR );
         /*---------------------------------------
@@ -226,6 +246,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         
         option_panel.add( size_panel );
         option_panel.add( diff_panel );
+        option_panel.add( ai_panel );
         option_panel.add( file_panel );
         option_panel.add( button_panel );
         
@@ -260,8 +281,8 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         /*---------------------------------------
         Add the menu panel to the main frame
         so that it is displayed
-       ---------------------------------------*/
-       main_frame.add( menu_panel );
+        ---------------------------------------*/
+        main_frame.add( menu_panel );
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -373,6 +394,21 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	}
 	
 	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		getDesiredBoardSize()
+	 * 
+	 * Description:
+	 * 		Gather the BoardSize options from the radio buttons
+	 --------------------------------------------------------------------------------------*/
+	public boolean getDesiredAI()
+	{
+		if ( playWithAI.isSelected() )
+			return true;
+		else
+			return false;
+	}
+	
+	/*---------------------------------------------------------------------------------------
 	 *  						 All Listener Functions
 	 --------------------------------------------------------------------------------------*/
 	@Override
@@ -383,7 +419,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         ---------------------------------------------------------------*/
 		if( e.getSource() == play_game_button )
 		{
-			game = new SudokuDisplay(this, getDesiredBoardSize(), getDesiredDifficulty() );
+			game = new SudokuDisplay(this, getDesiredBoardSize(), getDesiredDifficulty(), getDesiredAI() );
 			current_panel = game.getGamePanel();
             main_frame.getContentPane().remove( menu_panel );
             main_frame.add( current_panel );
@@ -443,7 +479,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
             
             if( !closed )
             {
-	            game = new SudokuDisplay( this, getDesiredDifficulty(), file );
+	            game = new SudokuDisplay( this, getDesiredDifficulty(), file, getDesiredAI() );
 	            current_panel = game.getGamePanel();
 	            main_frame.getContentPane().remove( menu_panel );
 	            main_frame.add( current_panel );
@@ -546,30 +582,36 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	public void update( Observable subject, Object object_changed ) 
 	{
 		/*-----------------------------------------------------------------------------------
-		A string was sent from sudoku display. Either quit or win was performed.
+		A message was sent from Sudoku display. Either quit or win was performed.
 		-----------------------------------------------------------------------------------*/
-		if( ( subject instanceof SudokuDisplay ) && ( object_changed instanceof String ) )
+		if ( subject instanceof SudokuDisplay )
 		{
-			/*-----------------------------------------------------------------------------------
-			Quit the game
-			-----------------------------------------------------------------------------------*/
-			if( ( ( String )object_changed ).equals( "Quit" ) )
+			if ( object_changed instanceof String )
 			{
-				main_frame.dispatchEvent( new WindowEvent( main_frame, WindowEvent.WINDOW_CLOSING ) );
+				/*-----------------------------------------------------------------------------------
+				Quit the game
+				-----------------------------------------------------------------------------------*/
+				if ( ( ( String )object_changed ).equals( "Quit" ) )
+				{
+					main_frame.dispatchEvent( new WindowEvent( main_frame, WindowEvent.WINDOW_CLOSING ) );
+				}
 			}
-			
-		    /*---------------------------------------------------------------
-			Board has been solved. Reload main menu panel.
-	        ---------------------------------------------------------------*/
-			if( ( (String )object_changed ).equals( "Win" ) )
+
+			if ( object_changed instanceof WinInfo )
 			{
-				main_frame.remove( current_panel );
-				main_frame.add( menu_panel );
-				main_frame.repaint();
-				main_frame.setVisible( true );
-				user.incrementMapsCompleted();
-				stats.updateUserInformation( user );
-				game = null;
+			    /*---------------------------------------------------------------
+				Board has been solved. Reload main menu panel.
+		        ---------------------------------------------------------------*/
+				if ( ( (WinInfo) object_changed ).didWin == true )
+				{
+					main_frame.remove( current_panel );
+					main_frame.add( menu_panel );
+					main_frame.repaint();
+					main_frame.setVisible( true );
+					user.incrementMapsCompleted( ((WinInfo) object_changed).board_size );
+					stats.updateUserInformation( user );
+					game = null;
+				}
 			}
 		}
 		

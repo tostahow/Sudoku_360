@@ -49,6 +49,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 	private int game_score;						// current game score
 	private int running_score;					// running score of this session
 	private boolean paused;						// whether or not game is paused
+	private boolean isAIRunning;
 	
 	private CustomButton pencil_button;			// pencil mode button
 	private CustomButton eraser_button;			// eraser mode button
@@ -79,12 +80,13 @@ public class SudokuDisplay extends Observable implements ActionListener
 	 * 		Set up all Components to generate board, and ensure game score is 0 and begin
 	 * 		the timer.
 	 --------------------------------------------------------------------------------------*/
-	public SudokuDisplay( Observer listener, BoardSize size, Difficulty difficulty )
+	public SudokuDisplay( Observer listener, BoardSize size, Difficulty difficulty, boolean isAIOn )
 	{
 		addObserver( listener );
 		board_size = size;
 		this.difficulty = difficulty;
 		paused = false;
+		isAIRunning = isAIOn;
 		start_time = 0;
 		elapsed_time = 0;
 		game_score = 0;
@@ -121,12 +123,13 @@ public class SudokuDisplay extends Observable implements ActionListener
      *      Set Up all Components to generate board and load a file to act as a new 
      *      sudoku board.
      --------------------------------------------------------------------------------------*/
-	public SudokuDisplay( Observer listener, Difficulty difficulty, File file )
+	public SudokuDisplay( Observer listener, Difficulty difficulty, File file, boolean isAIOn )
 	{
 	    addObserver( listener );
 	    
 	    this.difficulty = difficulty;	    
 	    paused = false;
+	    isAIRunning = isAIOn;
 	    
 	    this.file = file;
 	    elapsed_time = 0;
@@ -196,6 +199,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 			running_score = game_score = (int) in.readInt();
 			numHints = (int) in.readInt();
 			start_time = elapsed_time = (long) in.readLong();
+			isAIRunning = (boolean) in.readBoolean();
 			
 			System.out.println( "Hints: " + numHints );
 	
@@ -227,6 +231,7 @@ public class SudokuDisplay extends Observable implements ActionListener
         ---------------------------------------------------------------*/
         score.setText( "" + game_score );
         hint.setText( "" + back_end.getHints() );
+        time.setText( "" +  elapsed_time );
         initTimer();
         startTimer();
 	}
@@ -618,6 +623,7 @@ public class SudokuDisplay extends Observable implements ActionListener
     		    out.writeInt( game_score );
     		    out.writeInt( back_end.getHints() );
     		    out.writeLong( elapsed_time );
+    		    out.writeBoolean( isAIRunning );
     		    out.close();
     		}
     		catch (IOException e) 
@@ -656,7 +662,7 @@ public class SudokuDisplay extends Observable implements ActionListener
         updateTime( elapsed_time );
 		board.clearBoard();
 		setChanged();
-		notifyObservers( "Win" );
+		notifyObservers( new WinInfo(true, board_size) );
 	}
 	
 	/*---------------------------------------------------------------------------------------

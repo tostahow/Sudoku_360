@@ -13,6 +13,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.BufferedReader;
@@ -31,7 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 
-public class SudokuDisplay extends Observable implements ActionListener
+public class SudokuDisplay extends Observable implements ActionListener, Observer
 {	
 	/*-----------------------------------------------------------------------------------
 								Private Class Members
@@ -467,7 +468,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 	 --------------------------------------------------------------------------------------*/
 	public void loadBoardPanel( boolean isLoadingSave )
 	{	
-		board = new Board( this.board_size, this.difficulty );
+		board = new Board( this, this.board_size, this.difficulty );
 		board.enablePenMode();
 		pen_button.activateButton();
 		
@@ -488,7 +489,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 	 --------------------------------------------------------------------------------------*/
 	public void loadBoardPanel( Cell[][] c )
     {   
-        board = new Board( this.board_size, this.difficulty, c );
+        board = new Board( this, this.board_size, this.difficulty, c );
         board.enablePenMode();
         pen_button.activateButton();
         display_panel.add( board, BorderLayout.CENTER );
@@ -602,7 +603,7 @@ public class SudokuDisplay extends Observable implements ActionListener
     	        {
     	            for( int j = 0; j < cells[i].length; j++)
     	            {
-    	            	cells[i][j] = new Cell( board_size );
+    	            	cells[i][j] = new Cell( this, board_size );
     	                cells[i][j].setLocked( c[ i ][ j ].isLocked() );
     	                cells[i][j].setPenFilled( c[ i ][ j ].isPenFilled() );
     	                cells[i][j].setEraserCount( c[ i ][ j ].getEraserCount() );
@@ -870,4 +871,22 @@ public class SudokuDisplay extends Observable implements ActionListener
 		}
 		
 	}
+
+    @Override
+    public void update( Observable subject, Object object_changed )
+    {
+        /*---------------------------------------------------------------------
+        A message was sent from a Cell, indicating that it was penned in.
+        ---------------------------------------------------------------------*/
+        if ( subject instanceof Cell && object_changed instanceof String)
+        {
+            if ( ( ( String ) object_changed ).equals( "Penned" ) )
+            {                
+                if (isAIRunning)
+                {
+                    System.out.println("AI would have made a move here.");
+                }
+            }
+        }        
+    }
 }

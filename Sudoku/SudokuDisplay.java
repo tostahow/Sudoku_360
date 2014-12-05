@@ -13,6 +13,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.BufferedReader;
@@ -31,7 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 
-public class SudokuDisplay extends Observable implements ActionListener
+public class SudokuDisplay extends Observable implements ActionListener, Observer
 {	
 	/*-----------------------------------------------------------------------------------
 								Private Class Members
@@ -49,6 +50,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 	private int game_score;						// current game score
 	private int running_score;					// running score of this session
 	private boolean paused;						// whether or not game is paused
+	private boolean isAIRunning;
 	
 	private CustomButton pencil_button;			// pencil mode button
 	private CustomButton eraser_button;			// eraser mode button
@@ -79,12 +81,13 @@ public class SudokuDisplay extends Observable implements ActionListener
 	 * 		Set up all Components to generate board, and ensure game score is 0 and begin
 	 * 		the timer.
 	 --------------------------------------------------------------------------------------*/
-	public SudokuDisplay( Observer listener, BoardSize size, Difficulty difficulty )
+	public SudokuDisplay( Observer listener, BoardSize size, Difficulty difficulty, boolean isAIOn )
 	{
 		addObserver( listener );
 		board_size = size;
 		this.difficulty = difficulty;
 		paused = false;
+		isAIRunning = isAIOn;
 		start_time = 0;
 		elapsed_time = 0;
 		game_score = 0;
@@ -108,7 +111,7 @@ public class SudokuDisplay extends Observable implements ActionListener
         ---------------------------------------------------------------*/
 		loadStatPanel();
 		loadButtonPanels();
-		loadBoardPanel(false);
+		loadBoardPanel();
 		initTimer();
 		startTimer();
 	}
@@ -121,12 +124,13 @@ public class SudokuDisplay extends Observable implements ActionListener
      *      Set Up all Components to generate board and load a file to act as a new 
      *      sudoku board.
      --------------------------------------------------------------------------------------*/
-	public SudokuDisplay( Observer listener, Difficulty difficulty, File file )
+	public SudokuDisplay( Observer listener, Difficulty difficulty, File file, boolean isAIOn )
 	{
 	    addObserver( listener );
 	    
 	    this.difficulty = difficulty;	    
 	    paused = false;
+	    isAIRunning = isAIOn;
 	    
 	    this.file = file;
 	    elapsed_time = 0;
@@ -145,7 +149,7 @@ public class SudokuDisplay extends Observable implements ActionListener
         
         loadStatPanel();
         loadButtonPanels();
-        loadBoardPanel(false);
+        loadBoardPanel();
         initTimer();
         startTimer();
 	}
@@ -196,6 +200,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 			running_score = game_score = (int) in.readInt();
 			numHints = (int) in.readInt();
 			start_time = elapsed_time = (long) in.readLong();
+			isAIRunning = (boolean) in.readBoolean();
 			
 			System.out.println( "Hints: " + numHints );
 	
@@ -227,6 +232,7 @@ public class SudokuDisplay extends Observable implements ActionListener
         ---------------------------------------------------------------*/
         score.setText( "" + game_score );
         hint.setText( "" + back_end.getHints() );
+        time.setText( "" +  elapsed_time );
         initTimer();
         startTimer();
 	}
@@ -460,16 +466,12 @@ public class SudokuDisplay extends Observable implements ActionListener
 	 * Description:
 	 * 		create new Sudoku board and activate pen_mode
 	 --------------------------------------------------------------------------------------*/
-	public void loadBoardPanel( boolean isLoadingSave )
+	public void loadBoardPanel()
 	{	
-		board = new Board( this.board_size, this.difficulty );
+		board = new Board( this, this.board_size, this.difficulty );
 		board.enablePenMode();
 		pen_button.activateButton();
-		
-		if (!isLoadingSave)
-		{
-			back_end.populateBoard( board.getCells() );
-		}
+		back_end.populateBoard( board.getCells() );
 		
 		display_panel.add( board, BorderLayout.CENTER );
 	}
@@ -483,7 +485,7 @@ public class SudokuDisplay extends Observable implements ActionListener
 	 --------------------------------------------------------------------------------------*/
 	public void loadBoardPanel( Cell[][] c )
     {   
-        board = new Board( this.board_size, this.difficulty, c );
+        board = new Board( this, this.board_size, this.difficulty, c );
         board.enablePenMode();
         pen_button.activateButton();
         display_panel.add( board, BorderLayout.CENTER );
@@ -597,7 +599,7 @@ public class SudokuDisplay extends Observable implements ActionListener
     	        {
     	            for( int j = 0; j < cells[i].length; j++)
     	            {
-    	            	cells[i][j] = new Cell( board_size );
+    	            	cells[i][j] = new Cell( this, board_size );
     	                cells[i][j].setLocked( c[ i ][ j ].isLocked() );
     	                cells[i][j].setPenFilled( c[ i ][ j ].isPenFilled() );
     	                cells[i][j].setEraserCount( c[ i ][ j ].getEraserCount() );
@@ -618,6 +620,7 @@ public class SudokuDisplay extends Observable implements ActionListener
     		    out.writeInt( game_score );
     		    out.writeInt( back_end.getHints() );
     		    out.writeLong( elapsed_time );
+    		    out.writeBoolean( isAIRunning );
     		    out.close();
     		}
     		catch (IOException e) 
@@ -656,7 +659,7 @@ public class SudokuDisplay extends Observable implements ActionListener
         updateTime( elapsed_time );
 		board.clearBoard();
 		setChanged();
-		notifyObservers( "Win" );
+		notifyObservers( new WinInfo(true, board_size) );
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -793,7 +796,7 @@ public class SudokuDisplay extends Observable implements ActionListener
         ---------------------------------------------------------------*/
 		if( e.getSource() == hint_button && !paused )
 		{
-			boolean flag = back_end.hint( board.getCells() );
+			boolean flag = back_end.hint( board.getCells(), true );
 			if( !flag )
 			{
 				System.out.println( "No More Hints Left" );
@@ -864,4 +867,25 @@ public class SudokuDisplay extends Observable implements ActionListener
 		}
 		
 	}
+
+    @Override
+    public void update( Observable subject, Object object_changed )
+    {
+        /*---------------------------------------------------------------------
+        A message was sent from a Cell, indicating that it was penned in.
+        ---------------------------------------------------------------------*/
+        if ( subject instanceof Cell && object_changed instanceof String)
+        {
+            if ( ( ( String ) object_changed ).equals( "Penned" ) )
+            {
+                /*---------------------------------------------------------------------
+                If the AI is set to be run, do the AI's move.
+                ---------------------------------------------------------------------*/
+                if (isAIRunning)
+                {
+                    back_end.doAIMove( board.getCells() );
+                }
+            }
+        }        
+    }
 }

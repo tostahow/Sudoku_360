@@ -18,11 +18,13 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.Serializable;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-public class Cell extends JPanel implements KeyListener, MouseListener, Serializable
+public class Cell extends Observable implements KeyListener, MouseListener, Serializable
 {
 	/*-----------------------------------------------------------------------------------
 								Private Class Members
@@ -36,6 +38,8 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 	private boolean locked;						// locked flag
 	private boolean pen_filled;                 // pen filled flag
 	
+	private JPanel display_panel;               // panel to hold all elements
+	
 	private int eraser_count;                   // # of eraser uses
 	private CellField pen_field;				// Pen Field
 	private CellField pencil_field;			    // Pencil Field
@@ -48,9 +52,11 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 	 * Description:
 	 * 		Set Cell Type, Initialize Variables and Fields and Generate panel
 	 --------------------------------------------------------------------------------------*/
-	public Cell( BoardSize board_size )
+	public Cell( Observer listener, BoardSize board_size )
 	{
-		super();
+	    addObserver( listener );
+		
+	    display_panel = new JPanel();
 		
 		setCellType( board_size );
 		initVariables();
@@ -301,7 +307,19 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 	{
 		return this.locked;
 	}
-	
+	 
+	/*---------------------------------------------------------------------------------------
+     * Method:
+     *      getPenField()
+     * 
+     * Description:
+     *      return the display panel
+     --------------------------------------------------------------------------------------*/
+    public JPanel getDisplayPanel()
+    {
+        return display_panel;
+    }
+    
 	/*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		getPenField()
@@ -390,15 +408,15 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 	 --------------------------------------------------------------------------------------*/
 	private void generatePanel()
 	{
-		setLayout( new BorderLayout() );
-		setBorder( BorderFactory.createLineBorder( Color.black ) );
-		setPreferredSize( new Dimension(50, 50) );
+	    display_panel.setLayout( new BorderLayout() );
+	    display_panel.setBorder( BorderFactory.createLineBorder( Color.black ) );
+	    display_panel.setPreferredSize( new Dimension(50, 50) );
 		
 	    /*---------------------------------------------------------------
-        add fields to cell panel
+        add fields to cell's display panel
         ---------------------------------------------------------------*/
-		this.add( pen_field, BorderLayout.CENTER );
-		this.add( pencil_field, BorderLayout.NORTH );
+		display_panel.add( pen_field, BorderLayout.CENTER );
+		display_panel.add( pencil_field, BorderLayout.NORTH );
 	}
 	
 	/*---------------------------------------------------------------------------------------
@@ -516,12 +534,21 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 	{
 	    /*---------------------------------------------------------------
        	Once key is entered and released do not allow player to edit it
+       	Notify observers that the user penned in this Cell.
         ---------------------------------------------------------------*/
-		if( !this.pen_field.getText().equals("") )
+		if( !this.pen_field.getText().equals("") && !this.locked)
 		{
+		    boolean wasFilledBefore = this.pen_filled;
+		    
 			this.pen_field.setText( pen_field.getText().toUpperCase() );
 			this.pen_filled = true;
 			this.pen_field.setEditable(false);
+			
+			if (!wasFilledBefore)
+			{
+			    setChanged();
+                notifyObservers( "Penned" );
+			}
 		}
 	}
 
@@ -569,8 +596,8 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 	 * 		reset fields to normal appearance on exit of field.
 	 --------------------------------------------------------------------------------------*/
 	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mouseExited(MouseEvent arg0) 
+	{
 		if( !locked && isPenMode() )
 		{
 			pen_field.setBackground( SudokuCommon.COMPONENT_COLOR );
@@ -582,8 +609,7 @@ public class Cell extends JPanel implements KeyListener, MouseListener, Serializ
 			pencil_field.setBackground( SudokuCommon.COMPONENT_COLOR );
 			pencil_field.setForeground( SudokuCommon.PEN_COLOR );
 			pencil_field.setCaretColor( Color.white );
-		}
-		
+		}		
 	}
 	
 	/*---------------------------------------------------------------------------------------

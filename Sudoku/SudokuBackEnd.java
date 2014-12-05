@@ -613,13 +613,53 @@ public class SudokuBackEnd
     }
     
     /*---------------------------------------------------------------------------------------
+     * Method:
+     *      doAIMove()
+     * 
+     * Description:
+     *      perform an AI player's move, using the hint algorithm
+     --------------------------------------------------------------------------------------*/
+    public boolean doAIMove( Cell[][] cells )
+    {
+        hints++;
+        boolean check = false;
+        
+        /*-----------------------------------------------------------------
+        Verify that there's actually a space left on the board.
+        -----------------------------------------------------------------*/
+        for ( int i = 0; i < cells.length; i++ )
+        {
+            for ( int j = 0; j < cells[i].length; j++ )
+            {
+                if ( cells[i][j].getPenField().equals("") )
+                {
+                    check = true;
+                }
+            }
+        }
+        
+        /*-----------------------------------------------------------------
+        If there are no spots left on the board, exit out of the AI routine
+        -----------------------------------------------------------------*/
+        if (!check)
+        {
+            return false;
+        }
+        
+        /*-----------------------------------------------------------------
+        The AI makes its move here
+        -----------------------------------------------------------------*/
+        return hint( cells, false );
+    }
+    
+    /*---------------------------------------------------------------------------------------
 	 * Method:
 	 * 		hint()
 	 * 
 	 * Description:
 	 * 		give user a hint by filling an empty cell, or incorrect cell
 	 --------------------------------------------------------------------------------------*/
-    public boolean hint( Cell[][] cells )
+    public boolean hint( Cell[][] cells, boolean overridePlayerEntries )
     {	
     	boolean hint_given = false;
     	int i = getRandomValue();
@@ -631,20 +671,32 @@ public class SudokuBackEnd
     	if( win == true )
     		return hint_given;
     	
-    	while( !hint_given  )
+    	while ( !hint_given  )
     	{
-    		if( !cells[i][j].getPenField().equals( SudokuCommon.values[ board[i][j] ] ) )
+            /*------------------------------------------------------------
+            If there's a spot on the board that is not already locked
+            ------------------------------------------------------------*/
+    		if ( !cells[i][j].getPenField().equals( SudokuCommon.values[ board[i][j] ] ) )
     		{
-    			cells[i][j].setPenField( board[i][j] );
-    			cells[i][j].setLocked( true );
-    			hint_given = true;
-    			hints--;
+    	        /*--------------------------------------------------------------------
+    	        Add to the hint to this particular Cell as long as it's allowed to
+    	        override player entries, or the Cell's pen field is empty
+    	        --------------------------------------------------------------------*/
+    		    if ( overridePlayerEntries || cells[i][j].getPenField().equals("") )
+    		    {
+                    System.out.println(cells[i][j].getPenField());
+                    cells[i][j].setPenField( board[i][j] );
+                    cells[i][j].setLocked( true );
+                    hint_given = true;
+                    hints--;
+    		    }
     		}
+    		
         	i = getRandomValue();
         	j = getRandomValue();
     	}
-    	return hint_given;
     	
+    	return hint_given;    	
     }
     
     /*---------------------------------------------------------------------------------------

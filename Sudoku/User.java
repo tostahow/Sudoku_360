@@ -24,6 +24,9 @@ public class User implements Serializable
 	private String password_hash;						// generated password hash
 	private String password_salt;						// unique salt for user
 	private int maps_completed;							// Sudoku maps completed
+	private int size3_maps_completed;					// 9x9 Sudoku maps completed
+	private int size4_maps_completed;					// 16x16 Sudoku maps completed
+	
 	
 	/*---------------------------------------------------------------------------------------
 	 * Method:
@@ -75,6 +78,27 @@ public class User implements Serializable
 	 --------------------------------------------------------------------------------------*/
 	public int getMapsCompleted()
 	{
+		return maps_completed;
+	}
+	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		getMapsCompleted()
+	 * 
+	 * Description:
+	 * 		return number of maps completed with the particular BoardSize
+	 --------------------------------------------------------------------------------------*/
+	public int getMapsCompleted(BoardSize b)
+	{
+		if (b == BoardSize.NINE)
+		{
+			return size3_maps_completed;
+		}
+		else if (b == BoardSize.SIXTEEN)
+		{
+			return size4_maps_completed;
+		}
+		
 		return maps_completed;
 	}
 	
@@ -135,6 +159,23 @@ public class User implements Serializable
 	 --------------------------------------------------------------------------------------*/
 	public void incrementMapsCompleted()
 	{
+		maps_completed++;
+	}
+	
+	/*---------------------------------------------------------------------------------------
+	 * Method:
+	 * 		incrementMapsCompleted
+	 * 
+	 * Description:
+	 * 		update the # of maps completed
+	 --------------------------------------------------------------------------------------*/
+	public void incrementMapsCompleted(BoardSize b)
+	{
+		if (b == BoardSize.NINE)
+			size3_maps_completed++;
+		else if (b == BoardSize.SIXTEEN)
+			size4_maps_completed++;
+		
 		maps_completed++;
 	}
 	

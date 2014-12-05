@@ -37,9 +37,11 @@ public class Statistics extends JFrame implements WindowListener
 	private JLabel name_label;				// name label
 	private JLabel name;					// user name
 	private JLabel score_label;				// score label
-	private JLabel score;					// user score
+	private JLabel score;					// user score				
 	private JLabel maps_completed_label;	// maps completed label
 	private JLabel maps_completed;			// user # of maps completed
+	private JLabel size3_maps_completed;    // user # of 9 by 9 maps completed
+	private JLabel size4_maps_completed;    // user # of 16 by 16 maps completed
 	private JLabel time_label;				// label for time played
 	private JLabel time;					// total time played
 
@@ -80,12 +82,14 @@ public class Statistics extends JFrame implements WindowListener
         ---------------------------------------------------------------*/
 		showing = false;
 		stats_panel = new JPanel();
-		stats_grid = new GridLayout( 4, 2 );
+		stats_grid = new GridLayout( 5, 2 );
 		name_label = new CustomLabel("Username: ");
 		maps_completed_label = new CustomLabel("Maps Completed: ");
 		score_label = new CustomLabel("Total Score: ");
 		name = new CustomLabel("Name");
 		score = new CustomLabel("Score");
+		size3_maps_completed = new CustomLabel("9 by 9 Grid: ");
+		size4_maps_completed = new CustomLabel("16 by 16 Grid: ");
 		maps_completed = new CustomLabel("Maps Completed");
 		time_label = new CustomLabel( "Time Played:" );
 		time = new CustomLabel("Time");
@@ -98,6 +102,8 @@ public class Statistics extends JFrame implements WindowListener
 		stats_panel.add( name );
 		stats_panel.add( maps_completed_label );
 		stats_panel.add( maps_completed );
+		stats_panel.add( size3_maps_completed );
+		stats_panel.add( size4_maps_completed );
 		stats_panel.add( score_label );
 		stats_panel.add( score );
 		stats_panel.add( time_label );
@@ -115,10 +121,11 @@ public class Statistics extends JFrame implements WindowListener
 	public void addInformation( User user )
 	{
 		name.setText( user.getName() );
-		maps_completed.setText( "" + user.getMapsCompleted() );
+		maps_completed.setText( "" + user.getMapsCompleted() );		
 		score.setText( "" + user.getScore() );
-		time.setText( "" + user.getTimePlayed() + " seconds");
-		
+		size3_maps_completed.setText( "9x9 Maps: " + user.getMapsCompleted(BoardSize.NINE) );
+		size4_maps_completed.setText( "16x16 Maps: " + user.getMapsCompleted(BoardSize.SIXTEEN) );
+		time.setText( "" + user.getTimePlayed() + " seconds");		
 	}
 	
 	/*---------------------------------------------------------------------------------------

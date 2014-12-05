@@ -11,6 +11,8 @@
 -------------------------------------------------------------------------------------------------*/
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.util.Observer;
+
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
@@ -22,6 +24,7 @@ public class Board extends JPanel
 	private static final long 
 	serialVersionUID = 1L;			//Serialized Value
 	
+	private Observer listener;
 	private Difficulty diff;		//Difficulty Values
 	private BoardSize board_size;	//BoardSize Values
 	private Cell[][] cells;			//Cells which will be used for game
@@ -39,8 +42,9 @@ public class Board extends JPanel
 	 * Description:
 	 * 		Set Dimension of Board and Generate all of the cells into a panel
 	 --------------------------------------------------------------------------------------*/
-	public Board( BoardSize b_size, Difficulty difficulty )
+	public Board( Observer listener, BoardSize b_size, Difficulty difficulty )
 	{
+	    this.listener = listener;
 		this.setBackground( Color.BLACK );
 		this.board_size = b_size;
 		this.diff = difficulty;
@@ -61,8 +65,9 @@ public class Board extends JPanel
      *      Set Dimension of Board and Generate all of the cells into a panel using an already
      *      initialized cell array.
      --------------------------------------------------------------------------------------*/
-    public Board( BoardSize b_size, Difficulty difficulty, Cell[][] c )
+    public Board( Observer listener, BoardSize b_size, Difficulty difficulty, Cell[][] c )
     {
+        this.listener = listener;
         this.setBackground( Color.BLACK );
         this.board_size = b_size;
         this.diff = difficulty;
@@ -132,7 +137,7 @@ public class Board extends JPanel
 		{
 			for( int j = 0; j < cells_dim; j++)
 			{
-				cells[i][j] = new Cell( board_size );
+				cells[i][j] = new Cell( listener, board_size );
 			}
 			
 		}
@@ -171,7 +176,7 @@ public class Board extends JPanel
 				        row and column order. ie 	123456789
 				        						 	123456789
 				        ---------------------------------------------------------------*/
-						cell_square[ i ][ j ].add( cells[ ( k+i*cell_square_dim ) ][ ( l+j*cell_square_dim ) ] );
+						cell_square[ i ][ j ].add( cells[ ( k+i*cell_square_dim ) ][ ( l+j*cell_square_dim ) ].getDisplayPanel() );
 					}
 						
 				}
@@ -207,7 +212,7 @@ public class Board extends JPanel
         {
             for( int j = 0; j < cells_dim; j++)
             {
-                cells[i][j] = new Cell( board_size );                
+                cells[i][j] = new Cell( listener, board_size );                
                 cells[i][j].setLocked(c[i][j].isLocked());
                 cells[i][j].setPenFilled(c[i][j].isPenFilled());
                 cells[i][j].setEraserCount(c[i][j].getEraserCount());
@@ -242,7 +247,7 @@ public class Board extends JPanel
 					cells[i][j].setPencilField( c[i][j].getPencilFieldObject().str );
 				}
 
-                cells[i][j].repaint();                
+                cells[i][j].getDisplayPanel().repaint();                
             }
         }
         
@@ -275,7 +280,7 @@ public class Board extends JPanel
                 {
                     for( int l = 0; l < cell_square_dim; l++ )
                     {
-                        cell_square[i][j].add( cells[k+i*cell_square_dim][l+j*cell_square_dim] );
+                        cell_square[i][j].add( cells[k+i*cell_square_dim][l+j*cell_square_dim].getDisplayPanel() );
                     }
                         
                 }

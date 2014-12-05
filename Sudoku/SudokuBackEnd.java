@@ -521,8 +521,8 @@ public class SudokuBackEnd
 	    		numbers_shown = 20;
 	    		break;
 	    	case EVIL:
-	    		hints = 0;
-	    		numbers_shown = 15;
+	    		hints = 1;
+	    		numbers_shown = 18;
 	    		break;
 	    	}
     	}

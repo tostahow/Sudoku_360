@@ -8,7 +8,7 @@
  * 		Contains all logic for locking and setting cell values.
  *
  * Author:
- * 		Travis Ostahowski
+ * 		Travis Ostahowski and Xavier Tariq
 -------------------------------------------------------------------------------------------------*/
 import java.awt.BorderLayout;
 import java.awt.Color;

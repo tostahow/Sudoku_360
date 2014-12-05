@@ -7,13 +7,12 @@
  * 		can interact with.
  * 
  * Author:
- * 		Travis Ostahowski
+ * 		Travis Ostahowski and Xavier Tariq
 -------------------------------------------------------------------------------------------------*/
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.BufferedReader;
@@ -22,10 +21,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+
 import java.util.Observable;
 import java.util.Observer;
+
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JPanel;
@@ -41,6 +43,7 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
 	private Difficulty difficulty;				// difficulty of board
 	private SudokuBackEnd back_end;				// back end sudoku board for functionality
 	private Board board;						// board panel of cells
+	@SuppressWarnings("unused")
 	private File file;							// file to load
 			
 	private Timer timer;						// timer to keep track of time
@@ -104,7 +107,6 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
         ---------------------------------------------------------------*/
 		back_end = new SudokuBackEnd( this.board_size, this.difficulty );
 		back_end.generateNewPuzzle();
-		back_end.printBoardContents();
 		
 	    /*---------------------------------------------------------------
         Load statistic panel, button panels and board panels
@@ -145,8 +147,7 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
         
         back_end = new SudokuBackEnd( this.board_size, this.difficulty );
         back_end.generatePuzzleBasedOnFile( data );
-        back_end.printBoardContents();
-        
+
         loadStatPanel();
         loadButtonPanels();
         loadBoardPanel();
@@ -184,10 +185,7 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
             read in board size and difficulty
             ---------------------------------------------------------------*/
 			board_size = (BoardSize) in.readObject();
-			difficulty = (Difficulty) in.readObject();
-			
-			System.out.println("BSize: " + board_size);
-			System.out.println("DIF: " + difficulty);			
+			difficulty = (Difficulty) in.readObject();			
 			
 			back_end = new SudokuBackEnd( this.board_size, this.difficulty );
 			back_end.setBoard( (int[][]) in.readObject() );
@@ -201,8 +199,6 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
 			numHints = (int) in.readInt();
 			start_time = elapsed_time = (long) in.readLong();
 			isAIRunning = (boolean) in.readBoolean();
-			
-			System.out.println( "Hints: " + numHints );
 	
 			in.close();
 		} 
@@ -216,7 +212,6 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
         ---------------------------------------------------------------*/
         display_panel = new JPanel();
         display_panel.setLayout( new BorderLayout() );        
-        back_end.printBoardContents();
         
         /*---------------------------------------------------------------
         Load components
@@ -276,7 +271,7 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
 					public void actionPerformed( ActionEvent ae )
 					{
 						elapsed_time++;
-						time.setText("" +  elapsed_time );
+						time.setText( "" +  elapsed_time );
 					}
 				}
 			);
@@ -309,7 +304,7 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
 
             while ((line = brd.readLine()) != null) 
             {
-                fileBuffer.append( line ).append( System.getProperty("line.separator") );
+                fileBuffer.append( line ).append( System.getProperty( "line.separator" ) );
             }
 
             in.close();
@@ -376,9 +371,9 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
         ---------------------------------------------------------------*/
 		score_label = new CustomLabel( "Score: " );
 		score = new CustomLabel( "0" );
-		time_label = new CustomLabel( "Time elapsed: " );
+		time_label = new CustomLabel( "Time: " );
 		time = new CustomLabel( "0" );
-		score_button = new CustomButton( "Update Score!", true );
+		score_button = new CustomButton( "Score!", true );
 		pause_button = new CustomButton( "Pause", true );
 		hint_label = new CustomLabel( "Hints Left: " );
 		hint = new CustomLabel( "" + back_end.getHints() );
@@ -702,7 +697,6 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
 	        ---------------------------------------------------------------*/
 			if( win == true )
 			{
-				System.out.println( "Player wins!" );
 				board.setWin();
 				setChanged();
 				notifyObservers( updated_score );
@@ -769,7 +763,6 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
         ---------------------------------------------------------------*/
 		if( e.getSource() == quit_button && !paused )
 		{ 
-			System.out.println( "Calling Quit from Menu Frame!" );
 			quitGame();
 	        display_panel.repaint();
 	        display_panel.setVisible( true );
@@ -779,9 +772,7 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
         Save the current game's state, and quit the game.
         ---------------------------------------------------------------*/
 		if( e.getSource() == save_and_quit_button && !paused )
-		{
-			System.out.println( "Calling Quit from Menu Frame!" );
-			
+		{	
 			stopTimer();
 			
 			if ( saveAndQuitGame() )
@@ -799,8 +790,12 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
 			boolean flag = back_end.hint( board.getCells(), true );
 			if( !flag )
 			{
-				System.out.println( "No More Hints Left" );
-				return;
+			    JOptionPane.showMessageDialog(
+			            null,
+			            "There are no more hints left to be used!",
+			            "No more hints!",
+			            JOptionPane.OK_OPTION
+			            );
 			}
 			
 			hint.setText( "" + back_end.getHints() );
@@ -811,7 +806,6 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
         ---------------------------------------------------------------*/
 		if( e.getSource() == score_button && !paused )
 		{
-			System.out.println( "Score Button Pressed!" );
 			updateScore( back_end.scoreBoard( board.getCells() ) );
 		}
 		
@@ -826,8 +820,6 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
 		            "Solving now..",
 		            JOptionPane.OK_OPTION
 		            );
-		    
-		    updateTime( elapsed_time );
 		    updateScore( back_end.scoreBoard( board.getCells() ) );
 		    back_end.solve( board.getCells() );
 		    winGame();
@@ -848,7 +840,6 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
 				board.pauseBoard( false );
 				deactivateModes();
 				pen_button.activateButton();
-				board.enablePenMode();
 				display_panel.repaint();
 				startTimer();
 			}
@@ -859,6 +850,7 @@ public class SudokuDisplay extends Observable implements ActionListener, Observe
 			{
 				paused = true;
 				pause_button.activateButton();
+				deactivateModes();
 				board.disableBoard();
 				board.pauseBoard( true );
 				stopTimer();

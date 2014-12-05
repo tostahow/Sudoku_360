@@ -4,6 +4,9 @@
  * 
  * Description:
  * 		User is used to store information for specific users' achievements and statistics
+ * 
+ * Author:
+ * 		Travis Ostahowski and Xavier Tariq
 -------------------------------------------------------------------------------------------------*/
 
 /*-------------------------------------------------------------------------------------------------

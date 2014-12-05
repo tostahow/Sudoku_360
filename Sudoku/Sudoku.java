@@ -81,7 +81,6 @@ public class Sudoku implements Observer
 		---------------------------------------*/
 		if( object_changed instanceof User && ( subject instanceof ServiceFrame ) )
 		{
-			System.out.println( "User Loaded" );
 			current_user = (User)object_changed;
 			
 		    /*---------------------------------------------------------------

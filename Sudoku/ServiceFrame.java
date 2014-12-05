@@ -91,7 +91,7 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 		/*---------------------------------------------------------------
 		Set Frame Attributes
 		---------------------------------------------------------------*/
-		host_frame.setSize(display_width + 250, 750 );
+		host_frame.setSize( display_width , 750 );
 		host_frame.setLocation( 350, 100 );
 		host_frame.setResizable( false );
 		host_frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
@@ -220,7 +220,6 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 		---------------------------------------*/
 		if( object_changed instanceof User )
 		{
-			System.out.println( "User Loaded" );
 			current_user = (User)object_changed;
 			
 			/*---------------------------------------
@@ -239,9 +238,7 @@ public class ServiceFrame extends Observable implements Observer, WindowListener
 		 and reload entry panel.
 		---------------------------------------*/
 		if ( object_changed instanceof String   )
-		{
-			System.out.println( "Going Back to Service Menu" );
-			
+		{	
 			host_frame.getContentPane().removeAll();
 			host_frame.add( entry_panel );
 			host_frame.repaint();

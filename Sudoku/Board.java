@@ -7,7 +7,7 @@
  * 		Assists with establishing functionality of Sudoku Cells
  * 
  * Author:
- * 		Travis Ostahowski
+ * 		Travis Ostahowski and Xavier Tariq
 -------------------------------------------------------------------------------------------------*/
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -380,6 +380,13 @@ public class Board extends JPanel
 			for( int j = 0; j < cells_dim; j++)
 			{
 				cells[ i ][ j ].setPaused( flag );
+				
+				if( !flag )
+				{
+					cells[i][j].setPencilMode(false);
+					cells[i][j].setPenMode(true);
+					cells[i][j].setEraserMode(false);
+				}
 			}
 	}
 	/*---------------------------------------------------------------------------------------

@@ -8,7 +8,7 @@
  * 		The Main Menu includes buttons for playing the game, seeing user stats, and quiting game.
  * 
  * Author:
- * 		Travis Ostahowski, Xavier Tariq, Garett Winkler
+ * 		Travis Ostahowski, Xavier Tariq, Garett Winkler, Scott Parkman
 -------------------------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------------------------
 										    Imports
@@ -118,7 +118,7 @@ public class MainMenu implements Observer, ActionListener, WindowListener
         ---------------------------------------------------------------*/
         main_frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         main_frame.setTitle("Sudoku Main Menu");
-        main_frame.setSize( 1400, 800 );
+        main_frame.setSize( 1175, 770 );
         main_frame.setResizable(true);
         main_frame.setLocation( 300 , 125 );
         main_frame.addWindowListener(this);
@@ -330,12 +330,16 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 		  ---------------------------------------------------------------*/
 		
 		 
-		 JPanel info_panel = new JPanel();
-		 JTextArea information = new JTextArea( "\t\tSudoku\n\n\tWhat is Sudoku?\na puzzle game in with a 9x9 or 16x16 board..etc\nPencil Mode: " );
+		 JPanel info_panel = new JPanel( new FlowLayout() );
+		 JTextArea information = new JTextArea( SudokuCommon.INFO );
+		 information.setBackground( SudokuCommon.BACKGROUND_COLOR );
+		 information.setFont( SudokuCommon.PENCIL_FONT );
 		 information.setEditable( false );
-		 info_panel.add( information, BorderLayout.CENTER );
+		 info_panel.add( information );
+		 info_panel.setBackground( SudokuCommon.COMPONENT_COLOR );
 		 
 		 JScrollPane info_scroll = new JScrollPane( info_panel );
+		 info_scroll.setSize( 400, 400 );
 		 info_scroll.setVerticalScrollBarPolicy( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS );
 		    
 		  
@@ -434,15 +438,29 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 			if( stats.isShowing() == false )
 				stats.setShowing( true );
 			else
-				System.out.println("Stats already open");
+			{
+				JOptionPane.showMessageDialog(
+		            null,
+		            "Stats panel is already open!",
+		            "Stats Open",
+		            JOptionPane.OK_OPTION
+		            );
+			}
 		}
 		
 		if ( e.getSource() == info_button )
 		{
 			if ( info_open == false )
 				showInfo();
-         	else
-         		System.out.println("Info window already open");
+			else
+			{
+				JOptionPane.showMessageDialog(
+		            null,
+		            "Information panel is already open!",
+		            "Info Open",
+		            JOptionPane.OK_OPTION
+		            );
+			}
 		}
 		
 	    /*---------------------------------------------------------------
@@ -463,9 +481,9 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 		    File file = null;
 		    
 		    JFileChooser fileOpen = new JFileChooser();
-		    FileFilter filter = new FileNameExtensionFilter("txt files", "txt");
-		    fileOpen.addChoosableFileFilter(filter);
-		    int ret = fileOpen.showDialog(file_panel, "Open Sudoku board");
+		    FileFilter filter = new FileNameExtensionFilter( "txt files", "txt" );
+		    fileOpen.addChoosableFileFilter( filter );
+		    int ret = fileOpen.showDialog( file_panel, "Open Sudoku board" );
 
             if (ret == JFileChooser.APPROVE_OPTION) 
             {
@@ -474,7 +492,6 @@ public class MainMenu implements Observer, ActionListener, WindowListener
             else
             {
             	closed = true;
-            	System.out.println( "Open command cancelled by user!" );
             }
             
             if( !closed )
@@ -509,7 +526,6 @@ public class MainMenu implements Observer, ActionListener, WindowListener
             else
             {
             	closed = true;
-            	System.out.println( "Open command cancelled by user!" );
             }
             
             if( !closed )
@@ -621,7 +637,6 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	        {
 	            user.setScore( (int) object_changed );
 	            stats.updateUserInformation( user );
-	            System.out.println( "User Score Updated to " + user.getScore() );
 	        }
 	        
 	        /*---------------------------------------------------------------
@@ -631,7 +646,6 @@ public class MainMenu implements Observer, ActionListener, WindowListener
 	        {
 	            user.updateTimePlayed( (long) object_changed );
 	            stats.updateUserInformation( user );
-	            System.out.println( "User Time Played Updated to " + user.getTimePlayed() + " in seconds." );
 	        }
 		}
 	}

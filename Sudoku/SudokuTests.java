@@ -39,7 +39,6 @@ public class SudokuTests //implements Observer // Overall strategy: Test game wi
 		System.out.println("Successfull login test: complete");
 		testMainMenu();
 		testGame();
-		testStatWindow();
 	}
 
 	public static boolean testRegMenu(int C) // Test the register component of "ServiceFrame.java", testing cases expected to fail first
@@ -121,10 +120,6 @@ public class SudokuTests //implements Observer // Overall strategy: Test game wi
 		testGame = new SudokuDisplay(test_main, test_main.getDesiredDifficulty(), test_main.file);
 	}
 
-	//
-	public static void testStatWindow()
-	{
-	}
 }
 
 class Agent implements Observer
